@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Black">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="270dp"
+        android:paddingLeft="39dp"
+        android:text="ShareNcare"
+        android:textColor="@color/lightorange"
+        android:textSize="60sp"
+        android:textStyle="bold" />
+
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/main_progressBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="600dp"
+        android:visibility="invisible"/>
+
+</RelativeLayout>

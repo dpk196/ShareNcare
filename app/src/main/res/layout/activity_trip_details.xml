@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.TripDetails">
+
+    <TextView
+        android:id="@+id/textEmailReg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="Trip Detials"
+        android:textColor="@color/Black"
+        android:textSize="25sp" />
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/label_start_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="320dp"
+        android:layout_marginBottom="672dp"
+        android:text="Trip Start time"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+     <TextView
+         android:textStyle="bold"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="12:pm"
+         android:id="@+id/trip_start_time"
+         android:layout_marginTop="80dp"
+         android:layout_marginLeft="150dp" />
+    <Button
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:layout_marginLeft="290dp"
+        android:text="Set Start Time"
+        android:id="@+id/set_trip_start_time"
+        android:background="@drawable/theme_button" />
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/label_total_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginEnd="320dp"
+        android:layout_marginBottom="672dp"
+        android:text="Trip distance"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10km"
+        android:id="@+id/trip_distance"
+        android:layout_marginTop="150dp"
+        android:layout_marginLeft="150dp" />
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/label_total_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="200dp"
+        android:layout_marginEnd="320dp"
+        android:layout_marginBottom="672dp"
+        android:text="Trip duration"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2 hrs"
+        android:id="@+id/trip_duration"
+        android:layout_marginTop="200dp"
+        android:layout_marginLeft="150dp" />
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/label_total_fare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="250dp"
+        android:layout_marginEnd="320dp"
+        android:layout_marginBottom="672dp"
+        android:text="Fare"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rs 250"
+        android:id="@+id/trip_fare"
+        android:layout_marginTop="250dp"
+        android:layout_marginLeft="150dp"/>
+    <TextView
+        android:id="@+id/label_status"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="320dp"
+        android:layout_marginEnd="320dp"
+        android:layout_marginBottom="672dp"
+        android:text="Trip Status"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/trip_status"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Yet to Start"
+        android:layout_marginTop="320dp"
+        android:layout_marginLeft="150dp"/>
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/label_from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="370dp"
+        android:layout_marginEnd="320dp"
+        android:layout_marginBottom="672dp"
+        android:text="From"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/trip_from"
+        android:layout_marginTop="370dp"
+        android:layout_marginLeft="150dp"/>
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/label_to"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="400dp"
+        android:layout_marginEnd="320dp"
+        android:layout_marginBottom="672dp"
+        android:text="To"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/trip_to"
+        android:layout_marginTop="400dp"
+        android:layout_marginLeft="150dp"/>
+
+    <Button
+        android:textStyle="bold"
+        android:id="@+id/trip_confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="450dp"
+        android:background="@color/startblue"
+        android:text="Click to Confirm"/>
+
+
+
+</RelativeLayout>

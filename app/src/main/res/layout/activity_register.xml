@@ -1,0 +1,139 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:id="@+id/relLayout1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/textEmailReg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="30dp"
+                    android:text="@string/email_registration"
+                    android:textColor="@color/Black"
+                    android:textSize="25sp" />
+
+                <EditText
+                    android:id="@+id/input_fullname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textEmailReg"
+                    android:layout_marginTop="93dp"
+                    android:hint="Full Name"
+                    android:inputType="textEmailAddress" />
+
+                <EditText
+                    android:id="@+id/input_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textEmailReg"
+                    android:layout_marginTop="30dp"
+                    android:hint="@string/prompt_email"
+                    android:inputType="textEmailAddress" />
+
+                <EditText
+                    android:id="@+id/mob_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/input_email"
+                    android:layout_marginTop="75dp"
+                    android:hint="Mob number"
+                    android:inputType="textEmailAddress" />
+
+
+                <EditText
+                    android:id="@+id/input_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/mob_number"
+                    android:layout_marginTop="19dp"
+                    android:hint="@string/password"
+                    android:inputType="textPassword" />
+
+                <EditText
+                    android:id="@+id/input_confirm_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/input_password"
+                    android:layout_marginTop="19dp"
+                    android:hint="@string/confirm_password"
+                    android:inputType="textPassword" />
+
+                <TextView
+                    android:id="@+id/input_rider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/input_password"
+                    android:layout_marginTop="80dp"
+                    android:hint="Rider"
+                    android:inputType="textPassword"
+                    android:textSize="20sp" />
+
+                <Switch
+                    android:id="@+id/driver_rider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/input_confirm_password"
+                    android:layout_marginLeft="110dp"
+                    android:background="@drawable/mybutton"
+                    android:layout_marginTop="19dp"
+                    android:layout_toRightOf="@+id/input_rider" />
+
+                <TextView
+                    android:id="@+id/input_driver"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/input_password"
+                    android:layout_marginLeft="95dp"
+                    android:layout_marginTop="85dp"
+                    android:layout_toRightOf="@id/driver_rider"
+                    android:hint="Driver"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/registration_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/input_rider"
+                    android:layout_marginTop="36dp"
+                    android:hint="If Driver provide your Registration number"
+                    android:inputType="textPassword" />
+
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/btn_register"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/registration_number"
+                    android:layout_marginTop="33dp"
+                    android:background="@drawable/theme_button"
+                    android:text="@string/register" />
+
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+    </ScrollView>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="120dp"
+        android:visibility="invisible"/>
+
+</RelativeLayout>
