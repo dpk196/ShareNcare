@@ -1,121 +1,94 @@
 package com.example.sharencare.Models;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import com.google.firebase.firestore.ServerTimestamp;
-import com.google.type.Date;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.maps.model.DirectionsResult;
 
-public class TripDetail {
-    String tripStartTime;
-    String tripDuration;
-    String tripFare;
-    String tripDistance;
-    String tripStatus;
-    String tripSource;
-    String tripDestination;
-    String userID;
-    @ServerTimestamp java.util.Date time_stamp;
+import java.util.ArrayList;
+import java.util.List;
 
-    public TripDetail(String tripStartTime, String tripDuration, String tripFare, String tripDistance, String tripStatus, String tripSource, String tripDestination, String userID, java.util.Date time_stamp) {
-        this.tripStartTime = tripStartTime;
-        this.tripDuration = tripDuration;
-        this.tripFare = tripFare;
-        this.tripDistance = tripDistance;
-        this.tripStatus = tripStatus;
-        this.tripSource = tripSource;
-        this.tripDestination = tripDestination;
-        this.userID = userID;
-        this.time_stamp = time_stamp;
+
+public class TripDetail  {
+    String start_time;
+    String status;
+    GeoPoint sourceGeoPoint;
+    GeoPoint destinationGeoPoint;
+    String trip_source;
+    String trip_destination;
+
+    public TripDetail(List<DirectionsResult> result, String start_time, String status, GeoPoint sourceGeoPoint, GeoPoint destinationGeoPoint, String trip_source, String trip_destination) {
+
+        this.start_time = start_time;
+        this.status = status;
+        this.sourceGeoPoint = sourceGeoPoint;
+        this.destinationGeoPoint = destinationGeoPoint;
+        this.trip_source = trip_source;
+        this.trip_destination = trip_destination;
     }
 
     public TripDetail() {
     }
 
-    public String getTripStartTime() {
-        return tripStartTime;
+
+
+    public String getStart_time() {
+        return start_time;
     }
 
-    public void setTripStartTime(String tripStartTime) {
-        this.tripStartTime = tripStartTime;
+    public void setStart_time(String start_time) {
+        this.start_time = start_time;
     }
 
-    public String getTripDuration() {
-        return tripDuration;
+    public String getStatus() {
+        return status;
     }
 
-    public void setTripDuration(String tripDuration) {
-        this.tripDuration = tripDuration;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public String getTripFare() {
-        return tripFare;
+    public GeoPoint getSourceGeoPoint() {
+        return sourceGeoPoint;
     }
 
-    public void setTripFare(String tripFare) {
-        this.tripFare = tripFare;
+    public void setSourceGeoPoint(GeoPoint sourceGeoPoint) {
+        this.sourceGeoPoint = sourceGeoPoint;
     }
 
-    public String getTripDistance() {
-        return tripDistance;
+    public GeoPoint getDestinationGeoPoint() {
+        return destinationGeoPoint;
     }
 
-    public void setTripDistance(String tripDistance) {
-        this.tripDistance = tripDistance;
+    public void setDestinationGeoPoint(GeoPoint destinationGeoPoint) {
+        this.destinationGeoPoint = destinationGeoPoint;
+    }
+    public String getTrip_source() {
+        return trip_source;
     }
 
-    public String getTripStatus() {
-        return tripStatus;
+    public void setTrip_source(String trip_source) {
+        this.trip_source = trip_source;
     }
 
-    public void setTripStatus(String tripStatus) {
-        this.tripStatus = tripStatus;
+    public String getTrip_destination() {
+        return trip_destination;
     }
 
-    public String getTripSource() {
-        return tripSource;
-    }
-
-    public void setTripSource(String tripSource) {
-        this.tripSource = tripSource;
-    }
-
-    public String getTripDestination() {
-        return tripDestination;
-    }
-
-    public void setTripDestination(String tripDestination) {
-        this.tripDestination = tripDestination;
+    public void setTrip_destination(String trip_destination) {
+        this.trip_destination = trip_destination;
     }
 
     @Override
     public String toString() {
         return "TripDetail{" +
-                "tripStartTime='" + tripStartTime + '\'' +
-                ", tripDuration='" + tripDuration + '\'' +
-                ", tripFare='" + tripFare + '\'' +
-                ", tripDistance='" + tripDistance + '\'' +
-                ", tripStatus='" + tripStatus + '\'' +
-                ", tripSource='" + tripSource + '\'' +
-                ", tripDestination='" + tripDestination + '\'' +
-                ", userID='" + userID + '\'' +
-                ", time_stamp=" + time_stamp +
+
+                ", start_time='" + start_time + '\'' +
+                ", status='" + status + '\'' +
+                ", sourceGeoPoint=" + sourceGeoPoint +
+                ", destinationGeoPoint=" + destinationGeoPoint +
+                ", trip_source='" + trip_source + '\'' +
+                ", trip_destination='" + trip_destination + '\'' +
                 '}';
     }
-
-    public java.util.Date getTime_stamp() {
-        return time_stamp;
-    }
-
-    public void setTime_stamp(java.util.Date time_stamp) {
-        this.time_stamp = time_stamp;
-    }
-
-
-
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
-
 }

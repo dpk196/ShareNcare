@@ -6,17 +6,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.api.LogDescriptor;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.maps.model.DirectionsResult;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TripDetails extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "TripDetail";
@@ -24,6 +32,8 @@ public class TripDetails extends AppCompatActivity implements View.OnClickListen
     FirebaseAuth mAuth;
     private FirebaseFirestore mDb;
     Intent intent;
+    private  static TripDetail  tripDetail;
+    Button tripSubmitButton;
 
 
     @Override
@@ -38,26 +48,39 @@ public class TripDetails extends AppCompatActivity implements View.OnClickListen
         tripFrom=findViewById(R.id.trip_from);
         tripTo=findViewById(R.id.trip_to);
         findViewById(R.id.set_trip_start_time).setOnClickListener(this);
-        findViewById(R.id.trip_confirm).setOnClickListener(this);
+        tripSubmitButton=findViewById(R.id.trip_confirm);
+        tripSubmitButton.setOnClickListener(this::onClick);
         intent = getIntent();
         mAuth=FirebaseAuth.getInstance();
         mDb = FirebaseFirestore.getInstance();
-        setTripDetails();
+        getTripsFromDriverActivity();
+        startTimeFromSetStartTimeActivity();
+    }
+    private void getTripsFromDriverActivity(){
+        try{
+            if(tripDetail==null) {
+                tripDetail=new TripDetail();
+                DirectionsResult result = (DirectionsResult) intent.getSerializableExtra("DirectionsResults");
+
+                tripDetail.setStart_time("Yet to Start");
+                tripDetail.setStart_time("12:00");
+                Bundle bundle = getIntent().getParcelableExtra("bundle");
+                LatLng fromPosition = bundle.getParcelable("SourceGeoPoint");
+                LatLng toPosition = bundle.getParcelable("DestinationGeoPoint");
+                tripDetail.setSourceGeoPoint(new GeoPoint(fromPosition.latitude, fromPosition.longitude));
+                tripDetail.setDestinationGeoPoint(new GeoPoint(toPosition.latitude, toPosition.longitude));
+                tripDetail.setTrip_source(intent.getStringExtra("sourceText"));
+                tripDetail.setTrip_destination(intent.getStringExtra("destinationText"));
+                Log.d(TAG, "getTripsFromDriverActivity: " + tripDetail.toString());
+            }
+
+        }catch (Exception e){
+            Log.d(TAG, "setDetailsFromFireStore: "+e.getMessage());
+        }
+
     }
 
-    private void setTripDetails() {
-        Log.d(TAG, "setTripDetails: setting trip details");
-        String sourceText =intent.getStringExtra("sourceText");
-        String destinationText=intent.getStringExtra("destinationText");
-        String distanceText=intent.getStringExtra("distanceText");
-        String durationText=intent.getStringExtra("durationText");
-        String fareText=intent.getStringExtra("fareText");
-        tripFrom.setText(sourceText);
-        tripTo.setText(destinationText);
-        tripDistance.setText(distanceText);
-        tripDuration.setText(durationText);
-        tripFare.setText(fareText);
-    }
+
 
 
     @Override
@@ -71,7 +94,7 @@ public class TripDetails extends AppCompatActivity implements View.OnClickListen
                  if(!tripStartTime.getText().toString().equals("")&&!tripDistance.getText().toString().equals("")&&
                      !tripDuration.getText().toString().equals("")&&!tripStatus.getText().toString().equals("")&&
                          !tripFare.getText().toString().equals("")){
-                  submitDetailsToFireStore();
+                     submitDetailsToFireStore();
                  }
                  else{
                      Toast.makeText(this, "Please Fill the trip start Time ", Toast.LENGTH_SHORT).show();
@@ -81,31 +104,38 @@ public class TripDetails extends AppCompatActivity implements View.OnClickListen
 
         }
     }
-    private void submitDetailsToFireStore(){
+   private void submitDetailsToFireStore(){
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder().build();
         mDb.setFirestoreSettings(settings);
-        TripDetail userTripDetail = new TripDetail();
-        userTripDetail.setTripDistance(tripDistance.getText().toString());
-        userTripDetail.setTripDuration(tripDuration.getText().toString());
-        userTripDetail.setTripFare(tripFare.getText().toString());
-        userTripDetail.setTripStatus(tripStatus.getText().toString());
-        userTripDetail.setTripStartTime(tripStartTime.getText().toString());
-        userTripDetail.setTripSource(tripFrom.getText().toString());
-        userTripDetail.setTripDestination(tripTo.getText().toString());
-        userTripDetail.setUserID(FirebaseAuth.getInstance().getUid());
+
         DocumentReference newTripRef= mDb.collection(getString(R.string.collection_trips)).document();
-        newTripRef.set(userTripDetail).addOnCompleteListener(new OnCompleteListener<Void>() {
+        newTripRef.set(tripDetail).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
+                if(task.isSuccessful()) {
                     Log.d(TAG, "onComplete: Details Submitted Successfully");
-                    Log.d(TAG, "onComplete: "+task.toString());
+                    Log.d(TAG, "onComplete: " + task.toString());
                     Toast.makeText(TripDetails.this, "You will be notified when a rider is found", Toast.LENGTH_SHORT).show();
-                }else{
-                    Log.d(TAG, "onComplete: Failed to submit details");
+                    tripSubmitButton.setVisibility(View.INVISIBLE);
+                }else {
+                    Log.d(TAG, "onComplete: Something went wrong");
                 }
             }
         });
 
+
     }
+    public void startTimeFromSetStartTimeActivity(){
+        String time=intent.getStringExtra("PickedStartTime");
+        Log.d(TAG, "startTimeFromSetStartTimeActivity: called"+time);
+        try {
+            if (tripDetail != null && !time.equals("")) {
+                tripDetail.setStart_time(time);
+                Log.d(TAG, "startTimeFromSetStartTimeActivity: TripDetails" + tripDetail.toString());
+            }
+        }catch (Exception e){
+            Log.d(TAG, "startTimeFromSetStartTimeActivity: "+e.getMessage());
+        }
+    }
+
 }

@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +26,9 @@ import com.example.sharencare.R;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
@@ -54,6 +57,8 @@ import com.google.maps.model.Duration;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 
@@ -69,6 +74,8 @@ public class DriverActivity extends AppCompatActivity {
     private  LatLng destinationLatlng;
     private  String sourceText;
     private String destinationText;
+    private DirectionsResult result;
+    TripDetail tripDetail;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,83 +88,76 @@ public class DriverActivity extends AppCompatActivity {
        // getTripsFromFireStore();
         getLastKnownLocation();
     }
-//.....getting last known Location/..................................
 
-
-
-
-
-//.....getting Trips From FireStore.............
-    private void getTripsFromFireStore() {
-        Log.d(TAG, "getTripsFromFireStore: Trying to get trips from FireStore");
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder().build();
-        mDb.setFirestoreSettings(settings);
-        CollectionReference tripsCollectionRef=mDb.collection(getString(R.string.collection_trips));
-        Query tripsCollectionQuery=tripsCollectionRef.whereEqualTo("userID",FirebaseAuth.getInstance().getCurrentUser().getUid());
-        tripsCollectionQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for(QueryDocumentSnapshot document : task.getResult()){
-                        TripDetail tripDetail=document.toObject(TripDetail.class);
-                        source.add(tripDetail.getTripSource());
-                        destination.add(tripDetail.getTripDestination());
-                        initRecyclerView();
-                        Toast.makeText(DriverActivity.this, "Click on a trip to see details", Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "onComplete: "+tripDetail.toString());
-                    }
-                } else {
-                    Log.d(TAG, "onComplete: cannot find any trips for the current user");
-                }
-            }
-        });
-    }
-    private void initRecyclerView(){
-        Log.d(TAG, "initRecyclerView: init recyclerview.");
-        RecyclerView recyclerView = findViewById(R.id.recyclerview);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(source, destination,this );
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-    }
-//.....................................................................................................
-
-    private void calculateDirections(){
+    private void calculateDirections() {
+        DirectionsApiRequest directions;
         Log.d(TAG, "calculateDirections: calculating directions.");
+        try {
+            com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(
+                    destinationLatlng.latitude,
+                    destinationLatlng.longitude
+            );
+            directions = new DirectionsApiRequest(mGeoApiContext);
 
-        com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(
-                destinationLatlng.latitude,
-                destinationLatlng.longitude
-        );
-        DirectionsApiRequest directions = new DirectionsApiRequest(mGeoApiContext);
 
+            directions.origin(
+                    new com.google.maps.model.LatLng(
+                            sourceLatlng.latitude,
+                            sourceLatlng.longitude
+                    )
+            );
+            directions.alternatives(true);
+            Log.d(TAG, "calculateDirections: destination: " + destination.toString());
+            directions.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
 
-        directions.origin(
-                new com.google.maps.model.LatLng(
-                        sourceLatlng.latitude,
-                        sourceLatlng.longitude
-                )
-        );
-        Log.d(TAG, "calculateDirections: destination: " + destination.toString());
-        directions.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
+                @Override
+                public void onResult(DirectionsResult r) {
+                    result=r;
+                    Log.d(TAG, "calculateDirections: routes: " + result.routes[0].toString());
+                    Log.d(TAG, "calculateDirections: duration: " + result.routes[0].legs[0].duration);
+                    Log.d(TAG, "calculateDirections: distance: " + result.routes[0].legs[0].distance);
+                    tripDetails();
+                }
 
-            @Override
-            public void onResult(DirectionsResult result) {
-                Log.d(TAG, "calculateDirections: routes: " + result.routes[0].toString());
-                Log.d(TAG, "calculateDirections: duration: " + result.routes[0].legs[0].duration);
-                Log.d(TAG, "calculateDirections: distance: " + result.routes[0].legs[0].distance);
-                Log.d(TAG, "calculateDirections: geocodedWayPoints: " + result.geocodedWaypoints[0].toString());
-                //tripDistanceAndFareCalculation(result);
-            }
+                @Override
+                public void onFailure(Throwable e) {
+                    //  Toast.makeText(DriverActivity.this, "Please be more specific", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "calculateDirections: Failed to get directions: " + e.getMessage());
 
-            @Override
-            public void onFailure(Throwable e) {
-              //  Toast.makeText(DriverActivity.this, "Please be more specific", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "calculateDirections: Failed to get directions: " + e.getMessage() );
-
-            }
-        });
+                }
+            });
+        } catch (Exception e) {
+            //Toast.makeText(this, "Please be more Specific", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "calculateDirections: Problem detected"+e.getMessage());
+        }
     }
+
+    private void tripDetails() {
+
+        TripDetail tripDetail=new TripDetail();
+        Bundle bundle=new Bundle();
+        tripDetail.setTrip_source(sourceText);
+        tripDetail.setTrip_destination(destinationText);
+        Log.d(TAG, "tripDetails: "+sourceText);
+        Log.d(TAG, "tripDetails: "+destinationText);
+        tripDetail.setStatus("Yet to start");
+        Intent intent  =new Intent(DriverActivity.this,TripDetails.class);
+        LatLng sourceLatLng=new LatLng(sourceLatlng.latitude,sourceLatlng.longitude);
+        LatLng destinationLatLng=new LatLng(destinationLatlng.latitude,destinationLatlng.longitude);
+        try {
+            intent.putExtra("destinationText",destinationText);
+            intent.putExtra("sourceText",sourceText);
+            intent.putExtra("DirectionsResults",result);
+            bundle.putParcelable("SourceGeoPoint",sourceLatLng);
+            bundle.putParcelable("DestinationGeoPoint",destinationLatLng);
+            intent.putExtra("bundle", bundle);
+            startActivity(intent);
+        }catch (Exception e){
+            Log.d(TAG, "tripDetails: "+e.getMessage());
+        }
+    }
+
+
 
 
     ////.......Places Prediction  from.................
@@ -186,8 +186,6 @@ public class DriverActivity extends AppCompatActivity {
                     Log.i(TAG, "Place Source:" + place.getName());
                     sourceText=place.getName();
                     sourceLatlng = new LatLng(address.getLatitude(), address.getLongitude());
-                } else {
-                    Toast.makeText(DriverActivity.this, "Please be more specific", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -228,9 +226,7 @@ public class DriverActivity extends AppCompatActivity {
                     destinationLatlng = new LatLng(address.getLatitude(), address.getLongitude());
                     calculateDirections();
                 }
-                else {
-                    Toast.makeText(DriverActivity.this, "Please be more specific", Toast.LENGTH_SHORT).show();
-                }
+
 
             }
 
@@ -286,5 +282,31 @@ public class DriverActivity extends AppCompatActivity {
             }
         });
     }
+    //.....getting Trips From FireStore.............
+    private void getTripsFromFireStore() {
+    }
+
+//    private String calculateFare(){
+//       String distance=result.routes[0].legs[0].distance.toString();
+//       String str="";
+//       for(int i=0;i<distance.length()-3;i++){
+//           str=str+distance.charAt(i);
+//       }
+//       Double d=Double.valueOf(str);
+//       d*=7;
+//       int i=d.intValue();
+//       String fare=Integer.toString(i);
+//       return  fare;
+//    }
+    private void initRecyclerView(){
+        Log.d(TAG, "initRecyclerView: init recyclerview.");
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(source, destination,this,tripDetail );
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+    }
+
+
 }
 

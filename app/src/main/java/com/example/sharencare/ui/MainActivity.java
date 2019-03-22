@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(i);
                         finish();
                     }
-                }, 5000);
+                }, 1000);
 
             }
         } catch (Exception e){
