@@ -14,7 +14,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.TripDetails"></activity>
-        <activity android:name=".ui.SetStartTime" />
         <activity android:name=".ui.RiderActivity" />
         <activity android:name=".ui.DriverActivity" />
         <activity android:name=".ui.HomeActivity" />

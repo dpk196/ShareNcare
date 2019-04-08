@@ -15,19 +15,30 @@ public class TripDetail  {
     String trip_source;
     String trip_destination;
     String user_id;
+    String trip_duration;
+    String trip_fare;
+    String trip_distance;
+    String trip_date;
 
-    public TripDetail(String start_time, String status, GeoPoint sourceGeoPoint, GeoPoint destinationGeoPoint, String trip_source, String trip_destination, String user_id) {
+    public TripDetail(String start_time, String status, String trip_source, String trip_destination, String user_id, String trip_duration, String trip_fare, String trip_distance, String trip_date) {
         this.start_time = start_time;
         this.status = status;
-
         this.trip_source = trip_source;
         this.trip_destination = trip_destination;
         this.user_id = user_id;
+        this.trip_duration = trip_duration;
+        this.trip_fare = trip_fare;
+        this.trip_distance = trip_distance;
+        this.trip_date = trip_date;
     }
 
-    public TripDetail() {
+    public String getTrip_distance() {
+        return trip_distance;
     }
 
+    public void setTrip_distance(String trip_distance) {
+        this.trip_distance = trip_distance;
+    }
 
     @Override
     public String toString() {
@@ -37,8 +48,32 @@ public class TripDetail  {
                 ", trip_source='" + trip_source + '\'' +
                 ", trip_destination='" + trip_destination + '\'' +
                 ", user_id='" + user_id + '\'' +
+                ", trip_duration='" + trip_duration + '\'' +
+                ", trip_fare='" + trip_fare + '\'' +
+                ", trip_distance='" + trip_distance + '\'' +
+                ", trip_date='" + trip_date + '\'' +
                 '}';
     }
+
+    public String getTrip_date() {
+        return trip_date;
+    }
+
+    public void setTrip_date(String trip_date) {
+        this.trip_date = trip_date;
+    }
+
+    public String getTrip_fare() {
+        return trip_fare;
+    }
+
+    public void setTrip_fare(String trip_fare) {
+        this.trip_fare = trip_fare;
+    }
+
+    public TripDetail() {
+    }
+
 
     public String getUser_id() {
         return user_id;
@@ -80,4 +115,11 @@ public class TripDetail  {
         this.trip_destination = trip_destination;
     }
 
+    public String getTrip_duration() {
+        return trip_duration;
+    }
+
+    public void setTrip_duration(String trip_duration) {
+        this.trip_duration = trip_duration;
+    }
 }

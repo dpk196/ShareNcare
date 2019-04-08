@@ -33,26 +33,40 @@
          android:textStyle="bold"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:text="12:pm"
+         android:text="Click to set Start time"
          android:id="@+id/trip_start_time"
          android:layout_marginTop="80dp"
          android:layout_marginLeft="150dp" />
-    <Button
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/label_start_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="120dp"
+        android:layout_marginEnd="320dp"
+        android:layout_marginBottom="672dp"
+        android:text="Date"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
-        android:layout_marginLeft="290dp"
-        android:text="Set Start Time"
-        android:id="@+id/set_trip_start_time"
-        android:background="@drawable/theme_button" />
+        android:text="Click to set Date"
+        android:id="@+id/trip_start_date"
+        android:layout_marginTop="120dp"
+        android:layout_marginLeft="150dp" />
+
     <TextView
         android:textStyle="bold"
         android:id="@+id/label_total_distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="1dp"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="160dp"
         android:layout_marginEnd="320dp"
         android:layout_marginBottom="672dp"
         android:text="Trip distance"
@@ -66,7 +80,7 @@
         android:layout_height="wrap_content"
         android:text="10km"
         android:id="@+id/trip_distance"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="160dp"
         android:layout_marginLeft="150dp" />
     <TextView
         android:textStyle="bold"

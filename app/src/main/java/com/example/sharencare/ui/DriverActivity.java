@@ -240,6 +240,7 @@ public class DriverActivity extends AppCompatActivity implements TaskDelegate {
             Log.d(TAG, "onDirectionsRetrived: distance: " + result.routes[0].legs[0].distance);
             intent.putExtra("distance",distance);
             intent.putExtra("duration",duration);
+            TripDetails.tripDetail=null;
             startActivity(intent);
         } catch (Exception e) {
             Log.d(TAG, "onDirectionsRetrived: " + e.getMessage());
