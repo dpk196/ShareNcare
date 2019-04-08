@@ -12,25 +12,41 @@ import java.util.List;
 public class TripDetail  {
     String start_time;
     String status;
-    GeoPoint sourceGeoPoint;
-    GeoPoint destinationGeoPoint;
     String trip_source;
     String trip_destination;
+    String user_id;
 
-    public TripDetail(List<DirectionsResult> result, String start_time, String status, GeoPoint sourceGeoPoint, GeoPoint destinationGeoPoint, String trip_source, String trip_destination) {
-
+    public TripDetail(String start_time, String status, GeoPoint sourceGeoPoint, GeoPoint destinationGeoPoint, String trip_source, String trip_destination, String user_id) {
         this.start_time = start_time;
         this.status = status;
-        this.sourceGeoPoint = sourceGeoPoint;
-        this.destinationGeoPoint = destinationGeoPoint;
+
         this.trip_source = trip_source;
         this.trip_destination = trip_destination;
+        this.user_id = user_id;
     }
 
     public TripDetail() {
     }
 
 
+    @Override
+    public String toString() {
+        return "TripDetail{" +
+                "start_time='" + start_time + '\'' +
+                ", status='" + status + '\'' +
+                ", trip_source='" + trip_source + '\'' +
+                ", trip_destination='" + trip_destination + '\'' +
+                ", user_id='" + user_id + '\'' +
+                '}';
+    }
+
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
+    }
 
     public String getStart_time() {
         return start_time;
@@ -48,21 +64,6 @@ public class TripDetail  {
         this.status = status;
     }
 
-    public GeoPoint getSourceGeoPoint() {
-        return sourceGeoPoint;
-    }
-
-    public void setSourceGeoPoint(GeoPoint sourceGeoPoint) {
-        this.sourceGeoPoint = sourceGeoPoint;
-    }
-
-    public GeoPoint getDestinationGeoPoint() {
-        return destinationGeoPoint;
-    }
-
-    public void setDestinationGeoPoint(GeoPoint destinationGeoPoint) {
-        this.destinationGeoPoint = destinationGeoPoint;
-    }
     public String getTrip_source() {
         return trip_source;
     }
@@ -79,16 +80,4 @@ public class TripDetail  {
         this.trip_destination = trip_destination;
     }
 
-    @Override
-    public String toString() {
-        return "TripDetail{" +
-
-                ", start_time='" + start_time + '\'' +
-                ", status='" + status + '\'' +
-                ", sourceGeoPoint=" + sourceGeoPoint +
-                ", destinationGeoPoint=" + destinationGeoPoint +
-                ", trip_source='" + trip_source + '\'' +
-                ", trip_destination='" + trip_destination + '\'' +
-                '}';
-    }
 }
