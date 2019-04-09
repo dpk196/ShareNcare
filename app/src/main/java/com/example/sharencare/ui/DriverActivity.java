@@ -13,10 +13,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.example.sharencare.Adapters.RecyclerViewAdapter;
-import com.example.sharencare.Interfaces.TaskDelegate;
+import com.example.sharencare.Interfaces.DirectionsResultInterface;
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
 import com.example.sharencare.threads.DirectionsThreads;
+import com.example.sharencare.threads.RetriveDetailsFromFireStore;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -36,7 +37,7 @@ import com.google.maps.model.DirectionsResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class DriverActivity extends AppCompatActivity implements TaskDelegate {
+public class DriverActivity extends AppCompatActivity implements DirectionsResultInterface {
     private static final String TAG = "DriverActivity";
     //vars
     private ArrayList<String> source = new ArrayList<>();
@@ -245,6 +246,13 @@ public class DriverActivity extends AppCompatActivity implements TaskDelegate {
         } catch (Exception e) {
             Log.d(TAG, "onDirectionsRetrived: " + e.getMessage());
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        RetriveDetailsFromFireStore retriveDetailsFromFireStore=new RetriveDetailsFromFireStore();
+        retriveDetailsFromFireStore.execute();
     }
 }
 

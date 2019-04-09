@@ -1,27 +1,16 @@
 package com.example.sharencare.threads;
 import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.sharencare.Interfaces.TaskDelegate;
-import com.example.sharencare.R;
-import com.example.sharencare.ui.DriverActivity;
-import com.google.maps.DirectionsApi;
+import com.example.sharencare.Interfaces.DirectionsResultInterface;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PendingResult;
-import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.TravelMode;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class DirectionsThreads extends  AsyncTask<Void,Void,DirectionsResult>{
@@ -32,9 +21,9 @@ public class DirectionsThreads extends  AsyncTask<Void,Void,DirectionsResult>{
     GeoApiContext mGeoApiContext;
     DirectionsResult mResult;
     boolean rootfound=false;
-    WeakReference<TaskDelegate> mTaskDelegate;
+    WeakReference<DirectionsResultInterface> mTaskDelegate;
 
-    public DirectionsThreads(String tripFrom, String tripTo, Context mContext,TaskDelegate taskDelegate) {
+    public DirectionsThreads(String tripFrom, String tripTo, Context mContext, DirectionsResultInterface taskDelegate) {
         this.tripFrom = tripFrom;
         this.tripTo = tripTo;
         this.mContext = mContext;

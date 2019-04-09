@@ -2,6 +2,6 @@ package com.example.sharencare.Interfaces;
 
 import com.google.maps.model.DirectionsResult;
 
-public interface TaskDelegate {
+public interface DirectionsResultInterface {
     void onDirectionsRetrived(DirectionsResult result);
 }
