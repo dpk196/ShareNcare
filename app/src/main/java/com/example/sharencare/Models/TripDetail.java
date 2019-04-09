@@ -1,12 +1,8 @@
 package com.example.sharencare.Models;
-import android.os.Parcel;
-import android.os.Parcelable;
 
-import com.google.firebase.firestore.GeoPoint;
-import com.google.maps.model.DirectionsResult;
+import com.google.firebase.firestore.ServerTimestamp;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 
 public class TripDetail  {
@@ -19,25 +15,11 @@ public class TripDetail  {
     String trip_fare;
     String trip_distance;
     String trip_date;
+    @ServerTimestamp Date timestamp;
 
-    public TripDetail(String start_time, String status, String trip_source, String trip_destination, String user_id, String trip_duration, String trip_fare, String trip_distance, String trip_date) {
-        this.start_time = start_time;
-        this.status = status;
-        this.trip_source = trip_source;
-        this.trip_destination = trip_destination;
-        this.user_id = user_id;
-        this.trip_duration = trip_duration;
-        this.trip_fare = trip_fare;
-        this.trip_distance = trip_distance;
-        this.trip_date = trip_date;
-    }
 
-    public String getTrip_distance() {
-        return trip_distance;
-    }
-
-    public void setTrip_distance(String trip_distance) {
-        this.trip_distance = trip_distance;
+    public Date getTimestamp() {
+        return timestamp;
     }
 
     @Override
@@ -52,7 +34,33 @@ public class TripDetail  {
                 ", trip_fare='" + trip_fare + '\'' +
                 ", trip_distance='" + trip_distance + '\'' +
                 ", trip_date='" + trip_date + '\'' +
+                ", timestamp=" + timestamp +
                 '}';
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public TripDetail(String start_time, String status, String trip_source, String trip_destination, String user_id, String trip_duration, String trip_fare, String trip_distance, String trip_date, Date timestamp) {
+        this.start_time = start_time;
+        this.status = status;
+        this.trip_source = trip_source;
+        this.trip_destination = trip_destination;
+        this.user_id = user_id;
+        this.trip_duration = trip_duration;
+        this.trip_fare = trip_fare;
+        this.trip_distance = trip_distance;
+        this.trip_date = trip_date;
+        this.timestamp = timestamp;
+    }
+
+    public String getTrip_distance() {
+        return trip_distance;
+    }
+
+    public void setTrip_distance(String trip_distance) {
+        this.trip_distance = trip_distance;
     }
 
     public String getTrip_date() {

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.example.sharencare.R;
+import com.example.sharencare.threads.RetriveDetailsFromFireStore;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "HomeActivity";
@@ -18,13 +19,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
        findViewById(R.id.rider).setOnClickListener(this);
        findViewById(R.id.driver).setOnClickListener(this);
 
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        RetriveDetailsFromFireStore.mLastQuery=null;
     }
 
     @Override
     public void onClick(View v) {
        switch (v.getId()){
            case R.id.driver:{
-               startActivity(new Intent(HomeActivity.this, RiderActivity.class));
+                               startActivity(new Intent(HomeActivity.this, RiderActivity.class));
                Log.d(TAG, "onClick: directing to Drivers Activity");
                break;
            }

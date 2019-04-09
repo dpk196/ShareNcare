@@ -68,52 +68,61 @@
         android:layout_below="@id/layout_panel2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
     <LinearLayout
-        android:layout_below="@+id/onTripTextView"
         android:id="@+id/ontriplayout"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/onTripTextView"
+        android:layout_marginTop="3dp"
+        android:orientation="horizontal">
+
         <TextView
+            android:id="@+id/search_onTrip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/search_onTrip"
-            android:text="Destination"
-            android:layout_marginLeft="5dp"
             android:layout_gravity="center"
-            android:textStyle="bold"/>
+            android:layout_marginLeft="5dp"
+            android:text="Destination"
+            android:textStyle="bold" />
+
         <fragment
             android:id="@+id/autocomplete_fragment_onTrip"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/yourRidesText"
+        android:layout_below="@id/ontriplayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="Your Rides"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/yourRidesText">
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/recyclerview"
+            android:layout_marginTop="10dp">
+
+        </android.support.v7.widget.RecyclerView>
 
 
     </LinearLayout>
 
-   <LinearLayout
-       android:layout_below="@+id/ontriplayout"
-       android:layout_width="match_parent"
-       android:layout_marginTop="5dp"
-       android:layout_height="match_parent">
 
-       <TextView
-           android:layout_marginTop="8dp"
-           android:id="@+id/yourRidesText"
-           android:textSize="17sp"
-           android:textStyle="bold"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:text="Your Rides"/>
-       <android.support.v7.widget.RecyclerView
-            android:layout_marginTop="25dp"
-           android:layout_width="match_parent"
-           android:layout_height="match_parent"
-           android:id="@+id/recyclerview">
 
-       </android.support.v7.widget.RecyclerView>
-   </LinearLayout>
+
+
 
 
 

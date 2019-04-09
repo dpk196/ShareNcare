@@ -14,6 +14,7 @@ import android.util.Log;
 
 import com.example.sharencare.Adapters.RecyclerViewAdapter;
 import com.example.sharencare.Interfaces.DirectionsResultInterface;
+import com.example.sharencare.Interfaces.TripsRetrivedFromFireStore;
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
 import com.example.sharencare.threads.DirectionsThreads;
@@ -37,7 +38,7 @@ import com.google.maps.model.DirectionsResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class DriverActivity extends AppCompatActivity implements DirectionsResultInterface {
+public class DriverActivity extends AppCompatActivity implements DirectionsResultInterface, TripsRetrivedFromFireStore {
     private static final String TAG = "DriverActivity";
     //vars
     private ArrayList<String> source = new ArrayList<>();
@@ -251,8 +252,22 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     @Override
     protected void onStart() {
         super.onStart();
-        RetriveDetailsFromFireStore retriveDetailsFromFireStore=new RetriveDetailsFromFireStore();
+        RetriveDetailsFromFireStore retriveDetailsFromFireStore=new RetriveDetailsFromFireStore(this);
         retriveDetailsFromFireStore.execute();
+    }
+
+
+
+    @Override
+    public void userTripsCollectionFromFirestore(ArrayList<TripDetail> result) {
+        Log.d(TAG, "userTripsCollectionFromFirestore: Called");
+        for(TripDetail trip : result ){
+            Log.d(TAG, "userTripsCollectionFromFirestore: "+trip.toString());
+            source.add(trip.getTrip_source());
+            destination.add(trip.getTrip_destination());
+
+        }
+        initRecyclerView();
     }
 }
 
