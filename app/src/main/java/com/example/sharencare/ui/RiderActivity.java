@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.sharencare.Interfaces.TripsRetrivedFromFireStoreInterFace;
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
+import com.example.sharencare.threads.RetriveDetailsFromFireStore;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class RiderActivity extends AppCompatActivity {
+public class RiderActivity extends AppCompatActivity implements TripsRetrivedFromFireStoreInterFace {
     private static final String TAG = "RiderActivity";
     String destinationText;
     String sourceText;
@@ -167,8 +169,18 @@ public class RiderActivity extends AppCompatActivity {
                 }
             }
         });
+    }
 
 
+    private void initThread(){
+
+        RetriveDetailsFromFireStore retriveDetailsFromFireStore=new RetriveDetailsFromFireStore(this);
+        retriveDetailsFromFireStore.execute();
+
+    }
+
+    @Override
+    public void userTripsCollectionFromFirestore(ArrayList<TripDetail> result) {
 
     }
 }

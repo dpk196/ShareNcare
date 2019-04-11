@@ -4,6 +4,6 @@ import com.example.sharencare.Models.TripDetail;
 
 import java.util.ArrayList;
 
-public interface TripsRetrivedFromFireStore {
+public interface TripsRetrivedFromFireStoreInterFace {
     void userTripsCollectionFromFirestore(ArrayList<TripDetail> result);
 }

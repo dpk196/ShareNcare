@@ -2,7 +2,6 @@ package com.example.sharencare.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
 import com.example.sharencare.ui.TripDetails;
-import com.google.maps.model.DirectionsResult;
 
 import java.util.ArrayList;
 
@@ -24,10 +22,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<String> source =new ArrayList<>();
     private ArrayList<String> destination=new ArrayList<>();
     private Context mContext;
-    TripDetail tripDetail;
+    private ArrayList<TripDetail> tripDetail;
 
 
-    public RecyclerViewAdapter(ArrayList<String> source, ArrayList<String> destination, Context mContext, TripDetail tripDetail) {
+    public RecyclerViewAdapter(ArrayList<String> source, ArrayList<String> destination, Context mContext, ArrayList<TripDetail> tripDetail) {
         this.source = source;
         this.destination = destination;
         this.mContext = mContext;
@@ -52,9 +50,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(mContext,TripDetails.class);
-//                intent.putExtra("tripDetails", tripDetail);
-//                intent.putExtra("Source",source.get(i));
-//                intent.putExtra("Destination",destination.get(i));
+                intent.putExtra("tripDetails", tripDetail);
+                intent.putExtra("Source",source.get(i));
+                intent.putExtra("Destination",destination.get(i));
                 mContext.startActivity(intent);
             }
         });

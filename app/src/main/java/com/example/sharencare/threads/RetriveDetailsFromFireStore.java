@@ -4,12 +4,10 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.example.sharencare.Interfaces.TripsRetrivedFromFireStore;
+import com.example.sharencare.Interfaces.TripsRetrivedFromFireStoreInterFace;
 import com.example.sharencare.Models.TripDetail;
-import com.example.sharencare.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.api.LogDescriptor;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -19,19 +17,20 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class RetriveDetailsFromFireStore extends AsyncTask<Void,Void, ArrayList<TripDetail>> {
     private static final String TAG = "RetriveDetailsFromFireS";
     FirebaseAuth mAuth;
     public static DocumentSnapshot mLastQuery=null;
-    TripsRetrivedFromFireStore tripsRetrivedFromFireStore;
+    WeakReference<TripsRetrivedFromFireStoreInterFace> tripsRetrivedFromFireStore;
     private FirebaseFirestore mDb;
     boolean flag=false;
     ArrayList<TripDetail> tripCollection=new ArrayList<>();
-    public RetriveDetailsFromFireStore(TripsRetrivedFromFireStore retrivedFromFireStore) {
+    public RetriveDetailsFromFireStore(TripsRetrivedFromFireStoreInterFace retrivedFromFireStore) {
         mDb = FirebaseFirestore.getInstance();
-        tripsRetrivedFromFireStore=retrivedFromFireStore;
+        tripsRetrivedFromFireStore=new WeakReference<>(retrivedFromFireStore);
     }
 
 
@@ -92,6 +91,6 @@ public class RetriveDetailsFromFireStore extends AsyncTask<Void,Void, ArrayList<
     @Override
     protected void onPostExecute(ArrayList<TripDetail> tripDetail) {
         Log.d(TAG, "onPostExecute: Called");
-        tripsRetrivedFromFireStore.userTripsCollectionFromFirestore(tripDetail);
+        tripsRetrivedFromFireStore.get().userTripsCollectionFromFirestore(tripDetail);
     }
 }

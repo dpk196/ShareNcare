@@ -1,50 +1,45 @@
 package com.example.sharencare.ui;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.example.sharencare.Adapters.RecyclerViewAdapter;
 import com.example.sharencare.Interfaces.DirectionsResultInterface;
-import com.example.sharencare.Interfaces.TripsRetrivedFromFireStore;
+import com.example.sharencare.Interfaces.TripsRetrivedFromFireStoreInterFace;
+import com.example.sharencare.Interfaces.UserCurrentLocationInterface;
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
 import com.example.sharencare.threads.DirectionsThreads;
 import com.example.sharencare.threads.RetriveDetailsFromFireStore;
+import com.example.sharencare.threads.UserCurrentLocation;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
 import com.google.maps.GeoApiContext;
 import com.google.maps.model.DirectionsResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class DriverActivity extends AppCompatActivity implements DirectionsResultInterface, TripsRetrivedFromFireStore {
+public class DriverActivity extends AppCompatActivity implements DirectionsResultInterface, TripsRetrivedFromFireStoreInterFace, UserCurrentLocationInterface {
     private static final String TAG = "DriverActivity";
     //vars
+    private ProgressBar mProgressBar;
     private ArrayList<String> source = new ArrayList<>();
     private ArrayList<String> destination = new ArrayList<>();
     private FirebaseFirestore mDb;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
+
     private GeoApiContext mGeoApiContext;
     private  LatLng sourceLatlng;
     private  LatLng destinationLatlng;
@@ -52,7 +47,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     private String destinationText;
     private DirectionsResult result;
     private String tripFrom,tripTo;
-    TripDetail tripDetail;
+    ArrayList<TripDetail> tripDetail=new ArrayList<>();
     Intent intent;
 
     @Override
@@ -60,13 +55,15 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver);
         mDb = FirebaseFirestore.getInstance();
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        mProgressBar = findViewById(R.id.driver_progressBar);
         placesPredictionFrom();
         placesPredictionTo();
         placesPredictionOnTrip();
        // getTripsFromFireStore();
         //getLastKnownLocation();
         intent=new Intent(this,TripDetails.class);
+        showDialog();
     }
 
     private void placesPredictionOnTrip() {
@@ -88,8 +85,9 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                //TODO: Get info about the selected place.
-             //................//
+                intent.putExtra("destination",place.getName());
+                tripTo=place.getName()+" "+"Kolkata";
+                initThread();
             }
 
             @Override
@@ -177,23 +175,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
 
     }
 
-    private void getLastKnownLocation() {
-        Log.d(TAG, "getLastKnownLocation: Getting user last Known Location");
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            return;
-        }
-        mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                if(task.isSuccessful()){
-                    Location location=task.getResult();
-                    GeoPoint mUserPosition=new GeoPoint(location.getLatitude(),location.getLongitude());
-                    Log.d(TAG, "onComplete: Location Coordinates:"+mUserPosition.toString());
-                }
-            }
-        });
-    }
     //.....getting Trips From FireStore.............
     private void getTripsFromFireStore() {
     }
@@ -234,7 +216,6 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     @Override
     public void onDirectionsRetrived(DirectionsResult result) {
         try {
-            String f="";
             String duration= result.routes[0].legs[0].duration.toString();
             String distance=result.routes[0].legs[0].distance.toString();
             Log.d(TAG, "onDirectionsRetrived: routes: " + result.routes[0].toString());
@@ -254,6 +235,8 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
         super.onStart();
         RetriveDetailsFromFireStore retriveDetailsFromFireStore=new RetriveDetailsFromFireStore(this);
         retriveDetailsFromFireStore.execute();
+        UserCurrentLocation mUserCurrentLocation=new UserCurrentLocation(this,this);
+        mUserCurrentLocation.execute();
     }
 
 
@@ -265,9 +248,23 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
             Log.d(TAG, "userTripsCollectionFromFirestore: "+trip.toString());
             source.add(trip.getTrip_source());
             destination.add(trip.getTrip_destination());
-
+            try {
+                tripDetail.add(trip);
+            }catch (Exception e){
+                Log.d(TAG, "userTripsCollectionFromFirestore: "+e.getMessage());
+            }
         }
         initRecyclerView();
+        hideDialog();
+    }
+    private void showDialog(){mProgressBar.setVisibility(View.VISIBLE);}
+    private void hideDialog(){if(mProgressBar.getVisibility()==View.VISIBLE){mProgressBar.setVisibility(View.INVISIBLE);}}
+
+    @Override
+    public void userCurrentLocation(String userCurrentLocation) {
+        tripFrom=userCurrentLocation;
+        intent.putExtra("source",userCurrentLocation);
+        Log.d(TAG, "userCurrentLocation: from Driver Activity"+userCurrentLocation);
     }
 }
 

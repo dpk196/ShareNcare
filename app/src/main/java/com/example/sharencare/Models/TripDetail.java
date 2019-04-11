@@ -1,11 +1,14 @@
 package com.example.sharencare.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
 
 
-public class TripDetail  {
+public class TripDetail implements Parcelable {
     String start_time;
     String status;
     String trip_source;
@@ -17,6 +20,30 @@ public class TripDetail  {
     String trip_date;
     @ServerTimestamp Date timestamp;
 
+
+    protected TripDetail(Parcel in) {
+        start_time = in.readString();
+        status = in.readString();
+        trip_source = in.readString();
+        trip_destination = in.readString();
+        user_id = in.readString();
+        trip_duration = in.readString();
+        trip_fare = in.readString();
+        trip_distance = in.readString();
+        trip_date = in.readString();
+    }
+
+    public static final Creator<TripDetail> CREATOR = new Creator<TripDetail>() {
+        @Override
+        public TripDetail createFromParcel(Parcel in) {
+            return new TripDetail(in);
+        }
+
+        @Override
+        public TripDetail[] newArray(int size) {
+            return new TripDetail[size];
+        }
+    };
 
     public Date getTimestamp() {
         return timestamp;
@@ -129,5 +156,23 @@ public class TripDetail  {
 
     public void setTrip_duration(String trip_duration) {
         this.trip_duration = trip_duration;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(start_time);
+        dest.writeString(status);
+        dest.writeString(trip_source);
+        dest.writeString(trip_destination);
+        dest.writeString(user_id);
+        dest.writeString(trip_duration);
+        dest.writeString(trip_fare);
+        dest.writeString(trip_distance);
+        dest.writeString(trip_date);
     }
 }
