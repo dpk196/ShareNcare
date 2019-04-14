@@ -18,6 +18,7 @@ public class TripDetail implements Parcelable {
     String trip_fare;
     String trip_distance;
     String trip_date;
+    String riderOrDriver;
     @ServerTimestamp Date timestamp;
 
 
@@ -31,6 +32,7 @@ public class TripDetail implements Parcelable {
         trip_fare = in.readString();
         trip_distance = in.readString();
         trip_date = in.readString();
+        riderOrDriver=in.readString();
     }
 
     public static final Creator<TripDetail> CREATOR = new Creator<TripDetail>() {
@@ -61,15 +63,24 @@ public class TripDetail implements Parcelable {
                 ", trip_fare='" + trip_fare + '\'' +
                 ", trip_distance='" + trip_distance + '\'' +
                 ", trip_date='" + trip_date + '\'' +
+                ", riderOrDriver='" + riderOrDriver + '\'' +
                 ", timestamp=" + timestamp +
                 '}';
+    }
+
+    public String getRiderOrDriver() {
+        return riderOrDriver;
+    }
+
+    public void setRiderOrDriver(String riderOrDriver) {
+        this.riderOrDriver = riderOrDriver;
     }
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 
-    public TripDetail(String start_time, String status, String trip_source, String trip_destination, String user_id, String trip_duration, String trip_fare, String trip_distance, String trip_date, Date timestamp) {
+    public TripDetail(String start_time, String status, String trip_source, String trip_destination, String user_id, String trip_duration, String trip_fare, String trip_distance, String trip_date, String riderOrDriver, Date timestamp) {
         this.start_time = start_time;
         this.status = status;
         this.trip_source = trip_source;
@@ -79,6 +90,7 @@ public class TripDetail implements Parcelable {
         this.trip_fare = trip_fare;
         this.trip_distance = trip_distance;
         this.trip_date = trip_date;
+        this.riderOrDriver = riderOrDriver;
         this.timestamp = timestamp;
     }
 
@@ -174,5 +186,6 @@ public class TripDetail implements Parcelable {
         dest.writeString(trip_fare);
         dest.writeString(trip_distance);
         dest.writeString(trip_date);
+        dest.writeString(riderOrDriver);
     }
 }

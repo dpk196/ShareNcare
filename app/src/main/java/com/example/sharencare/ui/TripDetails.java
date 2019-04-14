@@ -55,6 +55,7 @@ public class TripDetails extends AppCompatActivity  implements View.OnClickListe
         setTripStartTime= findViewById(R.id.trip_start_time);
         setTripStartTime.setOnClickListener(this);
         tripSubmitButton = findViewById(R.id.trip_confirm);
+        findViewById(R.id.start_trip_button).setOnClickListener(this);
         tripSubmitButton.setOnClickListener(this::onClick);
         tripStartDate=findViewById(R.id.trip_start_date);
         tripStartDate.setOnClickListener(this::onClick);
@@ -128,6 +129,10 @@ public class TripDetails extends AppCompatActivity  implements View.OnClickListe
                 }catch (Exception e){
                     Log.d(TAG, "onClick: Submit Details"+e.getMessage());
                 }
+                break;
+            }
+            case R.id.start_trip_button:{
+                startActivity(new Intent(TripDetails.this,MapsActivity.class));
                 break;
             }
 

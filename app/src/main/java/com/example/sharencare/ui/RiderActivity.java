@@ -5,13 +5,20 @@ import android.location.Geocoder;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.sharencare.Adapters.RecyclerViewAdapter;
+import com.example.sharencare.Interfaces.SearchForTripsInterface;
 import com.example.sharencare.Interfaces.TripsRetrivedFromFireStoreInterFace;
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
 import com.example.sharencare.threads.RetriveDetailsFromFireStore;
+import com.example.sharencare.threads.SearchForRides;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,20 +40,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class RiderActivity extends AppCompatActivity implements TripsRetrivedFromFireStoreInterFace {
+public class RiderActivity extends AppCompatActivity implements TripsRetrivedFromFireStoreInterFace, SearchForTripsInterface {
     private static final String TAG = "RiderActivity";
     String destinationText;
     String sourceText;
     LatLng sourceLatlng;
     LatLng destinationLatlng;
     FirebaseFirestore mDb;
+    ArrayList<String> source =new ArrayList<>();
+    ArrayList<String>  destination =new ArrayList<>();
+    ArrayList<TripDetail> tripDetail =new ArrayList<>();
+    private ProgressBar mProgressBar;
+    private  String  tripFrom;
+    private  String  tripTo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rider);
         mDb = FirebaseFirestore.getInstance();
+        mProgressBar = findViewById(R.id.rider_progressBar);
         placesPredictionFrom();
         placesPredictionTo();
+        showDialog();
     }
     ////.......Places Prediction  from.................
     private void placesPredictionFrom() {
@@ -69,12 +84,8 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
             @Override
             public void onPlaceSelected(Place place) {
                 //TODO: Get info about the selected place.
-                Address address=geoLocate(place.getName());
-                if(address!=null) {
-                    Log.i(TAG, "Place Source:" + place.getName());
-                    sourceText=place.getName();
-                    sourceLatlng = new LatLng(address.getLatitude(), address.getLongitude());
-                }
+                tripFrom=place.getName();
+                Log.d(TAG, "onPlaceSelected: "+tripFrom);
             }
 
             @Override
@@ -107,15 +118,10 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
             @Override
             public void onPlaceSelected(Place place) {
                 //TODO: Get info about the selected place.
-                Address address=geoLocate(place.getName());
-                if(address!=null) {
-                    Log.i(TAG, "Place Destination:" + place.getName());
-                    destinationText=place.getName();
-                    destinationLatlng=new LatLng(address.getLatitude(), address.getLongitude());
-                    searchForRides();
-                }
-
-
+                tripTo=place.getName();
+                Log.d(TAG, "onPlaceSelected: "+tripTo);
+            //initThread();
+            searchForRides();
             }
 
             @Override
@@ -125,37 +131,15 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
             }
         });
     }
-    private Address geoLocate(String name) {
-        Address address=null;
-        Log.d(TAG, "geoLocate: Getting the latitude and Longitude of the Source and Destination for:"+name);
-        Geocoder geocoder= new Geocoder(RiderActivity.this);
-        List<Address> addressList= new ArrayList<>();
-        try{
-            Log.d(TAG, "geoLocate: inside try");
-            addressList= geocoder.getFromLocationName(name,1);
-        }catch (IOException e){
-            Log.d(TAG, "geoLocate: "+e.getMessage());
-        }
-        if(addressList.size()>0){
-            Log.d(TAG, "geoLocate: inside size>0");
-            address =addressList.get(0);
-            if(address.hasLatitude()&&address.hasLongitude()){
 
-                Log.d(TAG, "geoLocate: lat:"+address.getLatitude());
-                Log.d(TAG, "geoLocate: long:"+address.getLongitude());
-            }
-            else {
-                Toast.makeText(this, "cant go that location", Toast.LENGTH_SHORT).show();
-            }
-        }
-        return  address;
-    }
+
+
     private void searchForRides(){
         Log.d(TAG, "searchForRides: called");
          FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder().build();
          mDb.setFirestoreSettings(settings);
         CollectionReference tripCollectionReference =mDb.collection(getString(R.string.collection_trips));
-        Query  tripsQuery =tripCollectionReference.whereEqualTo("trip_source",sourceText).whereEqualTo("trip_destination",destinationText);
+        Query  tripsQuery =tripCollectionReference.whereEqualTo("trip_source",tripFrom).whereEqualTo("trip_destination",tripTo);
         tripsQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -172,15 +156,48 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
     }
 
 
-    private void initThread(){
+//    private void initThread(){
+//        SearchForRides searchForRides=new SearchForRides(tripFrom,tripTo,this);
+//        searchForRides.execute();
+//
+//    }
 
-        RetriveDetailsFromFireStore retriveDetailsFromFireStore=new RetriveDetailsFromFireStore(this);
-        retriveDetailsFromFireStore.execute();
+    @Override
+    public void userTripsCollectionFromFirestore(ArrayList<TripDetail> result) {
+        Log.d(TAG, "userTripsCollectionFromFirestore: Called");
+        for(TripDetail trip : result ){
+            Log.d(TAG, "userTripsCollectionFromFirestore: "+trip.toString());
+            source.add(trip.getTrip_source());
+            destination.add(trip.getTrip_destination());
+            try {
+                tripDetail.add(trip);
+            }catch (Exception e){
+                Log.d(TAG, "userTripsCollectionFromFirestore: "+e.getMessage());
+            }
+        }
+        initRecyclerView();
+        hideDialog();
+    }
+    private void initRecyclerView(){
+        Log.d(TAG, "initRecyclerView: init recyclerview.");
+        RecyclerView recyclerView = findViewById(R.id.rider_recyclerview);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(source, destination,this,tripDetail );
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     }
 
     @Override
-    public void userTripsCollectionFromFirestore(ArrayList<TripDetail> result) {
+    protected void onStart() {
+        super.onStart();
+        RetriveDetailsFromFireStore retriveDetailsFromFireStore=new RetriveDetailsFromFireStore(this);
+        retriveDetailsFromFireStore.execute();
+    }
+    private void showDialog(){mProgressBar.setVisibility(View.VISIBLE);}
+    private void hideDialog(){if(mProgressBar.getVisibility()==View.VISIBLE){mProgressBar.setVisibility(View.INVISIBLE);}}
+
+    @Override
+    public void tripsRetrieved(ArrayList<TripDetail> trips) {
 
     }
 }

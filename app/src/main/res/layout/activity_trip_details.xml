@@ -192,14 +192,23 @@
         android:layout_marginLeft="150dp"/>
 
     <Button
-        android:textStyle="bold"
         android:id="@+id/trip_confirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="150dp"
+        android:layout_marginLeft="200dp"
         android:layout_marginTop="450dp"
         android:background="@color/startblue"
-        android:text="Click to Confirm"/>
+        android:text="Click to Schedule "
+        android:textStyle="bold" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="450dp"
+        android:background="@color/colorAccent"
+        android:text="Start Now"
+        android:id="@+id/start_trip_button"/>
 
 
 

@@ -39,7 +39,6 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     private ArrayList<String> source = new ArrayList<>();
     private ArrayList<String> destination = new ArrayList<>();
     private FirebaseFirestore mDb;
-
     private GeoApiContext mGeoApiContext;
     private  LatLng sourceLatlng;
     private  LatLng destinationLatlng;
@@ -47,6 +46,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     private String destinationText;
     private DirectionsResult result;
     private String tripFrom,tripTo;
+    private  static  String riderOrDriver="Driver";
     ArrayList<TripDetail> tripDetail=new ArrayList<>();
     Intent intent;
 
@@ -55,48 +55,14 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver);
         mDb = FirebaseFirestore.getInstance();
-
         mProgressBar = findViewById(R.id.driver_progressBar);
         placesPredictionFrom();
         placesPredictionTo();
-        placesPredictionOnTrip();
-       // getTripsFromFireStore();
-        //getLastKnownLocation();
         intent=new Intent(this,TripDetails.class);
         showDialog();
     }
 
-    private void placesPredictionOnTrip() {
-        Log.d(TAG, "placesPrediction: Called");
-        if(!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), getString(R.string.api_key));
-        }
-        // Initialize the AutocompleteSupportFragment.
-        final AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment_onTrip);
-        autocompleteFragment.isHidden();
-        RectangularBounds bounds = RectangularBounds.newInstance(
-                new LatLng(22.5825856, 88.4452336),
-                new LatLng(22.7580747,88.7024556));
-        autocompleteFragment.setLocationBias(bounds);
 
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
-
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                intent.putExtra("destination",place.getName());
-                tripTo=place.getName()+" "+"Kolkata";
-                initThread();
-            }
-
-            @Override
-            public void onError(Status status) {
-                // TODO: Handle the error.
-                Log.i(TAG, "An error occurred: " + status);
-            }
-        });
-    }
 
 
 
@@ -181,7 +147,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     }
     private void initRecyclerView(){
         Log.d(TAG, "initRecyclerView: init recyclerview.");
-        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        RecyclerView recyclerView = findViewById(R.id.driver_recyclerview);
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(source, destination,this,tripDetail );
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -192,6 +158,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
         TripDetail tripDetail=new TripDetail();
         Bundle bundle=new Bundle();
         tripDetail.setTrip_source(sourceText);
+        tripDetail.setRiderOrDriver(riderOrDriver);
         tripDetail.setTrip_destination(destinationText);
         Log.d(TAG, "tripDetails: "+sourceText);
         Log.d(TAG, "tripDetails: "+destinationText);
@@ -235,8 +202,8 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
         super.onStart();
         RetriveDetailsFromFireStore retriveDetailsFromFireStore=new RetriveDetailsFromFireStore(this);
         retriveDetailsFromFireStore.execute();
-        UserCurrentLocation mUserCurrentLocation=new UserCurrentLocation(this,this);
-        mUserCurrentLocation.execute();
+//        UserCurrentLocation mUserCurrentLocation=new UserCurrentLocation(this,this);
+//        mUserCurrentLocation.execute();
     }
 
 

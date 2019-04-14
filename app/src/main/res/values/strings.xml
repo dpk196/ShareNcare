@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">ShareNcare</string>
-    <string name="maps_api">AIzaSyCAe4sDEIxA_ynzPdQSBJ7CRVLT3cB8C8M</string>
     <string name="api_key">AIzaSyC5GBW_utsccSxqqvyOawamVmacuNohEdY</string>//Curently using this one
 
     <!-- Strings related to login -->
@@ -51,6 +50,7 @@
     <string name="action_chatroom_user_list">User list</string>
     <string name="action_profile">Profile</string>
     <string name="user_obj">userObj</string>
+    <string name="title_activity_maps">Map</string>
 
 
 </resources>
