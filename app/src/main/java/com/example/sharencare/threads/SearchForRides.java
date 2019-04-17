@@ -49,7 +49,7 @@ public class SearchForRides extends AsyncTask<Void ,Void, ArrayList<TripDetail>>
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder().build();
         mDb.setFirestoreSettings(settings);
         CollectionReference mTripsReference=mDb.collection("collection_trips");
-        Query tripsQuery =mTripsReference.whereEqualTo("trip_source",tripFrom).whereEqualTo("trip_destination",tripTo);
+        Query tripsQuery =mTripsReference.whereEqualTo("user_id",FirebaseAuth.getInstance().getCurrentUser().getUid());
          tripsQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
              @Override
              public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -66,9 +66,9 @@ public class SearchForRides extends AsyncTask<Void ,Void, ArrayList<TripDetail>>
                  }
              }
          });
-//        while (flag==false){
-//            Log.d(TAG, "searchForRides: Still searching for rides");
-//        };
+        while (flag==false){
+            Log.d(TAG, "searchForRides: Still searching for rides");
+        };
         return  trips;
     }
 

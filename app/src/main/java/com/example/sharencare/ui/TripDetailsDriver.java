@@ -26,7 +26,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
-public class TripDetails extends AppCompatActivity  implements View.OnClickListener , TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
+import static com.example.sharencare.utils.CalculateFare.calculateFare;
+
+public class TripDetailsDriver extends AppCompatActivity  implements View.OnClickListener , TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
     private static final String TAG = "TripDetail";
     TextView tripStartTime, tripDistance, tripDuration, tripFare, tripStatus, tripFrom, tripTo,setTripStartTime,tripStartDate;
     FirebaseAuth mAuth;
@@ -38,23 +40,22 @@ public class TripDetails extends AppCompatActivity  implements View.OnClickListe
     String destination;
     String duration;
     String distance;
-    static  String fare="";
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_trip_details);
+        setContentView(R.layout.activity_trip_details_driver);
         tripStartTime = findViewById(R.id.trip_start_time);
         tripDistance = findViewById(R.id.trip_distance);
         tripDuration = findViewById(R.id.trip_duration);
         tripFare = findViewById(R.id.trip_fare);
-        tripStatus = findViewById(R.id.trip_status);
         tripFrom = findViewById(R.id.trip_from);
         tripTo = findViewById(R.id.trip_to);
         setTripStartTime= findViewById(R.id.trip_start_time);
         setTripStartTime.setOnClickListener(this);
-        tripSubmitButton = findViewById(R.id.trip_confirm);
+        tripSubmitButton = findViewById(R.id.trip_confirm_later);
         findViewById(R.id.start_trip_button).setOnClickListener(this);
         tripSubmitButton.setOnClickListener(this::onClick);
         tripStartDate=findViewById(R.id.trip_start_date);
@@ -78,16 +79,13 @@ public class TripDetails extends AppCompatActivity  implements View.OnClickListe
             tripDetail.setTrip_source(source);
             tripDetail.setTrip_destination(destination);
             tripDetail.setTrip_duration(duration);
-            tripDetail.setTrip_fare(calculateFare());
-            tripDetail.setStatus("Yet to Start");
+            tripDetail.setTrip_fare(calculateFare(distance));
             tripDetail.setTrip_distance(distance);
             Log.d(TAG, "prepareTripDetailObject: " + tripDetail.toString());
             setTripDetailsView(tripDetail);
         }else{
             Log.d(TAG, "prepareTripDetailObject: tripDetails is not null calling setTripDetails");
             setTripDetailsView(tripDetail);
-
-
         }
     }
 
@@ -96,11 +94,8 @@ public class TripDetails extends AppCompatActivity  implements View.OnClickListe
         tripDuration.setText(tripDetail.getTrip_duration());
         tripFrom.setText(tripDetail.getTrip_source());
         tripTo.setText(tripDetail.getTrip_destination());
-        tripStatus.setText(tripDetail.getStatus());
         tripDistance.setText(tripDetail.getTrip_distance());
         tripFare.setText(tripDetail.getTrip_fare());
-
-
     }
 
 
@@ -119,7 +114,7 @@ public class TripDetails extends AppCompatActivity  implements View.OnClickListe
                 datepicker.show(getSupportFragmentManager(),"date picker");
                 break;
             }
-            case R.id.trip_confirm: {
+            case R.id.trip_confirm_later: {
                 try {
                     if (!tripDetail.getStart_time().equals("") && !tripDetail.getTrip_date().equals("")) {
                         submitDetailsToFireStore();
@@ -128,11 +123,12 @@ public class TripDetails extends AppCompatActivity  implements View.OnClickListe
                     }
                 }catch (Exception e){
                     Log.d(TAG, "onClick: Submit Details"+e.getMessage());
+                    Toast.makeText(this, "Please Fill the trip start Time and Date", Toast.LENGTH_SHORT).show();
                 }
                 break;
             }
             case R.id.start_trip_button:{
-                startActivity(new Intent(TripDetails.this,MapsActivity.class));
+                startActivity(new Intent(TripDetailsDriver.this,MapsActivity.class));
                 break;
             }
 
@@ -150,8 +146,9 @@ public class TripDetails extends AppCompatActivity  implements View.OnClickListe
                 if (task.isSuccessful()) {
                     Log.d(TAG, "onComplete: Details Submitted Successfully");
                     Log.d(TAG, "onComplete: " + task.toString());
-                    Toast.makeText(TripDetails.this, "You will be notified when a rider is found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TripDetailsDriver.this, "You will be notified when a rider is found", Toast.LENGTH_SHORT).show();
                     tripSubmitButton.setVisibility(View.INVISIBLE);
+                    findViewById(R.id.start_trip_button).setVisibility(View.INVISIBLE);
                 } else {
                     Log.d(TAG, "onComplete: Something went wrong");
                 }
@@ -163,23 +160,6 @@ public class TripDetails extends AppCompatActivity  implements View.OnClickListe
 
 
 
-    private String calculateFare() {
-        Log.d(TAG, "calculateFare: Called");
-        String f = "";
-        try {
-            for (int i = 0; i < distance.length() - 3; i++) {
-                f = f + distance.charAt(i);
-            }
-            Double toDf = Double.valueOf(f) * 7;
-            Integer f_re = toDf.intValue();
-            fare=f_re.toString();
-            Log.d(TAG, "calculateFare: Fare:" + f_re.toString());
-
-        } catch (Exception e) {
-
-        }
-        return fare;
-    }
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {

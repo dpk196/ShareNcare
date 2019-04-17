@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
-import com.example.sharencare.ui.TripDetails;
+import com.example.sharencare.ui.TripDetailsDriver;
 
 import java.util.ArrayList;
 
@@ -49,7 +49,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(mContext,TripDetails.class);
+                Intent intent=new Intent(mContext, TripDetailsDriver.class);
                 intent.putExtra("tripDetails", tripDetail);
                 intent.putExtra("Source",source.get(i));
                 intent.putExtra("Destination",destination.get(i));

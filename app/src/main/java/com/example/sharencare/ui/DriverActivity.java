@@ -17,7 +17,6 @@ import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
 import com.example.sharencare.threads.DirectionsThreads;
 import com.example.sharencare.threads.RetriveDetailsFromFireStore;
-import com.example.sharencare.threads.UserCurrentLocation;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
@@ -32,7 +31,7 @@ import com.google.maps.model.DirectionsResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class DriverActivity extends AppCompatActivity implements DirectionsResultInterface, TripsRetrivedFromFireStoreInterFace, UserCurrentLocationInterface {
+public class DriverActivity extends AppCompatActivity implements DirectionsResultInterface, TripsRetrivedFromFireStoreInterFace {
     private static final String TAG = "DriverActivity";
     //vars
     private ProgressBar mProgressBar;
@@ -58,7 +57,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
         mProgressBar = findViewById(R.id.driver_progressBar);
         placesPredictionFrom();
         placesPredictionTo();
-        intent=new Intent(this,TripDetails.class);
+        intent=new Intent(this, TripDetailsDriver.class);
         showDialog();
     }
 
@@ -163,7 +162,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
         Log.d(TAG, "tripDetails: "+sourceText);
         Log.d(TAG, "tripDetails: "+destinationText);
         tripDetail.setStatus("Yet to start");
-        Intent intent  =new Intent(DriverActivity.this,TripDetails.class);
+        Intent intent  =new Intent(DriverActivity.this, TripDetailsDriver.class);
         LatLng sourceLatLng=new LatLng(sourceLatlng.latitude,sourceLatlng.longitude);
         LatLng destinationLatLng=new LatLng(destinationLatlng.latitude,destinationLatlng.longitude);
         try {
@@ -190,7 +189,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
             Log.d(TAG, "onDirectionsRetrived: distance: " + result.routes[0].legs[0].distance);
             intent.putExtra("distance",distance);
             intent.putExtra("duration",duration);
-            TripDetails.tripDetail=null;
+            TripDetailsDriver.tripDetail=null;
             startActivity(intent);
         } catch (Exception e) {
             Log.d(TAG, "onDirectionsRetrived: " + e.getMessage());
@@ -227,11 +226,6 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     private void showDialog(){mProgressBar.setVisibility(View.VISIBLE);}
     private void hideDialog(){if(mProgressBar.getVisibility()==View.VISIBLE){mProgressBar.setVisibility(View.INVISIBLE);}}
 
-    @Override
-    public void userCurrentLocation(String userCurrentLocation) {
-        tripFrom=userCurrentLocation;
-        intent.putExtra("source",userCurrentLocation);
-        Log.d(TAG, "userCurrentLocation: from Driver Activity"+userCurrentLocation);
-    }
+
 }
 

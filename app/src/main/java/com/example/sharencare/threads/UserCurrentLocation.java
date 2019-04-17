@@ -6,86 +6,77 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.example.sharencare.Interfaces.UserCurrentLocationInterface;
+import com.example.sharencare.Models.UserLocation;
+import com.example.sharencare.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-public class UserCurrentLocation extends AsyncTask<Void,Void , String> {
+import javax.annotation.Nullable;
+
+public class UserCurrentLocation extends AsyncTask<Void,Void , GeoPoint> {
+    private Handler mHandler = new Handler();
+    private Runnable mRunnable;
+    private static final int LOCATION_UPDATE_INTERVAL = 3000;
     private static final String TAG = "UserCurrentLocation";
     private FusedLocationProviderClient mFusedLocationProviderClient;
     Context mContext;
     boolean flagLocality=false;
     boolean flagCoordinates=false;
-    private  Location mLocation;
-    private WeakReference<UserCurrentLocationInterface> currentLocation;
-    String userLocation;
+    private FirebaseFirestore mDb;
+
+
     public UserCurrentLocation(Context mContext,UserCurrentLocationInterface location) {
         this.mContext = mContext;
-        currentLocation=new WeakReference<>(location);
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
+         mDb=FirebaseFirestore.getInstance();
+
     }
 
     @Override
-    protected String  doInBackground(Void... voids) {
-        return  getLastKnownLocation();
-    }
-
-    private String getLastKnownLocation() {
-        Log.d(TAG, "getLastKnownLocation: Getting user last Known Location");
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            return null;
-        }
-        mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+    protected GeoPoint  doInBackground(Void... voids) {
+        Log.d(TAG, "doInBackground: called");
+        mDb=FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder().build();
+        mDb.setFirestoreSettings(settings);
+        CollectionReference mCollectionReference=mDb.collection("collection_userlocation");
+        Query userLocationQuery=mCollectionReference.whereEqualTo("user_id", FirebaseAuth.getInstance().getCurrentUser().getUid());
+        userLocationQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                if (task.isSuccessful()) {
-                    mLocation = task.getResult();
-                    Log.d(TAG, "onComplete: Location Coordinates:" + mLocation.toString());
-                    Geocoder geocoder=new Geocoder(mContext);
-                    try {
-                        List<Address>    addresses=geocoder.getFromLocation(mLocation.getLatitude(),mLocation.getLongitude(),1) ;
-                        if(addresses.size()>0){
-                            flagLocality=true;
-                            flagCoordinates=true;
-                            userLocation=addresses.get(0).getAddressLine(0);
-                            Log.d(TAG, "onComplete: locality:"+addresses.get(0).getLocale());
-                        }else {
-                            flagLocality=true;
-                            flagCoordinates=true;
-                            Log.d(TAG, "onComplete: cannot locate the user");
-                        }
-                    }catch (Exception e){
-                        flagLocality=true;
-                        Log.d(TAG, "onComplete: "+e.getMessage());
-                    }
-
-                    
-                } else {
-                    flagLocality=flagCoordinates=true;
-                    Log.d(TAG, "onComplete: Unable to find User Current Location");
-
-                }
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+               for(DocumentSnapshot doc:queryDocumentSnapshots){
+                   UserLocation userLocation=doc.toObject(UserLocation.class);
+                   Log.d(TAG, "onEvent: "+userLocation.toString());
+               }
             }
         });
-          while(flagCoordinates==false&&flagLocality==false){
-              Log.d(TAG, "getLastKnownLocation: Still locting user");
-          };
-          return  userLocation;
+
+
+        return null;
+
     }
 
-    @Override
-    protected void onPostExecute(String s) {
-        Log.d(TAG, "onPostExecute: Called USer Location from onPostExecute:"+s);
-       currentLocation.get().userCurrentLocation(s);
-    }
+
+
+
+
 }

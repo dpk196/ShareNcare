@@ -1,5 +1,6 @@
 package com.example.sharencare.ui;
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.support.annotation.NonNull;
@@ -13,10 +14,12 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.sharencare.Adapters.RecyclerViewAdapter;
+import com.example.sharencare.Interfaces.DirectionsResultInterface;
 import com.example.sharencare.Interfaces.SearchForTripsInterface;
 import com.example.sharencare.Interfaces.TripsRetrivedFromFireStoreInterFace;
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
+import com.example.sharencare.threads.DirectionsThreads;
 import com.example.sharencare.threads.RetriveDetailsFromFireStore;
 import com.example.sharencare.threads.SearchForRides;
 import com.google.android.gms.common.api.Status;
@@ -28,19 +31,21 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.maps.model.DirectionsResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class RiderActivity extends AppCompatActivity implements TripsRetrivedFromFireStoreInterFace, SearchForTripsInterface {
+public class RiderActivity extends AppCompatActivity implements TripsRetrivedFromFireStoreInterFace, SearchForTripsInterface , DirectionsResultInterface {
     private static final String TAG = "RiderActivity";
     String destinationText;
     String sourceText;
@@ -53,6 +58,7 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
     private ProgressBar mProgressBar;
     private  String  tripFrom;
     private  String  tripTo;
+    boolean flag=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,8 +126,7 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
                 //TODO: Get info about the selected place.
                 tripTo=place.getName();
                 Log.d(TAG, "onPlaceSelected: "+tripTo);
-            //initThread();
-            searchForRides();
+                 initThread();
             }
 
             @Override
@@ -146,9 +151,14 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
                 if(task.isSuccessful()){
                     for(QueryDocumentSnapshot documentSnapshot:task.getResult()){
                         TripDetail tripDetail=documentSnapshot.toObject(TripDetail.class);
+                        if(!tripDetail.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+
+                        }
                         Log.d(TAG, "onComplete: Query from FireStore"+tripDetail.toString());
                     }
+                    flag=true;
                 }else {
+                    flag=true;
                     Log.d(TAG, "onComplete: Query Failed ");
                 }
             }
@@ -156,11 +166,11 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
     }
 
 
-//    private void initThread(){
-//        SearchForRides searchForRides=new SearchForRides(tripFrom,tripTo,this);
-//        searchForRides.execute();
-//
-//    }
+    private void initThread(){
+        DirectionsThreads directionsThreads=new DirectionsThreads(tripFrom,tripTo,this,this);
+        directionsThreads.execute();
+
+    }
 
     @Override
     public void userTripsCollectionFromFirestore(ArrayList<TripDetail> result) {
@@ -199,5 +209,24 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
     @Override
     public void tripsRetrieved(ArrayList<TripDetail> trips) {
 
+    }
+
+    @Override
+    public void onDirectionsRetrived(DirectionsResult result) {
+        try {
+            String duration= result.routes[0].legs[0].duration.toString();
+            String distance=result.routes[0].legs[0].distance.toString();
+            Log.d(TAG, "onDirectionsRetrived: routes: " + result.routes[0].toString());
+            Log.d(TAG, "onDirectionsRetrived: duration: " + result.routes[0].legs[0].duration);
+            Log.d(TAG, "onDirectionsRetrived: distance: " + result.routes[0].legs[0].distance);
+            Intent  intent=new Intent(RiderActivity.this,TripDetailsRider.class);
+            intent.putExtra("tripFrom",tripFrom);
+            intent.putExtra("tripTo",tripTo);
+            intent.putExtra("distance",result.routes[0].legs[0].distance.toString());
+            intent.putExtra("duration",result.routes[0].legs[0].duration.toString());
+            startActivity(intent);
+        } catch (Exception e) {
+            Log.d(TAG, "onDirectionsRetrived: " + e.getMessage());
+        }
     }
 }
