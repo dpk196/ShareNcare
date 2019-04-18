@@ -55,6 +55,9 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:1.7.25'
     //Support design toolbar
     implementation 'com.android.support:design:28.0.0'
+    //ClusterMarker dependency
+    implementation 'com.google.maps.android:android-maps-utils:0.5+'
+
 
 
 }

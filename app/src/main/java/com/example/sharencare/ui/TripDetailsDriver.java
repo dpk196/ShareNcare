@@ -1,9 +1,13 @@
 package com.example.sharencare.ui;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,15 +20,21 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.sharencare.Models.TripDetail;
+import com.example.sharencare.Models.User;
+import com.example.sharencare.Models.UserLocation;
 import com.example.sharencare.R;
 import com.example.sharencare.utils.DatePickerDialogFragment;
 import com.example.sharencare.utils.TimePickerDialogFragment;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.GeoPoint;
 
 import static com.example.sharencare.utils.CalculateFare.calculateFare;
 
@@ -40,7 +50,8 @@ public class TripDetailsDriver extends AppCompatActivity  implements View.OnClic
     String destination;
     String duration;
     String distance;
-
+   public static UserLocation userLocation;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
 
 
     @Override
@@ -67,7 +78,9 @@ public class TripDetailsDriver extends AppCompatActivity  implements View.OnClic
         distance = intent.getStringExtra("distance");
         mAuth = FirebaseAuth.getInstance();
         mDb = FirebaseFirestore.getInstance();
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         prepareTripDetailObject();
+        getLastKnownLocation();
 
 
     }
@@ -128,7 +141,8 @@ public class TripDetailsDriver extends AppCompatActivity  implements View.OnClic
                 break;
             }
             case R.id.start_trip_button:{
-                startActivity(new Intent(TripDetailsDriver.this,MapsActivity.class));
+                Intent mapsActIntent=new Intent(TripDetailsDriver.this,MapsActivity.class);
+                startActivity(mapsActIntent);
                 break;
             }
 
@@ -176,4 +190,24 @@ public class TripDetailsDriver extends AppCompatActivity  implements View.OnClic
         Log.d(TAG, "onDateSet: "+tripDetail.getTrip_date());
         tripStartDate.setText(tripDetail.getTrip_date());
     }
+
+    private void getLastKnownLocation() {
+        Log.d(TAG, "getLastKnownLocation: Getting user last Known Location");
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                if(task.isSuccessful()){
+                    Location location=task.getResult();
+                    GeoPoint geoPoint=new GeoPoint(location.getLatitude(),location.getLongitude());
+                    userLocation= new UserLocation();
+                    userLocation.setGeoPoint(geoPoint);
+                    Log.d(TAG, "onComplete: Location Coordinates:"+userLocation.toString());
+                }
+            }
+        });
+    }
 }
+

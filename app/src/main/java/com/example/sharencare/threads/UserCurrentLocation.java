@@ -14,6 +14,7 @@ import android.util.Log;
 import com.example.sharencare.Interfaces.UserCurrentLocationInterface;
 import com.example.sharencare.Models.UserLocation;
 import com.example.sharencare.R;
+import com.example.sharencare.services.LocationService;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,16 +35,17 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-public class UserCurrentLocation extends AsyncTask<Void,Void , GeoPoint> {
+public class UserCurrentLocation extends AsyncTask<Void,Void , Void> {
     private Handler mHandler = new Handler();
     private Runnable mRunnable;
     private static final int LOCATION_UPDATE_INTERVAL = 3000;
     private static final String TAG = "UserCurrentLocation";
     private FusedLocationProviderClient mFusedLocationProviderClient;
     Context mContext;
-    boolean flagLocality=false;
+    boolean flag=true;
     boolean flagCoordinates=false;
     private FirebaseFirestore mDb;
+    GeoPoint geoPoint;
 
 
     public UserCurrentLocation(Context mContext,UserCurrentLocationInterface location) {
@@ -52,31 +54,22 @@ public class UserCurrentLocation extends AsyncTask<Void,Void , GeoPoint> {
 
     }
 
+
     @Override
-    protected GeoPoint  doInBackground(Void... voids) {
-        Log.d(TAG, "doInBackground: called");
-        mDb=FirebaseFirestore.getInstance();
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder().build();
-        mDb.setFirestoreSettings(settings);
-        CollectionReference mCollectionReference=mDb.collection("collection_userlocation");
-        Query userLocationQuery=mCollectionReference.whereEqualTo("user_id", FirebaseAuth.getInstance().getCurrentUser().getUid());
-        userLocationQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-               for(DocumentSnapshot doc:queryDocumentSnapshots){
-                   UserLocation userLocation=doc.toObject(UserLocation.class);
-                   Log.d(TAG, "onEvent: "+userLocation.toString());
-               }
-            }
-        });
+    protected Void doInBackground(Void... voids) {
 
 
-        return null;
-
+        return  null;
     }
 
 
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        try {
+            Log.d(TAG, "onPostExecute: "+geoPoint.toString());
+        }catch (Exception e){
+            Log.d(TAG, "onPostExecute: "+e.getMessage());
+        }
 
-
-
+    }
 }

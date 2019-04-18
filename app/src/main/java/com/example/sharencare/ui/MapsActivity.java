@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -15,10 +16,13 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.sharencare.Interfaces.UserCurrentLocationInterface;
+import com.example.sharencare.Models.ClusterMarker;
+import com.example.sharencare.Models.User;
 import com.example.sharencare.Models.UserLocation;
 import com.example.sharencare.R;
 import com.example.sharencare.services.LocationService;
 import com.example.sharencare.threads.UserCurrentLocation;
+import com.example.sharencare.utils.MyClusterManagerRenderer;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,6 +34,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -38,10 +43,13 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.maps.android.clustering.ClusterManager;
+
+import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback{
     private static final String TAG = "MapsActivity";
     private GoogleMap mMap;
     private LatLngBounds mLatLngBounds;
@@ -50,8 +58,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static LocationService mLocationService;
     static ServiceConnection serviceConnection;
     static GeoPoint geoPoint;
-    boolean flag = true;
+    boolean flag = false;
     private LatLngBounds mMapBoundary;
+    private ClusterManager mClusterManager;
+    private MyClusterManagerRenderer mClusterManagerRenderer;
+    private Handler mHandler = new Handler();
+    private Runnable mRunnable;
+    private static final int LOCATION_UPDATE_INTERVAL = 3000;
+    private UserLocation userLocation;
+    private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
+    Intent fromTripDetails;
 
 
     @Override
@@ -63,26 +79,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         startLocationService();
+        fromTripDetails=getIntent();
+        userLocation= TripDetailsDriver.userLocation;
+        Log.d(TAG, "onCreate: "+userLocation.toString());
+
     }
-
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -93,6 +97,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        addMapMarkers();
         mMap.setMyLocationEnabled(true);
     }
     private void startLocationService(){
@@ -101,18 +106,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        this.startService(serviceIntent);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
                 MapsActivity.this.startForegroundService(serviceIntent);
+
             }else{
                 Log.d(TAG, "startLocationService: Starting Services");
                 startService(serviceIntent);
-
-
-
             }
         }
     }
 
     private boolean isLocationServiceRunning() {
-
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
             if("com.example.sharencare.services.LocationService".equals(service.service.getClassName())) {
@@ -124,79 +126,95 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return false;
     }
 
-//    private  void bindToLocationService(){
-//        Log.d(TAG, "bindToLocationService: Binding to Location Service");
-//        if(serviceConnection==null) {
-//            serviceConnection = new ServiceConnection() {
-//                @Override
-//                public void onServiceConnected(ComponentName name, IBinder service) {
-//                    Log.d(TAG, "onServiceConnected: Connected to Service");
-//                    binder = (LocationService.MyBinder) service;
-//                    mLocationService = binder.getService();
-//
-//                }
-//
-//                @Override
-//                public void onServiceDisconnected(ComponentName name) {
-//
-//                }
-//            };
-//        }
-//        Intent locationServiceIntent = new Intent(this, LocationService.class);
-//        bindService(locationServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-//
-//
-//    }
-
-
-    private  void initThread(){
-        new Thread(new Runnable() {
-            private static final String TAG = " inside Thread";
+    private void startUserLocationsRunnable(){
+        Log.d(TAG, "startUserLocationsRunnable: starting runnable for retrieving updated locations.");
+        mHandler.postDelayed(mRunnable = new Runnable() {
             @Override
             public void run() {
-                getUserLocationUpdates();
+                retrieveUserLocations();
+                mHandler.postDelayed(mRunnable, LOCATION_UPDATE_INTERVAL);
             }
-        }).start();
-
+        }, LOCATION_UPDATE_INTERVAL);
     }
 
-    private  void getUserLocationUpdates() {
-        Log.d(TAG, "getUserLocationUpdates: called");
-        while (flag==true) {
-            try {
-                Log.d(TAG, "getUserLocationUpdates: "+Thread.currentThread().getId());
-                Thread.sleep(4000);
-                geoPoint = LocationService.getUserLocation();
-                Log.d(TAG, "getUserLocationUpdates: " + geoPoint.toString());
+    private void retrieveUserLocations() {
+        Log.d(TAG, "retrieveUserLocations: Called");
+        DocumentReference mUserLocationReference=FirebaseFirestore.getInstance().collection(getString(R.string.collection_userlocation))
+                .document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+         mUserLocationReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+             @Override
+             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                   if(task.isSuccessful()){
+                        userLocation=task.getResult().toObject(UserLocation.class);
+                       Log.d(TAG, "onComplete: "+userLocation.toString());
+                       LatLng latLng=new LatLng(userLocation.getGeoPoint().getLatitude(),userLocation.getGeoPoint().getLongitude());
+                       mClusterMarkers.get(0).setPosition(latLng);
+                       mClusterManagerRenderer.setUpdateMarker(mClusterMarkers.get(0));
+                       
+                       Log.d(TAG, "onComplete: Updating User Location");
+                   }
+             }
+         });
+    }
+    private void stopLocationUpdates(){
+        mHandler.removeCallbacks(mRunnable);
+    }
 
-            } catch (Exception e) {
-                Log.d(TAG, "getUserLocationUpdates: " + e.getMessage());
+
+    //..................
+  private  void addMapMarkers(){
+        if(mMap!=null){
+            if (mClusterManager == null) {
+                mClusterManager = new ClusterManager<ClusterMarker>(getApplicationContext(), mMap);
+            }
+            if (mClusterManagerRenderer == null) {
+                mClusterManagerRenderer = new MyClusterManagerRenderer(this, mMap, mClusterManager);
+                mClusterManager.setRenderer(mClusterManagerRenderer);
+            }
+            String snippet = "You";
+            int avatar = R.drawable.car;
+            try {
+                ClusterMarker newClusterMarker = new ClusterMarker(new LatLng(userLocation.getGeoPoint().getLatitude(), userLocation.getGeoPoint().getLongitude()), "My Location", snippet, avatar);
+                mClusterManager.addItem(newClusterMarker);
+                mClusterMarkers.add(newClusterMarker);
+                mClusterManager.cluster();
+                setCameraView();
+            }catch (Exception e){
+                Log.d(TAG, "addMapMarkers: Error occured"+e.getMessage());
             }
 
+
+
+        }
+  }
+  //............................
+
+    private  void setCameraView(){
+        //total view of the map
+        try {
+            Log.d(TAG, "setCameraView: Setting Camera view to:"+userLocation.getGeoPoint().toString());
+            double bottomBoundary = userLocation.getGeoPoint().getLatitude() -0.1;
+            double leftBoundary = userLocation.getGeoPoint().getLongitude() -0.1 ;
+            double topBoundary = userLocation.getGeoPoint().getLatitude() +0.1;
+            double rightBoundary =userLocation.getGeoPoint().getLongitude() +0.1 ;
+            mLatLngBounds = new LatLngBounds(new LatLng(bottomBoundary, leftBoundary), new LatLng(topBoundary, rightBoundary));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mLatLngBounds, 0));
+        }catch (Exception e){
+            Log.d(TAG, "setCameraView: "+e.getMessage());
         }
     }
 
-    private  void setCameraView(){
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mLatLngBounds,0));
-    }
-
     @Override
-    protected void onStop() {
-        super.onStop();
-        flag=false;
-    }
+    protected void onResume() {
+        super.onResume();
+        startUserLocationsRunnable();
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        flag=true;
-        initThread();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        flag=false;
+        stopLocationUpdates();
 
     }
 }
