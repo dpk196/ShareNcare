@@ -9,10 +9,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.example.sharencare.Adapters.RecyclerViewAdapter;
+import com.example.sharencare.Adapters.PreviousRidesRecyclerViewAdapter;
 import com.example.sharencare.Interfaces.DirectionsResultInterface;
 import com.example.sharencare.Interfaces.TripsRetrivedFromFireStoreInterFace;
-import com.example.sharencare.Interfaces.UserCurrentLocationInterface;
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
 import com.example.sharencare.threads.DirectionsThreads;
@@ -35,6 +34,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     private static final String TAG = "DriverActivity";
     //vars
     private ProgressBar mProgressBar;
+    private ProgressBar dProgressBar;
     private ArrayList<String> source = new ArrayList<>();
     private ArrayList<String> destination = new ArrayList<>();
     private FirebaseFirestore mDb;
@@ -55,6 +55,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
         setContentView(R.layout.activity_driver);
         mDb = FirebaseFirestore.getInstance();
         mProgressBar = findViewById(R.id.driver_progressBar);
+        dProgressBar = findViewById(R.id.torideActivity_progressBar);
         placesPredictionFrom();
         placesPredictionTo();
         intent=new Intent(this, TripDetailsDriver.class);
@@ -123,6 +124,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
                 intent.putExtra("destination",place.getName());
                 tripTo=place.getName()+" "+"Kolkata";
                 Log.d(TAG, "onPlaceSelected: Trip to:"+tripTo);
+                showToActivityDialog();
                 initThread();
             }
 
@@ -147,7 +149,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     private void initRecyclerView(){
         Log.d(TAG, "initRecyclerView: init recyclerview.");
         RecyclerView recyclerView = findViewById(R.id.driver_recyclerview);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(source, destination,this,tripDetail );
+        PreviousRidesRecyclerViewAdapter adapter = new PreviousRidesRecyclerViewAdapter(source, destination,this,tripDetail );
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -190,6 +192,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
             intent.putExtra("distance",distance);
             intent.putExtra("duration",duration);
             TripDetailsDriver.tripDetail=null;
+            hideToActivityDialog();
             startActivity(intent);
         } catch (Exception e) {
             Log.d(TAG, "onDirectionsRetrived: " + e.getMessage());
@@ -225,7 +228,8 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     }
     private void showDialog(){mProgressBar.setVisibility(View.VISIBLE);}
     private void hideDialog(){if(mProgressBar.getVisibility()==View.VISIBLE){mProgressBar.setVisibility(View.INVISIBLE);}}
-
+    private void showToActivityDialog(){mProgressBar.setVisibility(View.VISIBLE);}
+    private void hideToActivityDialog(){if(mProgressBar.getVisibility()==View.VISIBLE){mProgressBar.setVisibility(View.INVISIBLE);}}
 
 }
 

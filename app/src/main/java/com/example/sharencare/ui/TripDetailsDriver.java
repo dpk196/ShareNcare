@@ -50,7 +50,7 @@ public class TripDetailsDriver extends AppCompatActivity  implements View.OnClic
     String destination;
     String duration;
     String distance;
-   public static UserLocation userLocation;
+    public static UserLocation userLocation;
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
 
@@ -130,6 +130,7 @@ public class TripDetailsDriver extends AppCompatActivity  implements View.OnClic
             case R.id.trip_confirm_later: {
                 try {
                     if (!tripDetail.getStart_time().equals("") && !tripDetail.getTrip_date().equals("")) {
+                        tripDetail.setStatus("Yet to Start");
                         submitDetailsToFireStore();
                     } else {
                         Toast.makeText(this, "Please Fill the trip start Time and Date", Toast.LENGTH_SHORT).show();
@@ -141,8 +142,11 @@ public class TripDetailsDriver extends AppCompatActivity  implements View.OnClic
                 break;
             }
             case R.id.start_trip_button:{
+                tripDetail.setStatus("On trip");
+                submitDetailsToFireStore();
                 Intent mapsActIntent=new Intent(TripDetailsDriver.this,MapsActivity.class);
                 startActivity(mapsActIntent);
+                finish();
                 break;
             }
 

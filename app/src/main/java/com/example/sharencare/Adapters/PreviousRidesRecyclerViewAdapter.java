@@ -17,7 +17,7 @@ import com.example.sharencare.ui.TripDetailsDriver;
 
 import java.util.ArrayList;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+public class PreviousRidesRecyclerViewAdapter extends RecyclerView.Adapter<PreviousRidesRecyclerViewAdapter.ViewHolder> {
     private static final String TAG = "RecyclerViewAdapter";
     private ArrayList<String> source =new ArrayList<>();
     private ArrayList<String> destination=new ArrayList<>();
@@ -25,7 +25,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<TripDetail> tripDetail;
 
 
-    public RecyclerViewAdapter(ArrayList<String> source, ArrayList<String> destination, Context mContext, ArrayList<TripDetail> tripDetail) {
+    public PreviousRidesRecyclerViewAdapter(ArrayList<String> source, ArrayList<String> destination, Context mContext, ArrayList<TripDetail> tripDetail) {
         this.source = source;
         this.destination = destination;
         this.mContext = mContext;
@@ -46,6 +46,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Log.d(TAG, "onBindViewHolder: called");
         viewHolder.src.setText(source.get(i));
         viewHolder.des_nation.setText(destination.get(i));
+        viewHolder.trip_status.setText(tripDetail.get(0).getStatus());
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,16 +67,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public class ViewHolder  extends RecyclerView.ViewHolder{
         TextView src;
         TextView  des_nation;
+        TextView  trip_status;
         RelativeLayout parentLayout;
         private TextView tripDetails;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             src=itemView.findViewById(R.id.source);
             des_nation=itemView.findViewById(R.id.destination);
+            trip_status=itemView.findViewById(R.id.status);
             parentLayout=itemView.findViewById(R.id.parent_layout);
-
-
-
         }
     }
 }

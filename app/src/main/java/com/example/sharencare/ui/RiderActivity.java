@@ -1,8 +1,6 @@
 package com.example.sharencare.ui;
 
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,9 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.example.sharencare.Adapters.RecyclerViewAdapter;
+import com.example.sharencare.Adapters.PreviousRidesRecyclerViewAdapter;
 import com.example.sharencare.Interfaces.DirectionsResultInterface;
 import com.example.sharencare.Interfaces.SearchForTripsInterface;
 import com.example.sharencare.Interfaces.TripsRetrivedFromFireStoreInterFace;
@@ -21,7 +18,6 @@ import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
 import com.example.sharencare.threads.DirectionsThreads;
 import com.example.sharencare.threads.RetriveDetailsFromFireStore;
-import com.example.sharencare.threads.SearchForRides;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -40,10 +36,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.maps.model.DirectionsResult;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class RiderActivity extends AppCompatActivity implements TripsRetrivedFromFireStoreInterFace, SearchForTripsInterface , DirectionsResultInterface {
     private static final String TAG = "RiderActivity";
@@ -191,7 +185,7 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
     private void initRecyclerView(){
         Log.d(TAG, "initRecyclerView: init recyclerview.");
         RecyclerView recyclerView = findViewById(R.id.rider_recyclerview);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(source, destination,this,tripDetail );
+        PreviousRidesRecyclerViewAdapter adapter = new PreviousRidesRecyclerViewAdapter(source, destination,this,tripDetail );
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
