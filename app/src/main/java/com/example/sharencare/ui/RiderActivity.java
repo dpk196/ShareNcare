@@ -12,7 +12,6 @@ import android.widget.ProgressBar;
 
 import com.example.sharencare.Adapters.PreviousRidesRecyclerViewAdapter;
 import com.example.sharencare.Interfaces.DirectionsResultInterface;
-import com.example.sharencare.Interfaces.SearchForTripsInterface;
 import com.example.sharencare.Interfaces.TripsRetrivedFromFireStoreInterFace;
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
@@ -39,7 +38,7 @@ import com.google.maps.model.DirectionsResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class RiderActivity extends AppCompatActivity implements TripsRetrivedFromFireStoreInterFace, SearchForTripsInterface , DirectionsResultInterface {
+public class RiderActivity extends AppCompatActivity implements TripsRetrivedFromFireStoreInterFace,  DirectionsResultInterface {
     private static final String TAG = "RiderActivity";
     String destinationText;
     String sourceText;
@@ -49,7 +48,7 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
     ArrayList<String> source =new ArrayList<>();
     ArrayList<String>  destination =new ArrayList<>();
     ArrayList<TripDetail> tripDetail =new ArrayList<>();
-    private ProgressBar mProgressBar;
+    private ProgressBar mProgressBar,dProgressBar;
     private  String  tripFrom;
     private  String  tripTo;
     boolean flag=false;
@@ -59,6 +58,7 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
         setContentView(R.layout.activity_rider);
         mDb = FirebaseFirestore.getInstance();
         mProgressBar = findViewById(R.id.rider_progressBar);
+        dProgressBar = findViewById(R.id.torideActivity_progressBar);
         placesPredictionFrom();
         placesPredictionTo();
         showDialog();
@@ -197,13 +197,9 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
         RetriveDetailsFromFireStore retriveDetailsFromFireStore=new RetriveDetailsFromFireStore(this);
         retriveDetailsFromFireStore.execute();
     }
-    private void showDialog(){mProgressBar.setVisibility(View.VISIBLE);}
-    private void hideDialog(){if(mProgressBar.getVisibility()==View.VISIBLE){mProgressBar.setVisibility(View.INVISIBLE);}}
 
-    @Override
-    public void tripsRetrieved(ArrayList<TripDetail> trips) {
 
-    }
+
 
     @Override
     public void onDirectionsRetrived(DirectionsResult result) {
@@ -223,4 +219,8 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
             Log.d(TAG, "onDirectionsRetrived: " + e.getMessage());
         }
     }
+    private void showDialog(){mProgressBar.setVisibility(View.VISIBLE);}
+    private void hideDialog(){if(mProgressBar.getVisibility()==View.VISIBLE){mProgressBar.setVisibility(View.INVISIBLE);}}
+    private void showToActivityDialog(){dProgressBar.setVisibility(View.VISIBLE);}
+    private void hideToActivityDialog(){if(dProgressBar.getVisibility()==View.VISIBLE){mProgressBar.setVisibility(View.INVISIBLE);}}
 }

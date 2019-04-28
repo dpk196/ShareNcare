@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:padding="15dp"
     android:background="@drawable/mybutton"
-    android:id="@+id/parent_layout">
+    android:id="@+id/searched_rides_parent_layout">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image"
@@ -21,7 +21,7 @@
         android:textColor="#000"
         android:text="Ride"
         android:layout_marginLeft="10dp"
-        android:textSize="25dp"/>
+        android:textSize="25dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -29,7 +29,8 @@
         android:layout_marginLeft="101dp"
         android:layout_toRightOf="@+id/rider_view"
         android:text="Ride Number"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:id="@+id/ride_number"/>
 
 
 

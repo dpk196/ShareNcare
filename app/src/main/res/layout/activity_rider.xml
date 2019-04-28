@@ -104,4 +104,12 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="500dp"
         android:visibility="invisible" />
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/torideActivity_progressBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="160dp"
+        android:visibility="invisible"
+        android:layout_gravity="center" />
 </android.support.design.widget.CoordinatorLayout>

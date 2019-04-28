@@ -12,7 +12,9 @@ public class User implements Parcelable{
     private String registration_number;
     private String  mobile_number;
     private String driver_or_rider;
-    public User(String email, String user_id, String username, String avatar, String registration_number, String mobile_number, String driver_or_rider) {
+    private String token;
+
+    public User(String email, String user_id, String username, String avatar, String registration_number, String mobile_number, String driver_or_rider, String token) {
         this.email = email;
         this.user_id = user_id;
         this.username = username;
@@ -20,12 +22,34 @@ public class User implements Parcelable{
         this.registration_number = registration_number;
         this.mobile_number = mobile_number;
         this.driver_or_rider = driver_or_rider;
+        this.token = token;
     }
 
     public User() {
 
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", user_id='" + user_id + '\'' +
+                ", username='" + username + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", registration_number='" + registration_number + '\'' +
+                ", mobile_number='" + mobile_number + '\'' +
+                ", driver_or_rider='" + driver_or_rider + '\'' +
+                ", token='" + token + '\'' +
+                '}';
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     protected User(Parcel in) {
         email = in.readString();
@@ -106,19 +130,6 @@ public class User implements Parcelable{
 
     public void setDriver_or_rider(String driver_or_rider) {
         this.driver_or_rider = driver_or_rider;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "email='" + email + '\'' +
-                ", user_id='" + user_id + '\'' +
-                ", username='" + username + '\'' +
-                ", avatar='" + avatar + '\'' +
-                ", registration_number='" + registration_number + '\'' +
-                ", mobile_number='" + mobile_number + '\'' +
-                ", driver_or_rider='" + driver_or_rider + '\'' +
-                '}';
     }
 
     @Override

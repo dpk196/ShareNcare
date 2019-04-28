@@ -59,6 +59,7 @@ public class RetriveDetailsFromFireStore extends AsyncTask<Void,Void, ArrayList<
                         Log.d(TAG, "onComplete: No Trips corresponding to the User ");
                         Log.d(TAG, "onComplete: Returning to doInBackground");
                         flag=true;
+                        return;
                     }
                     for(QueryDocumentSnapshot document : task.getResult()){
                       TripDetail result=document.toObject(TripDetail.class);

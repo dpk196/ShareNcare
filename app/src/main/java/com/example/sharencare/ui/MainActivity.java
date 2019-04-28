@@ -28,10 +28,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 public class MainActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
@@ -43,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private static  final int PERMISSIONS_REQUEST_ENABLE_GPS=991;
     private static  final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION=992;
     private static  final int ERROR_DIALOG_REQUEST=993;
+    String token="" ;
+    public  static String  server_key="";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
         showDialog();
         mAuth=FirebaseAuth.getInstance();
         mDb = FirebaseFirestore.getInstance();
+        getToken();
+        getServerKey();
+
     }
     private  void navigateToNextActivity(){
         final FirebaseUser user = mAuth.getCurrentUser();
@@ -223,6 +233,54 @@ public class MainActivity extends AppCompatActivity {
                 getLocationPermission();
         }
     }
+
+    private  void getToken(){
+        Log.d(TAG, "getToken: called");
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            @Override
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                if(task.isSuccessful()){
+                    String token=task.getResult().getToken();
+                    Log.d(TAG, "onComplete: Token: "+token);
+                    sendResgistrationTokenToServer(token);
+                }
+            }
+        });
+    }
+    private void sendResgistrationTokenToServer(String token) {
+
+        FirebaseFirestore db=FirebaseFirestore.getInstance();
+        DocumentReference reference= db.collection(getString(R.string.collection_users)).document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        reference.update("token",token).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    Log.d(TAG, "onComplete: Token Send to FireStore ");
+                }
+            }
+        });
+
+
+    }
+    private  void getServerKey(){
+        Log.d(TAG, "getServerKey: Called");
+       FirebaseFirestore db= FirebaseFirestore.getInstance();
+       DocumentReference ref=db.collection("server").document("server_key");
+       ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+           @Override
+           public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+              if(task.isSuccessful()){
+
+                  String key=task.getResult().getData().toString();
+                  server_key=key.substring(12);
+                  Log.d(TAG, "onComplete: Server Key:"+server_key);
+              }
+           }
+       });
+
+    }
+
 
 
 

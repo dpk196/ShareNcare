@@ -66,6 +66,7 @@ public class DirectionsThreads extends  AsyncTask<Void,Void,DirectionsResult>{
     @Override
     protected void onPostExecute(DirectionsResult result) {
         try {
+
             mTaskDelegate.get().onDirectionsRetrived(result);
         } catch (Exception e) {
             Log.d(TAG, "onPostExecute:" + e.getMessage());

@@ -228,8 +228,8 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     }
     private void showDialog(){mProgressBar.setVisibility(View.VISIBLE);}
     private void hideDialog(){if(mProgressBar.getVisibility()==View.VISIBLE){mProgressBar.setVisibility(View.INVISIBLE);}}
-    private void showToActivityDialog(){mProgressBar.setVisibility(View.VISIBLE);}
-    private void hideToActivityDialog(){if(mProgressBar.getVisibility()==View.VISIBLE){mProgressBar.setVisibility(View.INVISIBLE);}}
+    private void showToActivityDialog(){dProgressBar.setVisibility(View.VISIBLE);}
+    private void hideToActivityDialog(){if(dProgressBar.getVisibility()==View.VISIBLE){mProgressBar.setVisibility(View.INVISIBLE);}}
 
 }
 
