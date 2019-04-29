@@ -52,6 +52,15 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="collection_userlocation">UserLocation</string>
+    <string name="data_type_broadcast">data_type_broadcast</string>
+    <string name="default_notification_channel_name" translatable="true">
+       com.example.sharencare.default_notification_channel_name</string>
+    <string name="default_notification_channel_id" translatable="false">
+            com.example.sharencare.default_notification_channel_id</string>
+    <string name="data_title">title</string>
+    <string name="fromUserId">fromUserId</string>
+    <string name="toUserId">toUserId</string>
+    <string name="title_activity_rides_found">Map</string>
 
 
 </resources>

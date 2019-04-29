@@ -15,11 +15,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sharencare.Interfaces.FCMTokenInterface;
 import com.example.sharencare.Interfaces.SearchForLaterOnTripsInterface;
 import com.example.sharencare.Interfaces.SearchForOnTripRidesInterface;
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.Models.UserLocation;
 import com.example.sharencare.R;
+import com.example.sharencare.threads.GetMatchedFCMToken;
 import com.example.sharencare.threads.SearchForOnTripRides;
 import com.example.sharencare.threads.SearchForRideLater;
 import com.example.sharencare.utils.CalculateFare;
@@ -29,6 +31,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
@@ -56,6 +59,7 @@ public class TripDetailsRider extends AppCompatActivity implements View.OnClickL
     private ArrayList<TripDetail> tripFromFireStore=new ArrayList();
     private ProgressBar mProgressBar;
     private ArrayList<String > matchedUserIds=new ArrayList<>();
+    
 
 
 
@@ -105,23 +109,7 @@ public class TripDetailsRider extends AppCompatActivity implements View.OnClickL
 
     }
 
-    private void getLastKnownLocation() {
-        Log.d(TAG, "getLastKnownLocation: Getting user last Known Location");
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                if(task.isSuccessful()){
-                    Location location=task.getResult();
-                    geoPoint=new GeoPoint(location.getLatitude(),location.getLongitude());
-
-                    Log.d(TAG, "onComplete: Location Coordinates:"+geoPoint.toString());
-                }
-            }
-        });
-    }
+   
 
     private  void initThreadOnTrip(){
         SearchForOnTripRides searchForOnTripRides =new SearchForOnTripRides(this,this,tripFrom.getText().toString(),tripTo.getText().toString());
@@ -169,4 +157,26 @@ public class TripDetailsRider extends AppCompatActivity implements View.OnClickL
             Toast.makeText(this, "No Rides Available to:"+tripTo.getText().toString(), Toast.LENGTH_LONG).show();
         }
     }
+    //.............Getting and storing user Last kNown Location...............
+
+    private void getLastKnownLocation() {
+        Log.d(TAG, "getLastKnownLocation: Getting user last Known Location");
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                if(task.isSuccessful()){
+                    Location location=task.getResult();
+                    geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                    UserLocation userLocation = new UserLocation(FirebaseAuth.getInstance().getCurrentUser().getUid(), null, geoPoint);
+                    Log.d(TAG, "onComplete: Location Coordinates:"+geoPoint.toString());
+                }
+            }
+        });
+    }
+
+
+
 }

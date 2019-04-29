@@ -89,8 +89,11 @@ public class SearchForOnTripRides extends AsyncTask<Void ,Void, ArrayList<UserLo
                             if (!trip.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                                 tripFromFireStore.add(trip);
                                 driverUserIDs.add(trip.getUser_id());
+                                Log.d(TAG, "onComplete: UserId from UserLocation:"+trip.getUser_id());
+                                Log.d(TAG, "onComplete: UserId of  Current User:"+FirebaseAuth.getInstance().getCurrentUser().getUid());
                             }
                         }
+
                         onTripFlag = true;
                     } else {
                         Log.d(TAG, "onComplete: Result is empty");
@@ -202,4 +205,7 @@ public class SearchForOnTripRides extends AsyncTask<Void ,Void, ArrayList<UserLo
         matchedDriverLocations.clear();
 
     }
+
+
+
 }

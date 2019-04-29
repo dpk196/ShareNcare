@@ -79,15 +79,19 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                 if(task.isSuccessful()){
-                                    Log.d(TAG, "onComplete: successfully set the user client.");
-                                    u = task.getResult().toObject(User.class);
-                                    Log.d(TAG, "onCreate: Redirecting to Home Activity"+u.toString());
-                                    try{
-                                        ((UserClient)(getApplicationContext())).setUser(u);
-                                    }
-                                    catch (Exception e){
-                                        Log.d(TAG, "onComplete: "+e.getMessage());
-                                    }
+                                        try {
+                                            Log.d(TAG, "onComplete: successfully set the user client.");
+                                            u = task.getResult().toObject(User.class);
+                                            Log.d(TAG, "onCreate: Redirecting to Home Activity" + u.toString());
+                                        } catch (Exception e) {
+                                            Log.d(TAG, "onComplete: " + e.getMessage());
+                                            Log.d(TAG, "onComplete: Something went wrong please try again");
+                                            Log.d(TAG, "onComplete: Redirecting to Login activity");
+                                            Intent intent=new Intent(MainActivity.this,LoginActivity.class);
+                                            Log.d(TAG, "onCreate: Redirecting to Register Activity");
+                                            startActivity(intent);
+                                            finish();
+                                        }
 
                                 }
                             }
@@ -248,18 +252,21 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     private void sendResgistrationTokenToServer(String token) {
+     try {
+         FirebaseFirestore db = FirebaseFirestore.getInstance();
+         DocumentReference reference = db.collection(getString(R.string.collection_users)).document(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-        FirebaseFirestore db=FirebaseFirestore.getInstance();
-        DocumentReference reference= db.collection(getString(R.string.collection_users)).document(FirebaseAuth.getInstance().getCurrentUser().getUid());
-
-        reference.update("token",token).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
-                    Log.d(TAG, "onComplete: Token Send to FireStore ");
-                }
-            }
-        });
+         reference.update("token", token).addOnCompleteListener(new OnCompleteListener<Void>() {
+             @Override
+             public void onComplete(@NonNull Task<Void> task) {
+                 if (task.isSuccessful()) {
+                     Log.d(TAG, "onComplete: Token Send to FireStore ");
+                 }
+             }
+         });
+     }catch (Exception e){
+         Log.d(TAG, "sendResgistrationTokenToServer: Error "+e.getMessage());
+     }
 
 
     }

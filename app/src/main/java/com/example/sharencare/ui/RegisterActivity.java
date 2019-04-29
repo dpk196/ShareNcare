@@ -23,6 +23,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import static android.text.TextUtils.isEmpty;
 import static com.example.sharencare.utils.Check.doStringsMatch;
@@ -106,6 +108,7 @@ public class RegisterActivity extends AppCompatActivity implements
                                     hideDialog();
 
                                     if(task.isSuccessful()){
+                                        getToken();
                                         redirectDetailsScreen();
                                     }else{
                                         View parentLayout = findViewById(android.R.id.content);
@@ -192,5 +195,37 @@ public class RegisterActivity extends AppCompatActivity implements
                 break;
             }
         }
+    }
+    private  void getToken(){
+        Log.d(TAG, "getToken: called");
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            @Override
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                if(task.isSuccessful()){
+                    String token=task.getResult().getToken();
+                    Log.d(TAG, "onComplete: Token: "+token);
+                    sendResgistrationTokenToServer(token);
+                }
+            }
+        });
+    }
+    private void sendResgistrationTokenToServer(String token) {
+        try {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference reference = db.collection(getString(R.string.collection_users)).document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+            reference.update("token", token).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "onComplete: Token Send to FireStore ");
+                    }
+                }
+            });
+        }catch (Exception e){
+            Log.d(TAG, "sendResgistrationTokenToServer: Error "+e.getMessage());
+        }
+
+
     }
 }
