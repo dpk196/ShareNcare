@@ -35,7 +35,7 @@ public class RegisterActivity extends AppCompatActivity implements
     private static final String TAG = "RegisterActivity";
 
     //widgets
-    private EditText mEmail, mPassword, mConfirmPassword,username,mobile_number,registration_number;
+    private EditText mEmail, mPassword, mConfirmPassword,username,mobile_number,registration_number,vehicle_name;
     private ProgressBar mProgressBar;
     String driver_rider="Rider";
     Switch aSwitch ;
@@ -60,6 +60,7 @@ public class RegisterActivity extends AppCompatActivity implements
         mobile_number = (EditText) findViewById(R.id.mob_number);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         registration_number =  findViewById(R.id.registration_number);
+        vehicle_name=findViewById(R.id.vehicle_name);
         aSwitch=findViewById(R.id.driver_rider);
         aSwitch.setOnClickListener(this);
         findViewById(R.id.btn_register).setOnClickListener(this);
@@ -90,6 +91,7 @@ public class RegisterActivity extends AppCompatActivity implements
                             //insert some default data
                             User user = new User();
                             user.setEmail(email);
+                            user.setVehicle_name(vehicle_name.getText().toString());
                             user.setUsername(username.getText().toString());
                             user.setUser_id(FirebaseAuth.getInstance().getUid());
                             user.setDriver_or_rider(driver_rider);

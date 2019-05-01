@@ -5,16 +5,36 @@ public class FCMData {
     private String fromUserId;
     private String toUserId;
     private String data_type;
+    private String otp;
 
-    public FCMData(String title, String fromUserId, String toUserId, String data_type) {
+    public FCMData(String title, String fromUserId, String toUserId, String data_type, String otp) {
         this.title = title;
         this.fromUserId = fromUserId;
         this.toUserId = toUserId;
         this.data_type = data_type;
+        this.otp = otp;
     }
 
-
     public FCMData() {
+    }
+
+    @Override
+    public String toString() {
+        return "FCMData{" +
+                "title='" + title + '\'' +
+                ", fromUserId='" + fromUserId + '\'' +
+                ", toUserId='" + toUserId + '\'' +
+                ", data_type='" + data_type + '\'' +
+                ", otp='" + otp + '\'' +
+                '}';
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
     }
 
     public String getTitle() {
@@ -23,16 +43,6 @@ public class FCMData {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    @Override
-    public String toString() {
-        return "Data{" +
-                "title='" + title + '\'' +
-                ", fromUserId='" + fromUserId + '\'' +
-                ", toUserId='" + toUserId + '\'' +
-                ", data_type='" + data_type + '\'' +
-                '}';
     }
 
     public String getData_type() {

@@ -2,13 +2,68 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".Fragments.RideOptionsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment_relative_layout_fragment_ride_options">
+
+
+        <TextView
+            android:id="@+id/ride_to_view_fragment_ride_options"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="To"
+            android:textSize="25dp"
+            android:background="@drawable/white_onclick_grey"
+            android:backgroundTint="@color/White"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/ride_to_fragment_ride_options"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/ride_to_view_fragment_ride_options"
+            android:layout_marginLeft="15dp"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:text="Kolkata"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ride_to_view_fragment_ride_options"
+            android:layout_marginTop="10dp"
+            android:text="Accept Ride"
+            android:background="@drawable/white_onclick_grey"
+            android:layout_marginLeft="20dp"
+            android:id="@+id/accept_ride_fragment_ride_options"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reject Ride"
+            android:layout_toRightOf="@+id/accept_ride_fragment_ride_options"
+            android:layout_below="@+id/ride_to_view_fragment_ride_options"
+            android:background="@drawable/white_onclick_grey"
+            android:id="@+id/reject_ride_fragment_ride_options"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ride Details"
+            android:layout_toRightOf="@+id/reject_ride_fragment_ride_options"
+            android:layout_below="@+id/ride_to_view_fragment_ride_options"
+            android:background="@drawable/white_onclick_grey"
+            android:id="@+id/ride_details_fragment_ride_options"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"/>
+
+
+
+    </RelativeLayout>
+
+
+
 
 </FrameLayout>

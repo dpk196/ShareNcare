@@ -22,7 +22,8 @@ import com.example.sharencare.R;
 import com.example.sharencare.threads.TripDetailsOfOnTripMatchedTrip;
 import com.example.sharencare.threads.UserCurrentLocationFromFireStore;
 import com.example.sharencare.threads.UserDetailsOfMatchedTrip;
-import com.example.sharencare.ui.RidesFoundShowOnMap;
+import com.example.sharencare.ui.DriveFoundShowOnMapForRider;
+import com.example.sharencare.ui.RidesFoundShowOnMapForDriver;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,6 +46,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
     public static TripDetail tripFromMessagingService;
     public  static UserLocation userLocationFromMessagingService;
     private  String message;
+    private  Intent notifyIntent;
+    public static String otp;
 
     @Override
     public void onDeletedMessages() {
@@ -65,15 +68,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
                 Log.d(TAG, "onMessageReceived: A rider Request");
                 initRiderRequestThreads(fromUserId, myUserId);
                 message="wants to ride with you";
+                notifyIntent= new Intent(this, RidesFoundShowOnMapForDriver.class);
             }
 
             if(data_type.equals("data_type_ride_accepted")){
+                Log.d(TAG, "onMessageReceived: Trip accepted");
+                otp=remoteMessage.getData().get(getString(R.string.otp));
                 initRiderRequestThreads(fromUserId, myUserId);
                 message="accepted your request";
+                Log.d(TAG, "onMessageReceived: otp:"+otp);
+                notifyIntent= new Intent(this, DriveFoundShowOnMapForRider.class);
 
             }
             if(data_type.equals("data_type_ride_rejected")){
-
+                Log.d(TAG, "onMessageReceived: Trip Rejected");
+                sendRejectedBroadcastNotification(title, myUserId);
+                message="can't ride with you";
             }
 
         }catch (NullPointerException e){
@@ -93,7 +103,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,CHANNEL_Id);
         // Creates an Intent for the Activity
 
-        Intent notifyIntent = new Intent(this, RidesFoundShowOnMap.class);
+
         // Sets the Activity to start in a new, empty task
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         // Creates the PendingIntent
@@ -133,8 +143,46 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         userDetailsOfMatchedTrip.execute();
 
     }
-    private void initDriverResponseToRiderThread(String fromUserID,String myUserID ) {
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void sendRejectedBroadcastNotification(String title, String message) {
+
+        Log.d(TAG, "sendBroadcastNotification: building a  notification");
+
+
+        // Instantiate a Builder object.
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_Id);
+        // Creates an Intent for the Activity
+
+        Intent notifyIntent = new Intent(this, RidesFoundShowOnMapForDriver.class);
+        // Sets the Activity to start in a new, empty task
+        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        // Creates the PendingIntent
+        PendingIntent notifyPendingIntent =
+                PendingIntent.getActivity(
+                        this,
+                        0, new Intent(),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
+
+        //add properties to the builder
+        builder.setSmallIcon(R.drawable.applogo)
+                .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                        R.drawable.applogo))
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setContentTitle(title)
+                .setColor(getColor(R.color.blue4))
+                .setAutoCancel(true);
+
+        builder.setContentIntent(notifyPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        mNotificationManager.notify(BROADCAST_NOTIFICATION_ID, builder.build());
+
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override

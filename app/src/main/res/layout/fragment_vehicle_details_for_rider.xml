@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.OtpCallChatFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment_relative_layout"
+        android:background="@drawable/white_onclick_grey">
+
+
+        <TextView
+            android:id="@+id/ride_to_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="On Trip with"
+            android:background="@drawable/white_onclick_grey"
+            android:textSize="24dp"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/ride_with"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/ride_to_view"
+            android:background="@drawable/white_onclick_grey"
+            android:layout_marginLeft="15dp"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:shadowColor="@color/Black"
+            android:text="Deepak"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ride_to_view"
+            android:layout_marginTop="10dp"
+            android:text="OTP"
+            android:textStyle="bold"
+            android:backgroundTint="@color/quantum_yellow900"
+            android:textSize="13sp"
+            android:background="@drawable/white_onclick_grey"
+            android:layout_marginLeft="5dp"
+            android:id="@+id/otpTextView"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4578"
+            android:layout_toRightOf="@+id/accept_ride"
+            android:layout_below="@+id/otpTextView"
+            android:background="@drawable/white_onclick_grey"
+            android:backgroundTint="@color/quantum_yellow100"
+            android:id="@+id/otp_value"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            android:textSize="15sp"
+            android:layout_marginLeft="20dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vehicle"
+            android:layout_toRightOf="@+id/otp_value"
+            android:layout_below="@+id/ride_with"
+            android:background="@drawable/white_onclick_grey"
+            android:backgroundTint="@color/quantum_yellow"
+            android:id="@+id/start_trip"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="WB 2132"
+            android:layout_toRightOf="@+id/otp_value"
+            android:layout_below="@+id/otpTextView"
+            android:background="@drawable/white_onclick_grey"
+            android:backgroundTint="@color/quantum_yellow100"
+            android:id="@+id/vehicle_registration_number"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            android:textSize="15sp"
+            android:layout_marginLeft="20dp"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Call"
+            android:layout_toRightOf="@+id/start_trip"
+            android:layout_below="@+id/ride_to_view"
+            android:background="@drawable/white_onclick_grey"
+            android:backgroundTint="@color/colorPrimary"
+            android:id="@+id/call_him"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="45dp"
+            android:layout_marginRight="5dp"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ride_with"
+            android:layout_toRightOf="@+id/call_him"
+            android:background="@drawable/white_onclick_grey"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="17dp"
+            android:id="@+id/chat_with"
+            android:backgroundTint="@color/common_google_signin_btn_tint"
+            android:text="Chat"/>
+
+
+    </RelativeLayout>
+
+</FrameLayout>

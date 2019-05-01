@@ -25,6 +25,8 @@ public class TripDetailsOfOnTripMatchedTrip extends AsyncTask<Void,Void, TripDet
     private String userId;
     private Context mContext;
     private  boolean flag=false;
+    private boolean flag_vehicle = false;
+    private boolean flag_registration = false;
 
     public TripDetailsOfOnTripMatchedTrip(String userId, Context mContext,TripDetailsOfOnTripMatchedTripInterface detail) {
         details=new WeakReference<>(detail);

@@ -2,6 +2,7 @@ package com.example.sharencare.ui;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -9,7 +10,11 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
+import com.example.sharencare.Fragments.OnTripFragment;
+import com.example.sharencare.Fragments.OtpCallChatFragment;
+import com.example.sharencare.Fragments.RideOptionsFragment;
 import com.example.sharencare.Interfaces.FCM;
 import com.example.sharencare.Models.ClusterMarker;
 import com.example.sharencare.Models.FCMData;
@@ -36,6 +41,7 @@ import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -51,7 +57,7 @@ import static com.example.sharencare.services.MyFirebaseMessagingService.userRid
 import static com.example.sharencare.ui.HomeActivity.userLocationFromHomeScreen;
 
 
-public class RidesFoundShowOnMap extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
+public class RidesFoundShowOnMapForDriver extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener, RideOptionsFragment.OnFragmentInteractionListener, OnTripFragment.OnFragmentInteractionListener, OtpCallChatFragment.OnFragmentInteractionListener {
     private static final String TAG = "RidesFoundShowOnMap";
     private MapView mMapView;
     private GoogleMap mMap;
@@ -69,13 +75,15 @@ public class RidesFoundShowOnMap extends FragmentActivity implements OnMapReadyC
     private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
     private User  userOtherUserDetails;
     private User currentUserDetails;
+    private String otp="";
+    private TextView tripTo;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rides_driver_found_show_on_map);
-        initializeVars();
+
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
@@ -83,8 +91,11 @@ public class RidesFoundShowOnMap extends FragmentActivity implements OnMapReadyC
         mMapView = (MapView) findViewById(R.id.user_list_map);
         mMapView.onCreate(mapViewBundle);
         mMapView.getMapAsync(this);
-        findViewById(R.id.accept_ride).setOnClickListener(this);
-        findViewById(R.id.reject_ride).setOnClickListener(this);
+        findViewById(R.id.accept_ride_fragment_ride_options).setOnClickListener(this);
+        findViewById(R.id.reject_ride_fragment_ride_options).setOnClickListener(this);
+        findViewById(R.id.ride_details_fragment_ride_options).setOnClickListener(this);
+        tripTo=findViewById(R.id.ride_to_fragment_ride_options);
+        initializeVars();
 
     }
 
@@ -123,6 +134,8 @@ public class RidesFoundShowOnMap extends FragmentActivity implements OnMapReadyC
         Log.d(TAG, "initializeVars: TripDetails:" + tripDetails.toString());
         Log.d(TAG, "initializeVars: Other User Details:"+userOtherUserDetails);
         Log.d(TAG, "initializeVars: current User Details:"+currentUserDetails);
+        tripTo.setText(tripDetails.getTrip_destination());
+
     }
 
     private void startUserLocationsRunnable(){
@@ -203,17 +216,22 @@ public class RidesFoundShowOnMap extends FragmentActivity implements OnMapReadyC
     @Override
     public void onClick(View v) {
         switch(v.getId()){
-            case R.id.accept_ride :{
-                sendRequest(userOtherUserDetails.getToken(),userOtherUserDetails.getUser_id());
+            case R.id.accept_ride_fragment_ride_options:{
+                Random rand = new Random();
+                otp = String.format("%04d", rand.nextInt(10000));
+                Log.d(TAG, "onClick: Otp:"+otp);
+                sendRequest(userOtherUserDetails.getToken(),userOtherUserDetails.getUser_id(),"accepted your Request","data_type_ride_accepted",otp);
                 break;
             }
-            case R.id.reject_trip:{
+            case R.id.reject_ride_fragment_ride_options:{
+
+                sendRequest(userOtherUserDetails.getToken(),userOtherUserDetails.getUser_id(),"is unable to Ride with you","data_type_ride_rejected",otp);
                 break;
             }
         }
 
     }
-    private  void sendRequest(String token,String userId){
+    private  void sendRequest(String token,String userId,String  message,String data_type,String otp){
         Log.d(TAG, "sendRequest: Sending request to user:"+userId);
         Log.d(TAG, "sendRequest: Sending request for the token:"+token);
 
@@ -230,10 +248,11 @@ public class RidesFoundShowOnMap extends FragmentActivity implements OnMapReadyC
 
         //token
         FCMData data=new FCMData();
+        data.setOtp(otp);
         data.setToUserId(otherUserLocation.getUser_id());
         data.setFromUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        data.setData_type("data_type_ride_accepted");
-        data.setTitle(currentUserDetails.getUsername()+" "+"accepted your Request");
+        data.setData_type(data_type);
+        data.setTitle(currentUserDetails.getUsername()+" "+message);
         FirebaseCloudMessage firebaseCloudMessage =new FirebaseCloudMessage();
         firebaseCloudMessage.setData(data);
         firebaseCloudMessage.setTo(token);
@@ -296,5 +315,8 @@ public class RidesFoundShowOnMap extends FragmentActivity implements OnMapReadyC
     }
 
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
+    }
 }

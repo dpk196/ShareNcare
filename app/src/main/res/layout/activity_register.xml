@@ -111,13 +111,19 @@
                     android:layout_marginTop="36dp"
                     android:hint="If Driver provide your Registration number"
                     android:inputType="textPassword" />
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/registration_number"
+                    android:id="@+id/vehicle_name"
+                    android:hint="Enter Vehicle Name"/>
 
 
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/btn_register"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/registration_number"
+                    android:layout_below="@+id/vehicle_name"
                     android:layout_marginTop="33dp"
                     android:background="@drawable/theme_button"
                     android:text="@string/register" />

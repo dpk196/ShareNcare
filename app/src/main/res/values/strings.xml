@@ -62,9 +62,11 @@
     <string name="toUserId">toUserId</string>
     <string name="title_activity_rides_found">Map</string>
     <string name="data_type">data_type</string>
+    <string name="otp">otp</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_rides_found_show_on_map_for_rider">Map</string>
 
 
 </resources>

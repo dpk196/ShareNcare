@@ -31,12 +31,13 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener, TripDetailsOfOnTripMatchedTripInterface{
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener, TripDetailsOfOnTripMatchedTripInterface {
     private static final String TAG = "HomeActivity";
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    public  static boolean onTripAlreayPresent=false;
+    public static boolean onTripAlreayPresent = false;
     public static UserLocation userLocationFromHomeScreen;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,29 +54,38 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        RetriveDetailsFromFireStore.mLastQuery=null;
+        RetriveDetailsFromFireStore.mLastQuery = null;
     }
 
     @Override
     public void onClick(View v) {
-       switch (v.getId()){
-           case R.id.driver:{
-                               startActivity(new Intent(HomeActivity.this, RiderActivity.class));
-               Log.d(TAG, "onClick: directing to Drivers Activity");
-               break;
-           }
-           case R.id.rider:{
-               startActivity(new Intent(HomeActivity.this, DriverActivity.class));
-               Log.d(TAG, "onClick: directing to Riders Activity");
-               break;
-           }
-           case R.id.sign_out:{
-               FirebaseAuth.getInstance().signOut();
-               break;
-           }
-       }
-    }
+        Log.d(TAG, "onClick: Inside on Click"+MainActivity.currentUser.toString());
+        switch (v.getId()) {
+            case R.id.driver: {
+                String vehicle=MainActivity.currentUser.getVehicle_name();
+                String registration=MainActivity.currentUser.getRegistration_number();
 
+                if (vehicle.equals("")||registration.equals("")){
+                    startActivity(new Intent(HomeActivity.this, VehicleNameAndRegistration.class));
+                    Log.d(TAG, "onClick: directing to  VehicleNameAndRegistration Activity");
+
+                }else{
+                    startActivity(new Intent(HomeActivity.this, RiderActivity.class));
+                    Log.d(TAG, "onClick: directing to Drivers Activity");
+                }
+                break;
+            }
+            case R.id.rider: {
+                startActivity(new Intent(HomeActivity.this, DriverActivity.class));
+                Log.d(TAG, "onClick: directing to Riders Activity");
+                break;
+            }
+            case R.id.sign_out: {
+                FirebaseAuth.getInstance().signOut();
+                break;
+            }
+        }
+    }
 
 
     @Override
@@ -87,19 +97,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStop() {
         super.onStop();
-        if(mAuthStateListener!=null){
+        if (mAuthStateListener != null) {
             FirebaseAuth.getInstance().removeAuthStateListener(mAuthStateListener);
         }
     }
-    private void setupFirebaseListener(){
+
+    private void setupFirebaseListener() {
         Log.d(TAG, "setupFirebaseListener: setting up the auth state listener.");
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if(user != null){
+                if (user != null) {
                     Log.d(TAG, "onAuthStateChanged: signed_in: " + user.getUid());
-                }else{
+                } else {
                     Log.d(TAG, "onAuthStateChanged: signed_out");
                     Toast.makeText(HomeActivity.this, "Signed out", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
@@ -109,8 +120,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
         };
     }
-    private void initThread(){
-        Log.d(TAG, "initThread: "+FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+    private void initThread() {
+        Log.d(TAG, "initThread: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
         TripDetailsOfOnTripMatchedTrip trip = new TripDetailsOfOnTripMatchedTrip(FirebaseAuth.getInstance().getCurrentUser().getUid(), this, this);
         trip.execute();
         getLastKnownLocation();
@@ -119,10 +131,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void getOnTripDetail(TripDetail tripDetail) {
-        if(tripDetail!=null){
-            Log.d(TAG, "getOnTripDetail:Driver is already onTrip "+tripDetail.toString());
-            onTripAlreayPresent=true;
-        }else {
+        if (tripDetail != null) {
+            Log.d(TAG, "getOnTripDetail:Driver is already onTrip " + tripDetail.toString());
+            onTripAlreayPresent = true;
+        } else {
             Log.d(TAG, "getOnTripDetail: Not  Ontrip ");
         }
     }
@@ -137,6 +149,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void onComplete(@NonNull Task<Location> task) {
                     if (task.isSuccessful()) {
+
                         Location location = task.getResult();
                         GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
                         userLocationFromHomeScreen = new UserLocation(FirebaseAuth.getInstance().getCurrentUser().getUid(), null, geoPoint);
@@ -145,11 +158,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d(TAG, "getLastKnownLocation: Cannot get user last known location");
             Toast.makeText(this, "Cannot get last Known Location", Toast.LENGTH_SHORT).show();
         }
     }
+
     private void saveUserLocation(UserLocation userLocation) {
 
         try {
@@ -159,14 +173,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             locationRef.set(userLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         Log.d(TAG, "onComplete: Successfully updated userlocation");
                     }
                 }
             });
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             Log.e(TAG, "saveUserLocation: User instance is null, stopping location service.");
-            Log.e(TAG, "saveUserLocation: NullPointerException: "  + e.getMessage() );
+            Log.e(TAG, "saveUserLocation: NullPointerException: " + e.getMessage());
         }
     }
 
