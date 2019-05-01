@@ -12,10 +12,11 @@
         android:orientation="vertical"
         android:weightSum="100"
         android:background="@color/White">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="80"
+            android:layout_weight="85"
             android:id="@+id/map_container">
 
             <com.google.android.gms.maps.MapView
@@ -24,6 +25,73 @@
                 android:layout_height="match_parent"
                 android:id="@+id/user_list_map" />
         </RelativeLayout>
+
+        <RelativeLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="15"
+            android:id="@+id/options_container"
+            android:background="@color/colorPrimaryDark">
+            <TextView
+                android:id="@+id/ride_to_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="To"
+                android:textSize="25dp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/ride_to"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/ride_to_view"
+                android:layout_marginLeft="15dp"
+                android:textSize="25dp"
+                android:textStyle="bold"
+                android:text="Kolkata"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ride_to_view"
+                android:layout_marginTop="10dp"
+                android:text="Accept Ride"
+                android:background="@drawable/white_onclick_grey"
+                android:layout_marginLeft="5dp"
+                android:id="@+id/accept_ride"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reject Ride"
+                android:layout_toRightOf="@+id/accept_ride"
+                android:layout_below="@+id/ride_to_view"
+                android:background="@drawable/white_onclick_grey"
+                android:id="@+id/reject_ride"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Call"
+                android:layout_toRightOf="@+id/reject_ride"
+                android:layout_below="@+id/ride_to_view"
+                android:background="@drawable/white_onclick_grey"
+                android:id="@+id/call"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chat"
+                android:layout_toRightOf="@+id/call"
+                android:layout_below="@+id/ride_to_view"
+                android:background="@drawable/white_onclick_grey"
+                android:id="@+id/chat"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="17dp"
+                android:layout_marginRight="5dp"/>
+        </RelativeLayout>
+
+
 
 
     </LinearLayout>

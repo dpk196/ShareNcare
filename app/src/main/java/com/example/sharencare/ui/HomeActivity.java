@@ -13,11 +13,14 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.sharencare.Interfaces.TripDetailsOfOnTripMatchedTripInterface;
+import com.example.sharencare.Interfaces.UserDetailsOfMatchedTripInterface;
 import com.example.sharencare.Models.TripDetail;
+import com.example.sharencare.Models.User;
 import com.example.sharencare.Models.UserLocation;
 import com.example.sharencare.R;
 import com.example.sharencare.threads.RetriveDetailsFromFireStore;
 import com.example.sharencare.threads.TripDetailsOfOnTripMatchedTrip;
+import com.example.sharencare.threads.UserDetailsOfMatchedTrip;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,11 +31,11 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener, TripDetailsOfOnTripMatchedTripInterface {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener, TripDetailsOfOnTripMatchedTripInterface{
     private static final String TAG = "HomeActivity";
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     public  static boolean onTripAlreayPresent=false;
-    public static UserLocation userLocationFromNotificationChannelApplication;
+    public static UserLocation userLocationFromHomeScreen;
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
     @Override
@@ -136,8 +139,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     if (task.isSuccessful()) {
                         Location location = task.getResult();
                         GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-                        userLocationFromNotificationChannelApplication = new UserLocation(FirebaseAuth.getInstance().getCurrentUser().getUid(), null, geoPoint);
-                        saveUserLocation(userLocationFromNotificationChannelApplication);
+                        userLocationFromHomeScreen = new UserLocation(FirebaseAuth.getInstance().getCurrentUser().getUid(), null, geoPoint);
+                        saveUserLocation(userLocationFromHomeScreen);
                         Log.d(TAG, "onComplete: Location Coordinates:" + geoPoint.toString());
                     }
                 }
@@ -166,4 +169,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             Log.e(TAG, "saveUserLocation: NullPointerException: "  + e.getMessage() );
         }
     }
+
+
 }

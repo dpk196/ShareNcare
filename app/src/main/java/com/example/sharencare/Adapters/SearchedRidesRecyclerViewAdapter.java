@@ -33,7 +33,7 @@ public class SearchedRidesRecyclerViewAdapter extends RecyclerView.Adapter<Searc
     ArrayList<String > userIDS =new ArrayList<>();
     ArrayList<String > tokenList=new ArrayList<>();
     Context mContext;
-    private  static  String  BASE_URL="https://fcm.googleapis.com/fcm/";
+    public   static  String  BASE_URL="https://fcm.googleapis.com/fcm/";
 
     public SearchedRidesRecyclerViewAdapter(ArrayList<String> userLocations, ArrayList<String> tokenList, Context mContext) {
         this.userIDS = userLocations;

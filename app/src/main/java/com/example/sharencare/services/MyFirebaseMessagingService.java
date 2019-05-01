@@ -44,6 +44,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
     public static User userRiderDetailsFromMessagingService;
     public static TripDetail tripFromMessagingService;
     public  static UserLocation userLocationFromMessagingService;
+    private  String message;
 
     @Override
     public void onDeletedMessages() {
@@ -63,10 +64,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
             if(data_type.equals("data_type_ride_request")) {
                 Log.d(TAG, "onMessageReceived: A rider Request");
                 initRiderRequestThreads(fromUserId, myUserId);
+                message="wants to ride with you";
             }
 
-            if(data_type.equals("data_type_ride_response")){
-                initDriverResponseToRiderThread();
+            if(data_type.equals("data_type_ride_accepted")){
+                initRiderRequestThreads(fromUserId, myUserId);
+                message="accepted your request";
+
+            }
+            if(data_type.equals("data_type_ride_rejected")){
+
             }
 
         }catch (NullPointerException e){
@@ -76,34 +83,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
 
     }
 
-    private void initDriverResponseToRiderThread() {
-    }
 
-    @Override
-    public void onNewToken(String s) {
-        sendRegistrationTokenToServer(s);
-    }
-
-    private void sendRegistrationTokenToServer(String token) {
-
-        FirebaseFirestore db=FirebaseFirestore.getInstance();
-        try {
-            DocumentReference reference = db.collection(getString(R.string.collection_users)).document(FirebaseAuth.getInstance().getCurrentUser().getUid());
-
-            reference.update("token", token).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, "onComplete: Token Refreshed ");
-                    }
-                }
-            });
-        }catch (Exception e){
-            Log.d(TAG, "sendRegistrationTokenToServer: User is not signed in Token cannt be refreshed "+e.getMessage());
-        }
-
-
-    }
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void sendBroadcastNotification(String title, String message){
         Log.d(TAG, "sendBroadcastNotification: building a  notification");
@@ -148,10 +128,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         UserDetailsOfMatchedTrip userDetailsOfMatchedTrip=new UserDetailsOfMatchedTrip(fromUserID,this,this);
         TripDetailsOfOnTripMatchedTrip tripDetailsOfOnTripMatchedTrip=new TripDetailsOfOnTripMatchedTrip(myUserID,this,this);
         UserCurrentLocationFromFireStore location=new UserCurrentLocationFromFireStore(fromUserID,this,this);
-        userDetailsOfMatchedTrip.execute();
         location.execute();
         tripDetailsOfOnTripMatchedTrip.execute();
+        userDetailsOfMatchedTrip.execute();
 
+    }
+    private void initDriverResponseToRiderThread(String fromUserID,String myUserID ) {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -160,7 +142,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         Log.d(TAG, "userDetailsReceived: User Details Received of Rider:"+user.getUsername());
         if(user!=null) {
             userRiderDetailsFromMessagingService =user;
-            sendBroadcastNotification(title, user.getUsername() + " " + "wants to ride with you");
+            sendBroadcastNotification(title, user.getUsername() + " "+message);
         }else{
             Log.d(TAG, "userDetailsReceived: User Object is Empty cannot send notification");
         }
@@ -181,6 +163,35 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
     public void userCurrentLocation(UserLocation location) {
         Log.d(TAG, "userCurrentLocation: Called ");
         userLocationFromMessagingService=location;
+
+    }
+
+
+
+   //.............................................................................
+
+    @Override
+    public void onNewToken(String s) {
+        sendRegistrationTokenToServer(s);
+    }
+    private void sendRegistrationTokenToServer(String token) {
+
+        FirebaseFirestore db=FirebaseFirestore.getInstance();
+        try {
+            DocumentReference reference = db.collection(getString(R.string.collection_users)).document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+            reference.update("token", token).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "onComplete: Token Refreshed ");
+                    }
+                }
+            });
+        }catch (Exception e){
+            Log.d(TAG, "sendRegistrationTokenToServer: User is not signed in Token cannt be refreshed "+e.getMessage());
+        }
+
 
     }
 }

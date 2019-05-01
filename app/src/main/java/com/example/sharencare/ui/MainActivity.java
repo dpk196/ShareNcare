@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private FirebaseAuth mAuth;
     FirebaseFirestore mDb;
-    User u;
+    public static User currentUser;
     boolean mLocationPermissionGranted=false;
     private static  final int PERMISSIONS_REQUEST_ENABLE_GPS=991;
     private static  final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION=992;
@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
                                 if(task.isSuccessful()){
                                         try {
                                             Log.d(TAG, "onComplete: successfully set the user client.");
-                                            u = task.getResult().toObject(User.class);
-                                            Log.d(TAG, "onCreate: Redirecting to Home Activity" + u.toString());
+                                            currentUser = task.getResult().toObject(User.class);
+                                            Log.d(TAG, "onCreate: Redirecting to Home Activity" + currentUser.toString());
                                         } catch (Exception e) {
                                             Log.d(TAG, "onComplete: " + e.getMessage());
                                             Log.d(TAG, "onComplete: Something went wrong please try again");
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         Intent i=new Intent(MainActivity.this,HomeActivity.class);
-                        i.putExtra(getString(R.string.user_obj),u);
+                        i.putExtra(getString(R.string.user_obj),currentUser);
                         startActivity(i);
                         finish();
                     }
