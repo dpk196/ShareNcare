@@ -2,26 +2,20 @@ package com.example.sharencare.ui;
 
 import android.Manifest;
 import android.app.ActivityManager;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Handler;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.example.sharencare.Interfaces.UserCurrentLocationInterface;
 import com.example.sharencare.Models.ClusterMarker;
-import com.example.sharencare.Models.User;
 import com.example.sharencare.Models.UserLocation;
 import com.example.sharencare.R;
 import com.example.sharencare.services.LocationService;
-import com.example.sharencare.threads.UserCurrentLocation;
 import com.example.sharencare.utils.MyClusterManagerRenderer;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,25 +23,16 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
-
-import javax.annotation.Nullable;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback{
     private static final String TAG = "MapsActivity";
@@ -150,7 +135,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                        LatLng latLng=new LatLng(userLocation.getGeoPoint().getLatitude(),userLocation.getGeoPoint().getLongitude());
                        mClusterMarkers.get(0).setPosition(latLng);
                        mClusterManagerRenderer.setUpdateMarker(mClusterMarkers.get(0));
-                       
                        Log.d(TAG, "onComplete: Updating User Location");
                    }
              }

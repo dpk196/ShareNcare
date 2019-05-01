@@ -1,4 +1,4 @@
-package com.example.sharencare.utils;
+package com.example.sharencare.Interfaces;
 
 import com.example.sharencare.Models.FirebaseCloudMessage;
 

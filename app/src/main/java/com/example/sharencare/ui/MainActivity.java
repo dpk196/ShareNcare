@@ -273,15 +273,15 @@ public class MainActivity extends AppCompatActivity {
     private  void getServerKey(){
         Log.d(TAG, "getServerKey: Called");
        FirebaseFirestore db= FirebaseFirestore.getInstance();
-       DocumentReference ref=db.collection("server").document("server_key");
+       DocumentReference ref=db.collection("server").document("key");
        ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
            @Override
            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
               if(task.isSuccessful()){
 
                   String key=task.getResult().getData().toString();
-                  server_key=key.substring(12);
-                  Log.d(TAG, "onComplete: Server Key:"+server_key);
+
+                  Log.d(TAG, "onComplete: Server Key:"+key);
               }
            }
        });

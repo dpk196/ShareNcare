@@ -19,14 +19,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.sharencare.Interfaces.TripDetailsOfOnTripMatchedTripInterface;
-import com.example.sharencare.Interfaces.UserDetailsOfMatchedTripInterface;
 import com.example.sharencare.Models.TripDetail;
-import com.example.sharencare.Models.User;
 import com.example.sharencare.Models.UserLocation;
 import com.example.sharencare.R;
-import com.example.sharencare.threads.TripDetailsOfOnTripMatchedTrip;
-import com.example.sharencare.threads.UserDetailsOfMatchedTrip;
 import com.example.sharencare.utils.DatePickerDialogFragment;
 import com.example.sharencare.utils.TimePickerDialogFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -35,14 +30,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
-
 import static com.example.sharencare.utils.CalculateFare.calculateFare;
 
-public class TripDetailsDriver extends AppCompatActivity  implements View.OnClickListener , TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener, TripDetailsOfOnTripMatchedTripInterface {
+public class TripDetailsDriver extends AppCompatActivity  implements View.OnClickListener , TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
     private static final String TAG = "TripDetail";
     TextView tripStartTime, tripDistance, tripDuration, tripFare, tripStatus, tripFrom, tripTo,setTripStartTime,tripStartDate;
     FirebaseAuth mAuth;
@@ -56,7 +49,7 @@ public class TripDetailsDriver extends AppCompatActivity  implements View.OnClic
     String distance;
     public static UserLocation userLocation;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private boolean onTripAlreayPresent=false;
+
 
 
     @Override
@@ -86,14 +79,8 @@ public class TripDetailsDriver extends AppCompatActivity  implements View.OnClic
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         prepareTripDetailObject();
         getLastKnownLocation();
-        initThread();
-    }
 
-    private void initThread() {
-        TripDetailsOfOnTripMatchedTrip tripDetailsOfOnTripMatchedTrip=new TripDetailsOfOnTripMatchedTrip(FirebaseAuth.getInstance().getCurrentUser().getUid(),this,this);
-        tripDetailsOfOnTripMatchedTrip.execute();
     }
-
     public void prepareTripDetailObject(){
         if(tripDetail==null) {
             Log.d(TAG, "prepareTripDetailObject: TripDetails is Null");
@@ -143,24 +130,25 @@ public class TripDetailsDriver extends AppCompatActivity  implements View.OnClic
                         tripDetail.setStatus("Yet to Start");
                         submitDetailsToFireStore();
                     } else {
-                        Toast.makeText(this, "Please Fill the trip start Time and Date", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Please Fill the tripFromMessagingService start Time and Date", Toast.LENGTH_SHORT).show();
                     }
                 }catch (Exception e){
                     Log.d(TAG, "onClick: Submit Details"+e.getMessage());
-                    Toast.makeText(this, "Please Fill the trip start Time and Date", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Please Fill the tripFromMessagingService start Time and Date", Toast.LENGTH_SHORT).show();
                 }
                 break;
             }
             case R.id.start_trip_button:{
-                if(onTripAlreayPresent!=true) {
-                    tripDetail.setStatus("On trip");
+               // if(onTripAlreayPresent!=true) {
+                   // onTripAlreayPresent=true;
+                    tripDetail.setStatus("On tripFromMessagingService");
                     submitDetailsToFireStore();
                     Intent mapsActIntent = new Intent(TripDetailsDriver.this, MapsActivity.class);
                     startActivity(mapsActIntent);
                     finish();
-                }else{
+                //}else{
                     Toast.makeText(this, "You are Currently on a Trip", Toast.LENGTH_SHORT).show();
-                }
+                //}
                 break;
             }
 
@@ -229,14 +217,6 @@ public class TripDetailsDriver extends AppCompatActivity  implements View.OnClic
     }
 
 
-    @Override
-    public void getOnTripDetail(TripDetail tripDetail) {
-        if(tripDetail!=null){
-            Log.d(TAG, "getOnTripDetail:Driver is already onTrip "+tripDetail.toString());
-            onTripAlreayPresent=true;
-        }else {
-            Log.d(TAG, "getOnTripDetail: Not  Ontrip ");
-        }
-    }
+
 }
 

@@ -6,9 +6,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.sharencare.Interfaces.TripDetailsOfOnTripMatchedTripInterface;
-import com.example.sharencare.Interfaces.UserDetailsOfMatchedTripInterface;
 import com.example.sharencare.Models.TripDetail;
-import com.example.sharencare.Models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -37,12 +35,12 @@ public class TripDetailsOfOnTripMatchedTrip extends AsyncTask<Void,Void, TripDet
     @Override
     protected TripDetail doInBackground(Void... voids) {
         Log.d(TAG, "doInBackground: called");
-        getCurrentTipDetails();
+        getCurrentTripDetails();
         return trip;
     }
 
-    private void getCurrentTipDetails(){
-        Log.d(TAG, "getCurrentTipDetails: Called");
+    private void getCurrentTripDetails(){
+        Log.d(TAG, "getCurrentTripDetails: Called");
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder().build();
         FirebaseFirestore mDb  =FirebaseFirestore.getInstance();
         mDb.setFirestoreSettings(settings);
@@ -54,7 +52,7 @@ public class TripDetailsOfOnTripMatchedTrip extends AsyncTask<Void,Void, TripDet
                 if(task.isSuccessful()){
                     for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                         trip = documentSnapshot.toObject(TripDetail.class);
-                        Log.d(TAG, "onComplete: received trip:"+trip.toString());
+                        Log.d(TAG, "onComplete: received tripFromMessagingService:"+trip.toString());
                         break;
                     }
                 }
@@ -62,7 +60,7 @@ public class TripDetailsOfOnTripMatchedTrip extends AsyncTask<Void,Void, TripDet
             }
         });
         while(flag!=true){
-            Log.d(TAG, "getCurrentTipDetails: getting trip details");
+            Log.d(TAG, "getCurrentTripDetails: getting tripFromMessagingService details");
         }
     }
 

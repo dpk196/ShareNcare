@@ -150,10 +150,12 @@ public class LocationService extends Service {
     public  static GeoPoint getUserLocation(){
         return geoPoint ;
     }
-    
 
-
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopSelf();
+    }
 }
 
 

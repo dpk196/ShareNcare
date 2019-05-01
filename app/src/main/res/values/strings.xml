@@ -61,6 +61,7 @@
     <string name="fromUserId">fromUserId</string>
     <string name="toUserId">toUserId</string>
     <string name="title_activity_rides_found">Map</string>
+    <string name="data_type">data_type</string>
 
 
 </resources>
