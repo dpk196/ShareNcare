@@ -17,6 +17,7 @@ import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
 import com.example.sharencare.threads.DirectionsThreads;
 import com.example.sharencare.threads.RetriveDetailsFromFireStore;
+import com.example.sharencare.utils.StaticPoolClass;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -133,31 +134,7 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
 
 
 
-    private void searchForRides(){
-        Log.d(TAG, "searchForRides: called");
-         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder().build();
-         mDb.setFirestoreSettings(settings);
-        CollectionReference tripCollectionReference =mDb.collection(getString(R.string.collection_trips));
-        Query  tripsQuery =tripCollectionReference.whereEqualTo("trip_source",tripFrom).whereEqualTo("trip_destination",tripTo);
-        tripsQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
-                    for(QueryDocumentSnapshot documentSnapshot:task.getResult()){
-                        TripDetail tripDetail=documentSnapshot.toObject(TripDetail.class);
-                        if(!tripDetail.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
 
-                        }
-                        Log.d(TAG, "onComplete: Query from FireStore"+tripDetail.toString());
-                    }
-                    flag=true;
-                }else {
-                    flag=true;
-                    Log.d(TAG, "onComplete: Query Failed ");
-                }
-            }
-        });
-    }
 
 
     private void initThread(){
@@ -204,12 +181,11 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
     @Override
     public void onDirectionsRetrived(DirectionsResult result) {
         try {
-            String duration= result.routes[0].legs[0].duration.toString();
-            String distance=result.routes[0].legs[0].distance.toString();
             Log.d(TAG, "onDirectionsRetrived: routes: " + result.routes[0].toString());
             Log.d(TAG, "onDirectionsRetrived: duration: " + result.routes[0].legs[0].duration);
             Log.d(TAG, "onDirectionsRetrived: distance: " + result.routes[0].legs[0].distance);
             Intent  intent=new Intent(RiderActivity.this,TripDetailsRider.class);
+            StaticPoolClass.directionsResultRider=result;
             intent.putExtra("tripFrom",tripFrom);
             intent.putExtra("tripTo",tripTo);
             intent.putExtra("distance",result.routes[0].legs[0].distance.toString());

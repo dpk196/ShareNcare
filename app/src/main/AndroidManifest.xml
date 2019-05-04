@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
+    <supports-screens></supports-screens>
+
     <application
         android:name=".utils.NotifactionChannel"
         android:allowBackup="true"
@@ -19,7 +21,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.VehicleNameAndRegistration"></activity>
+        <activity android:name=".ui.ScheduleTripDriver"></activity>
+        <activity android:name=".ui.VehicleNameAndRegistration" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

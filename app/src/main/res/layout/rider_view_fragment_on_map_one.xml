@@ -2,19 +2,18 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Fragments.OtpCallChatFragment">
+    android:layout_height="match_parent">
 
     <!-- TODO: Update blank fragment layout -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/fragment_relative_layout"
+        android:id="@+id/fragment_relative_layout_VehicleDetailsForRider"
         android:background="@drawable/white_onclick_grey">
 
 
         <TextView
-            android:id="@+id/ride_to_view"
+            android:id="@+id/ride_to_view_VehicleDetailsForRider"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="On Trip with"
@@ -22,10 +21,10 @@
             android:textSize="24dp"
             android:textStyle="bold"/>
         <TextView
-            android:id="@+id/ride_with"
+            android:id="@+id/ride_with_VehicleDetailsForRider"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/ride_to_view"
+            android:layout_toRightOf="@+id/ride_to_view_VehicleDetailsForRider"
             android:background="@drawable/white_onclick_grey"
             android:layout_marginLeft="15dp"
             android:textSize="25dp"
@@ -35,7 +34,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/ride_to_view"
+            android:layout_below="@+id/ride_to_view_VehicleDetailsForRider"
             android:layout_marginTop="10dp"
             android:text="OTP"
             android:textStyle="bold"
@@ -43,29 +42,28 @@
             android:textSize="13sp"
             android:background="@drawable/white_onclick_grey"
             android:layout_marginLeft="5dp"
-            android:id="@+id/otpTextView"/>
+            android:id="@+id/otpTextView_VehicleDetailsForRider"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="4578"
-            android:layout_toRightOf="@+id/accept_ride"
-            android:layout_below="@+id/otpTextView"
+            android:layout_below="@+id/otpTextView_VehicleDetailsForRider"
             android:background="@drawable/white_onclick_grey"
             android:backgroundTint="@color/quantum_yellow100"
-            android:id="@+id/otp_value"
+            android:id="@+id/otp_value_VehicleDetailsForRider"
             android:textStyle="bold"
             android:layout_marginTop="10dp"
             android:textSize="15sp"
-            android:layout_marginLeft="20dp"/>
+            android:layout_marginLeft="15dp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Vehicle"
-            android:layout_toRightOf="@+id/otp_value"
-            android:layout_below="@+id/ride_with"
+            android:layout_toRightOf="@+id/otp_value_VehicleDetailsForRider"
+            android:layout_below="@+id/ride_with_VehicleDetailsForRider"
             android:background="@drawable/white_onclick_grey"
             android:backgroundTint="@color/quantum_yellow"
-            android:id="@+id/start_trip"
+            android:id="@+id/start_trip_VehicleDetailsForRider"
             android:textStyle="bold"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="20dp"/>
@@ -73,38 +71,66 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="WB 2132"
-            android:layout_toRightOf="@+id/otp_value"
-            android:layout_below="@+id/otpTextView"
+            android:layout_toRightOf="@+id/otp_value_VehicleDetailsForRider"
+            android:layout_below="@+id/otpTextView_VehicleDetailsForRider"
             android:background="@drawable/white_onclick_grey"
             android:backgroundTint="@color/quantum_yellow100"
-            android:id="@+id/vehicle_registration_number"
+            android:id="@+id/vehicle_registration_number_VehicleDetailsForRider"
             android:textStyle="bold"
             android:layout_marginTop="10dp"
             android:textSize="15sp"
             android:layout_marginLeft="20dp"/>
-        <Button
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Call"
-            android:layout_toRightOf="@+id/start_trip"
-            android:layout_below="@+id/ride_to_view"
+            android:text="Fare"
+            android:layout_toRightOf="@+id/start_trip_VehicleDetailsForRider"
+            android:layout_below="@+id/ride_with_VehicleDetailsForRider"
+            android:background="@drawable/white_onclick_grey"
+            android:backgroundTint="@color/quantum_yellow"
+            android:id="@+id/fare_rider"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Free Ride"
+            android:layout_toRightOf="@+id/vehicle_registration_number_VehicleDetailsForRider"
+            android:layout_below="@+id/otpTextView_VehicleDetailsForRider"
+            android:background="@drawable/white_onclick_grey"
+            android:backgroundTint="@color/quantum_yellow100"
+            android:id="@+id/fare_value_rider"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            android:textSize="15sp"
+            android:layout_marginLeft="20dp"/>
+
+        <Button
+            android:id="@+id/call_him_VehicleDetailsForRider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ride_to_view_VehicleDetailsForRider"
+            android:layout_marginLeft="101dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="5dp"
+            android:layout_toRightOf="@+id/start_trip_VehicleDetailsForRider"
             android:background="@drawable/white_onclick_grey"
             android:backgroundTint="@color/colorPrimary"
-            android:id="@+id/call_him"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="45dp"
-            android:layout_marginRight="5dp"/>
+            android:text="Call" />
+
         <Button
+
+            android:id="@+id/chat_with_VehicleDetailsForRider"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/ride_with"
-            android:layout_toRightOf="@+id/call_him"
+            android:layout_below="@+id/ride_with_VehicleDetailsForRider"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@+id/call_him_VehicleDetailsForRider"
             android:background="@drawable/white_onclick_grey"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="17dp"
-            android:id="@+id/chat_with"
             android:backgroundTint="@color/common_google_signin_btn_tint"
-            android:text="Chat"/>
+            android:text="Chat" />
 
 
     </RelativeLayout>

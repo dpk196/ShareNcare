@@ -6,35 +6,22 @@ public class FCMData {
     private String toUserId;
     private String data_type;
     private String otp;
+    private String message;
 
-    public FCMData(String title, String fromUserId, String toUserId, String data_type, String otp) {
+    public FCMData(String title, String fromUserId, String toUserId, String data_type, String otp, String message) {
         this.title = title;
         this.fromUserId = fromUserId;
         this.toUserId = toUserId;
         this.data_type = data_type;
         this.otp = otp;
+        this.message = message;
     }
 
     public FCMData() {
     }
 
-    @Override
-    public String toString() {
-        return "FCMData{" +
-                "title='" + title + '\'' +
-                ", fromUserId='" + fromUserId + '\'' +
-                ", toUserId='" + toUserId + '\'' +
-                ", data_type='" + data_type + '\'' +
-                ", otp='" + otp + '\'' +
-                '}';
-    }
-
-    public String getOtp() {
-        return otp;
-    }
-
-    public void setOtp(String otp) {
-        this.otp = otp;
+    public String getMessage() {
+        return message;
     }
 
     public String getTitle() {
@@ -43,14 +30,6 @@ public class FCMData {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getData_type() {
-        return data_type;
-    }
-
-    public void setData_type(String data_type) {
-        this.data_type = data_type;
     }
 
     public String getFromUserId() {
@@ -67,5 +46,37 @@ public class FCMData {
 
     public void setToUserId(String toUserId) {
         this.toUserId = toUserId;
+    }
+
+    public String getData_type() {
+        return data_type;
+    }
+
+    public void setData_type(String data_type) {
+        this.data_type = data_type;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    @Override
+    public String toString() {
+        return "FCMData{" +
+                "title='" + title + '\'' +
+                ", fromUserId='" + fromUserId + '\'' +
+                ", toUserId='" + toUserId + '\'' +
+                ", data_type='" + data_type + '\'' +
+                ", otp='" + otp + '\'' +
+                ", message='" + message + '\'' +
+                '}';
     }
 }

@@ -13,9 +13,11 @@ import android.widget.Toast;
 
 import com.example.sharencare.Models.FCMData;
 import com.example.sharencare.Models.FirebaseCloudMessage;
+import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
 import com.example.sharencare.ui.MainActivity;
 import com.example.sharencare.Interfaces.FCM;
+import com.example.sharencare.ui.TripDetailsRider;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
@@ -61,7 +63,7 @@ public class SearchedRidesRecyclerViewAdapter extends RecyclerView.Adapter<Searc
                 try {
                     Log.d(TAG, "onClick: UserId:"+userIDS.get(i).toString());
                     Log.d(TAG, "onClick: Token:"+tokenList.get(i).toString());
-                    sendRequest(tokenList.get(i),userIDS.get(i));
+                    sendRequest(tokenList.get(i),userIDS.get(i), TripDetailsRider.mCollectionTrips.get(i));
                     Toast.makeText(mContext, "Please wait for 2-3 minutes for response", Toast.LENGTH_SHORT).show();
                 }catch(Exception e){
                     Log.d(TAG, "onClick: Something went wrong please try again");
@@ -88,7 +90,7 @@ public class SearchedRidesRecyclerViewAdapter extends RecyclerView.Adapter<Searc
       }
   }
 
-  private  void sendRequest(String token,String userId){
+  private  void sendRequest(String token, String userId, TripDetail trip){
       Log.d(TAG, "sendRequest: Sending request to user:"+userId);
       Log.d(TAG, "sendRequest: Sending request for the token:"+token);
 
@@ -109,6 +111,8 @@ public class SearchedRidesRecyclerViewAdapter extends RecyclerView.Adapter<Searc
       data.setFromUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
       data.setData_type("data_type_ride_request");
       data.setTitle("Rider found");
+
+      data.setMessage(MainActivity.currentUser.getUsername()+" "+"wants to ride with you");
       FirebaseCloudMessage firebaseCloudMessage =new FirebaseCloudMessage();
       firebaseCloudMessage.setData(data);
       firebaseCloudMessage.setTo(token);

@@ -110,14 +110,6 @@ public class SearchForRideLater   extends AsyncTask<Void ,Void, ArrayList<String
 
     @Override
     protected void onPostExecute(ArrayList<String> strings) {
-        if(strings.size()>0){
-            for(String id:strings){
-                Log.d(TAG, "onPostExecute: Userids of the Drivers:"+id+" Size:"+strings.size());
-            }
-            reference.get().matchedLaterOnTrips(strings);
-        }else {
-            Log.d(TAG, "onPostExecute: .....No rides Found...");
-        }
-
+        reference.get().matchedLaterOnTrips(strings);
     }
 }

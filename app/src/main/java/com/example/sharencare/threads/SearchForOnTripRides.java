@@ -49,6 +49,7 @@ public class SearchForOnTripRides extends AsyncTask<Void ,Void, ArrayList<UserLo
     ArrayList<String> driverUserIDs = new ArrayList<>();
     ArrayList<UserLocation> locations = new ArrayList<>();
     ArrayList<UserLocation> matchedDriverLocations=new ArrayList<>();
+    private ArrayList<TripDetail> tripsMatched=new ArrayList<>();
     int count = 0;
 
 
@@ -89,31 +90,20 @@ public class SearchForOnTripRides extends AsyncTask<Void ,Void, ArrayList<UserLo
                             if (!trip.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                                 tripFromFireStore.add(trip);
                                 driverUserIDs.add(trip.getUser_id());
-                                Log.d(TAG, "onComplete: UserId from UserLocation:"+trip.getUser_id());
-                                Log.d(TAG, "onComplete: UserId of  Current User:"+FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                Log.d(TAG, "onComplete: UserId from UserLocation:" + trip.getUser_id());
+                                Log.d(TAG, "onComplete: UserId of  Current User:" + FirebaseAuth.getInstance().getCurrentUser().getUid());
                             }
                         }
-
-                        onTripFlag = true;
-                    } else {
-                        Log.d(TAG, "onComplete: Result is empty");
-                        onTripFlag = true;
                     }
-                } else {
-                    onTripFlag = true;
-                    Log.d(TAG, "onComplete: Query Unsuccesfull");
+
                 }
+                onTripFlag=true;
             }
         });
         while (onTripFlag == false) {
             Log.d(TAG, "searchForOnTripRides: Still searching for rides");
         }
-        if (tripFromFireStore.size() > 0) {
-            Log.d(TAG, "searchForOnTripRides:Search Completed" + tripFromFireStore.get(0).toString());
-        } else {
-            Log.d(TAG, "searchForOnTripRides: No Trips Foundd......");
-        }
-        findDriversLocation(driverUserIDs);
+        findDriversLocation(driverUserIDs,tripFromFireStore);
     }
 
     private void getLastKnownLocation() {
@@ -133,7 +123,7 @@ public class SearchForOnTripRides extends AsyncTask<Void ,Void, ArrayList<UserLo
         });
     }
 
-    private void findDriversLocation(ArrayList<String> userIds) {
+    private void findDriversLocation(ArrayList<String> userIds,ArrayList<TripDetail> trips) {
         onTripFlag = false;
 
 
@@ -186,6 +176,11 @@ public class SearchForOnTripRides extends AsyncTask<Void ,Void, ArrayList<UserLo
                  LatLng latLng=new LatLng(location.getGeoPoint().getLatitude(),location.getGeoPoint().getLongitude());
                 Log.d(TAG, "onPostExecute: "+bounds.getCenter());
                  if(bounds.contains(latLng)){
+                     for(TripDetail trip :tripFromFireStore){
+                         if(trip.getUser_id().equals(location.getUser_id())){
+                             tripsMatched.add(trip);
+                         }
+                     }
                      matchedDriverLocations.add(location);
                      Log.d(TAG, "onPostExecute: Driver currently near you"+location.toString());
                  }else{
@@ -194,12 +189,13 @@ public class SearchForOnTripRides extends AsyncTask<Void ,Void, ArrayList<UserLo
             }
         }
         Log.d(TAG, "onPostExecute: matchedDriverLocations size before sending"+matchedDriverLocations.size());
-        searchForRidesInterface.get().matchedOnTripRides(matchedDriverLocations);
+        searchForRidesInterface.get().matchedOnTripRides(matchedDriverLocations,tripsMatched);
     }
 
     @Override
     protected void onPreExecute() {
         tripFromFireStore.clear();
+        tripsMatched.clear();
         driverUserIDs.clear();
         locations.clear();
         matchedDriverLocations.clear();

@@ -32,22 +32,27 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import static com.example.sharencare.utils.StaticPoolClass.currentUserDetails;
+import static com.example.sharencare.utils.StaticPoolClass.currentUserLocation;
+import static com.example.sharencare.utils.StaticPoolClass.otherUserDetails;
+import static com.example.sharencare.utils.StaticPoolClass.otherUserLocation;
+import static com.example.sharencare.utils.StaticPoolClass.recevied_otp;
+import static com.example.sharencare.utils.StaticPoolClass.rideAcceptedFlag;
+import static com.example.sharencare.utils.StaticPoolClass.tripDetails;
 import static com.example.sharencare.utils.NotifactionChannel.CHANNEL_Id;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService implements UserDetailsOfMatchedTripInterface, TripDetailsOfOnTripMatchedTripInterface, UserCurrentLocationFromFirestoreInterface {
     private static final String TAG = "MyFirebaseMessagingServ";
     private static final int BROADCAST_NOTIFICATION_ID = 1;
-    private String notificationData="";
-    private  String title="";
-    private  String fromUserId="";
-    private String  myUserId="";
-    private String  data_type;
-    public static User userRiderDetailsFromMessagingService;
-    public static TripDetail tripFromMessagingService;
-    public  static UserLocation userLocationFromMessagingService;
-    private  String message;
-    private  Intent notifyIntent;
-    public static String otp;
+    private String notificationData = "";
+    private String title = "";
+    private String fromUserId = "";
+    private String myUserId = "";
+    private String data_type;
+    private String message;
+    private Intent notifyIntent;
+    private  boolean currentUserDetailsFlag=false,otherUserDetailsFlag=false,otherUserlocationFlag=false,currentUserlocationFlag=false;
+
 
     @Override
     public void onDeletedMessages() {
@@ -57,50 +62,56 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-
+       
         try {
-            notificationData=remoteMessage.getData().toString();
+            
+            notificationData = remoteMessage.getData().toString();
+            Log.d(TAG, "onMessageReceived: "+notificationData);
+            data_type = remoteMessage.getData().get(getString(R.string.data_type));
             title = remoteMessage.getData().get(getString(R.string.data_title));
-            fromUserId= remoteMessage.getData().get(getString(R.string.fromUserId));
-            myUserId= remoteMessage.getData().get(getString(R.string.toUserId));
-            data_type=remoteMessage.getData().get(getString(R.string.data_type));
-            if(data_type.equals("data_type_ride_request")) {
+            fromUserId = remoteMessage.getData().get(getString(R.string.fromUserId));
+            myUserId = remoteMessage.getData().get(getString(R.string.toUserId));
+            message =remoteMessage.getData().get("message");
+            
+            
+            if (data_type.equals("data_type_ride_request")) {
+                notifyIntent = new Intent(this, RidesFoundShowOnMapForDriver.class);
                 Log.d(TAG, "onMessageReceived: A rider Request");
-                initRiderRequestThreads(fromUserId, myUserId);
-                message="wants to ride with you";
-                notifyIntent= new Intent(this, RidesFoundShowOnMapForDriver.class);
+                Log.d(TAG, "onMessageReceived: A rider Request:" + notifyIntent.toString());
+                initThreads(fromUserId, myUserId);
             }
 
-            if(data_type.equals("data_type_ride_accepted")){
+            if (data_type.equals("data_type_ride_accepted")) {
+                notifyIntent = new Intent(this, DriveFoundShowOnMapForRider.class);
                 Log.d(TAG, "onMessageReceived: Trip accepted");
-                otp=remoteMessage.getData().get(getString(R.string.otp));
-                initRiderRequestThreads(fromUserId, myUserId);
-                message="accepted your request";
-                Log.d(TAG, "onMessageReceived: otp:"+otp);
-                notifyIntent= new Intent(this, DriveFoundShowOnMapForRider.class);
+                recevied_otp = remoteMessage.getData().get(getString(R.string.otp));
+                initThreads(fromUserId, myUserId);
+                Log.d(TAG, "onMessageReceived: otp:" + recevied_otp);
+                notifyIntent = new Intent(this, DriveFoundShowOnMapForRider.class);
+                Log.d(TAG, "onMessageReceived:A driver Ride accepted " + notifyIntent.toString());
 
             }
-            if(data_type.equals("data_type_ride_rejected")){
+            if (data_type.equals("data_type_ride_rejected")) {
                 Log.d(TAG, "onMessageReceived: Trip Rejected");
-                sendRejectedBroadcastNotification(title, myUserId);
-                message="can't ride with you";
+                sendRejectedBroadcastNotification(title, message);
+                message = "can't ride with you";
             }
 
-        }catch (NullPointerException e){
-            Log.d(TAG, "onMessageReceived: Null pointer"+e.getMessage());
+        } catch (NullPointerException e) {
+            Log.d(TAG, "onMessageReceived: Null pointer" + e.getMessage());
         }
-        Log.d(TAG, "onMessageReceived: Data:"+notificationData);
+        Log.d(TAG, "onMessageReceived: Data:" + notificationData);
 
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void sendBroadcastNotification(String title, String message){
+    private void sendBroadcastNotification(String title, String message) {
         Log.d(TAG, "sendBroadcastNotification: building a  notification");
 
 
         // Instantiate a Builder object.
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,CHANNEL_Id);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_Id);
         // Creates an Intent for the Activity
 
 
@@ -133,14 +144,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
 
     }
 
-    private  void initRiderRequestThreads(String fromUserID,String myUserID){
+    private void initThreads(String fromUserID, String myUserID) {
         Log.d(TAG, "initThreads: called");
-        UserDetailsOfMatchedTrip userDetailsOfMatchedTrip=new UserDetailsOfMatchedTrip(fromUserID,this,this);
-        TripDetailsOfOnTripMatchedTrip tripDetailsOfOnTripMatchedTrip=new TripDetailsOfOnTripMatchedTrip(myUserID,this,this);
-        UserCurrentLocationFromFireStore location=new UserCurrentLocationFromFireStore(fromUserID,this,this);
-        location.execute();
+        UserDetailsOfMatchedTrip otherUserDetailsOfMatchedTrip = new UserDetailsOfMatchedTrip(fromUserID, this, this);
+        otherUserDetailsOfMatchedTrip.execute();
+        //...............
+        UserDetailsOfMatchedTrip currentUserDetailsOfMatchedTrip = new UserDetailsOfMatchedTrip(fromUserID, this, this);
+        currentUserDetailsOfMatchedTrip.execute();
+        //...............
+        UserCurrentLocationFromFireStore otherUserlocation = new UserCurrentLocationFromFireStore(fromUserID, this, this);
+        otherUserlocation.execute();
+        //.........
+        UserCurrentLocationFromFireStore currentUserlocation = new UserCurrentLocationFromFireStore(myUserID, this, this);
+        currentUserlocation.execute();
+        //.....
+        while(currentUserDetailsFlag!=true&&otherUserDetailsFlag!=true&&otherUserlocationFlag!=true&&currentUserlocationFlag!=true)
+        {
+            Log.d(TAG, "initThreads: Getting otherUserDetailsOfMatchedTrip currentUserDetailsOfMatchedTrip otherUserlocation currentUserlocation ");
+        }
+        TripDetailsOfOnTripMatchedTrip tripDetailsOfOnTripMatchedTrip = new TripDetailsOfOnTripMatchedTrip(myUserID, this, this);
         tripDetailsOfOnTripMatchedTrip.execute();
-        userDetailsOfMatchedTrip.execute();
+        
+        
 
     }
 
@@ -148,12 +173,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
     private void sendRejectedBroadcastNotification(String title, String message) {
 
         Log.d(TAG, "sendBroadcastNotification: building a  notification");
-
-
         // Instantiate a Builder object.
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_Id);
         // Creates an Intent for the Activity
-
         Intent notifyIntent = new Intent(this, RidesFoundShowOnMapForDriver.class);
         // Sets the Activity to start in a new, empty task
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -164,21 +186,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
                         0, new Intent(),
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
-
-
         //add properties to the builder
         builder.setSmallIcon(R.drawable.applogo)
                 .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
                         R.drawable.applogo))
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setContentTitle(title)
+                .setContentText(message)
                 .setColor(getColor(R.color.blue4))
                 .setAutoCancel(true);
-
         builder.setContentIntent(notifyPendingIntent);
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
         mNotificationManager.notify(BROADCAST_NOTIFICATION_ID, builder.build());
 
     }
@@ -187,44 +206,60 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void userDetailsReceived(User user) {
-        Log.d(TAG, "userDetailsReceived: User Details Received of Rider:"+user.getUsername());
-        if(user!=null) {
-            userRiderDetailsFromMessagingService =user;
-            sendBroadcastNotification(title, user.getUsername() + " "+message);
-        }else{
-            Log.d(TAG, "userDetailsReceived: User Object is Empty cannot send notification");
+        Log.d(TAG, "userDetailsReceived: User Details Received of Rider:" + user.getUsername());
+        if (user.getUser_id().equals(fromUserId)) {
+            otherUserDetails = user;
+            otherUserDetailsFlag=true;
+        }
+        if(user.getUser_id().equals(myUserId)){
+            currentUserDetails=user;
+            currentUserlocationFlag=true;
         }
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void getOnTripDetail(TripDetail tripDetail) {
         Log.d(TAG, "getOnTripDetail: Called");
-        if(tripDetail!=null){
-            tripFromMessagingService =tripDetail;
-            Log.d(TAG, "getOnTripDetail: Received:"+ tripFromMessagingService.toString());
-        }else {
+        if (tripDetail != null) {
+            tripDetails = tripDetail;
+            Log.d(TAG, "getOnTripDetail: Received:" + tripDetails.toString());
+            sendBroadcastNotification(title, message);
+        } else {
             Log.d(TAG, "getOnTripDetail: Something went wrong");
         }
     }
+
     @Override
     public void userCurrentLocation(UserLocation location) {
         Log.d(TAG, "userCurrentLocation: Called ");
-        userLocationFromMessagingService=location;
+        if(location.getUser_id().equals(fromUserId)){
+            otherUserLocation= location;
+            otherUserlocationFlag=true;
+            Log.d(TAG, "userCurrentLocation: OtherUserLocation"+location.toString());
+        }
+        if(location.getUser_id().equals(myUserId)){
+            currentUserLocation=location;
+            currentUserlocationFlag=true;
+            Log.d(TAG, "userCurrentLocation: CurrentUserLocation:"+location.toString());
+        }
+
+
 
     }
 
 
-
-   //.............................................................................
+    //.............................................................................
 
     @Override
     public void onNewToken(String s) {
         sendRegistrationTokenToServer(s);
     }
+
     private void sendRegistrationTokenToServer(String token) {
 
-        FirebaseFirestore db=FirebaseFirestore.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         try {
             DocumentReference reference = db.collection(getString(R.string.collection_users)).document(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
@@ -236,10 +271,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
                     }
                 }
             });
-        }catch (Exception e){
-            Log.d(TAG, "sendRegistrationTokenToServer: User is not signed in Token cannt be refreshed "+e.getMessage());
+        } catch (Exception e) {
+            Log.d(TAG, "sendRegistrationTokenToServer: User is not signed in Token cannt be refreshed " + e.getMessage());
         }
 
+
+    }
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        rideAcceptedFlag =false;
 
     }
 }

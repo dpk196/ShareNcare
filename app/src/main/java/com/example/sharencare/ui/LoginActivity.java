@@ -88,6 +88,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             if(task.isSuccessful()){
                                 Log.d(TAG, "onComplete: successfully set the user client.");
                                 User user = task.getResult().toObject(User.class);
+                                MainActivity.currentUser=user;
                                 try{
                                     ((UserClient)(getApplicationContext())).setUser(user);
                                 }

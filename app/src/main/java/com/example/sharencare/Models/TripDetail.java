@@ -80,7 +80,13 @@ public class TripDetail implements Parcelable {
         this.timestamp = timestamp;
     }
 
-    public TripDetail(String start_time, String status, String trip_source, String trip_destination, String user_id, String trip_duration, String trip_fare, String trip_distance, String trip_date, String riderOrDriver, Date timestamp) {
+    public TripDetail(String start_time,
+                      String status, String trip_source,
+                      String trip_destination,
+                      String user_id, String trip_duration,
+                      String trip_fare, String trip_distance,
+                      String trip_date, String riderOrDriver,
+                      Date timestamp) {
         this.start_time = start_time;
         this.status = status;
         this.trip_source = trip_source;

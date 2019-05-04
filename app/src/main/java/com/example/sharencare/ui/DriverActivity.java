@@ -47,7 +47,10 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     private String tripFrom,tripTo;
     private  static  String riderOrDriver="Driver";
     ArrayList<TripDetail> tripDetail=new ArrayList<>();
+    private  String tti,tfi;
     Intent intent;
+    public static  DirectionsResult mDirectionsResult;
+    public static ArrayList<TripDetail> collectionTrips;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +90,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
             @Override
             public void onPlaceSelected(Place place) {
                 //TODO: Get info about the selected place.
-                intent.putExtra("source",place.getName());
+                tfi=place.getName();
                  tripFrom =place.getName()+" "+"Kolkata";
                 Log.d(TAG, "onPlaceSelected: Trip From:"+tripFrom);
             }
@@ -121,7 +124,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                intent.putExtra("destination",place.getName());
+                 tti=place.getName();
                 tripTo=place.getName()+" "+"Kolkata";
                 Log.d(TAG, "onPlaceSelected: Trip to:"+tripTo);
                 showToActivityDialog();
@@ -154,44 +157,22 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     }
-    private void tripDetails() {
 
-        TripDetail tripDetail=new TripDetail();
-        Bundle bundle=new Bundle();
-        tripDetail.setTrip_source(sourceText);
-        tripDetail.setRiderOrDriver(riderOrDriver);
-        tripDetail.setTrip_destination(destinationText);
-        Log.d(TAG, "tripDetails: "+sourceText);
-        Log.d(TAG, "tripDetails: "+destinationText);
-        tripDetail.setStatus("Yet to start");
-        Intent intent  =new Intent(DriverActivity.this, TripDetailsDriver.class);
-        LatLng sourceLatLng=new LatLng(sourceLatlng.latitude,sourceLatlng.longitude);
-        LatLng destinationLatLng=new LatLng(destinationLatlng.latitude,destinationLatlng.longitude);
-        try {
-            intent.putExtra("destinationText",destinationText);
-            intent.putExtra("sourceText",sourceText);
-            intent.putExtra("DirectionsResults",result);
-            bundle.putParcelable("SourceGeoPoint",sourceLatLng);
-            bundle.putParcelable("DestinationGeoPoint",destinationLatLng);
-            intent.putExtra("bundle", bundle);
-            startActivity(intent);
-        }catch (Exception e){
-            Log.d(TAG, "tripDetails: "+e.getMessage());
-        }
-    }
 
 
     @Override
     public void onDirectionsRetrived(DirectionsResult result) {
         try {
+            mDirectionsResult=result;
             String duration= result.routes[0].legs[0].duration.toString();
             String distance=result.routes[0].legs[0].distance.toString();
             Log.d(TAG, "onDirectionsRetrived: routes: " + result.routes[0].toString());
             Log.d(TAG, "onDirectionsRetrived: duration: " + result.routes[0].legs[0].duration);
             Log.d(TAG, "onDirectionsRetrived: distance: " + result.routes[0].legs[0].distance);
-            intent.putExtra("distance",distance);
-            intent.putExtra("duration",duration);
-            TripDetailsDriver.tripDetail=null;
+            intent.putExtra("tripFrom",tfi);
+            intent.putExtra("tripTo",tti);
+            intent.putExtra("distance",result.routes[0].legs[0].distance.toString());
+            intent.putExtra("duration",result.routes[0].legs[0].duration.toString());
             hideToActivityDialog();
             startActivity(intent);
         } catch (Exception e) {
@@ -213,6 +194,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     @Override
     public void userTripsCollectionFromFirestore(ArrayList<TripDetail> result) {
         Log.d(TAG, "userTripsCollectionFromFirestore: Called");
+        collectionTrips=result;
         for(TripDetail trip : result ){
             Log.d(TAG, "userTripsCollectionFromFirestore: "+trip.toString());
             source.add(trip.getTrip_source());

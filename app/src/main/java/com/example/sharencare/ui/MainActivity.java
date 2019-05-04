@@ -20,25 +20,27 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.sharencare.Interfaces.UserDetailsOfMatchedTripInterface;
 import com.example.sharencare.Models.User;
 import com.example.sharencare.R;
+import com.example.sharencare.threads.UserDetailsOfMatchedTrip;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
+
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
+
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
-public class MainActivity extends AppCompatActivity {
+import static com.example.sharencare.ui.HomeActivity.user_name;
+
+public class MainActivity extends AppCompatActivity implements UserDetailsOfMatchedTripInterface {
     private ProgressBar mProgressBar;
     private static final String TAG = "MainActivity";
     private FirebaseAuth mAuth;
@@ -63,45 +65,37 @@ public class MainActivity extends AppCompatActivity {
         getServerKey();
 
     }
+
+    private void getCurrrentUser() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null){
+            if (!user.getUid().equals("")) {
+                UserDetailsOfMatchedTrip details =new UserDetailsOfMatchedTrip(FirebaseAuth.getInstance().getCurrentUser().getUid(),this,this);
+                details.execute();
+            }
+        }else{
+            navigateToNextActivity();
+        }
+
+    }
+
+
     private  void navigateToNextActivity(){
+        Log.d(TAG, "navigateToNextActivity: Called");
         final FirebaseUser user = mAuth.getCurrentUser();
+
         try{
             if(!user.getUid().equals("")){
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                                .setTimestampsInSnapshotsEnabled(true)
-                                .build();
-                        mDb.setFirestoreSettings(settings);
-                        DocumentReference userRef = mDb.collection(getString(R.string.collection_users)).document(user.getUid());
-                        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if(task.isSuccessful()){
-                                        try {
-                                            Log.d(TAG, "onComplete: successfully set the user client.");
-                                            currentUser = task.getResult().toObject(User.class);
-                                            Log.d(TAG, "onCreate: Redirecting to Home Activity" + currentUser.toString());
-                                        } catch (Exception e) {
-                                            Log.d(TAG, "onComplete: " + e.getMessage());
-                                            Log.d(TAG, "onComplete: Something went wrong please try again");
-                                            Log.d(TAG, "onComplete: Redirecting to Login activity");
-                                            Intent intent=new Intent(MainActivity.this,LoginActivity.class);
-                                            Log.d(TAG, "onCreate: Redirecting to Register Activity");
-                                            startActivity(intent);
-                                            finish();
-                                        }
-
-                                }
-                            }
-                        });
                         Intent i=new Intent(MainActivity.this,HomeActivity.class);
                         i.putExtra(getString(R.string.user_obj),currentUser);
+                        hideDialog();
                         startActivity(i);
                         finish();
                     }
-                }, 1000);
+                }, 500);
 
             }
         } catch (Exception e){
@@ -112,10 +106,11 @@ public class MainActivity extends AppCompatActivity {
 
                     Intent intent=new Intent(MainActivity.this,LoginActivity.class);
                     Log.d(TAG, "onCreate: Redirecting to Register Activity");
+                    hideDialog();
                     startActivity(intent);
                     finish();
                 }
-            }, 5000);
+            }, 4000);
         }
     }
 
@@ -165,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
-            navigateToNextActivity();
+            getCurrrentUser();
 
         } else {
             ActivityCompat.requestPermissions(this,
@@ -218,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
                 if(mLocationPermissionGranted){
-                   navigateToNextActivity();
+                   getCurrrentUser();
                 }
                 else{
                     getLocationPermission();
@@ -232,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if(checkMapServices()){
             if(mLocationPermissionGranted){
-               navigateToNextActivity();
+               getCurrrentUser();
             }else
                 getLocationPermission();
         }
@@ -287,8 +282,13 @@ public class MainActivity extends AppCompatActivity {
        });
 
     }
+    @Override
+    public void userDetailsReceived(User user) {
+        Log.d(TAG, "userDetailsReceived: Current User:"+user);
+        currentUser=user;
 
+        Log.d(TAG, "userDetailsReceived: Navigating to Next Activity");
+        navigateToNextActivity();
 
-
-
+    }
 }

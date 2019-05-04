@@ -2,28 +2,26 @@ package com.example.sharencare.ui;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
-import com.example.sharencare.Fragments.OnTripFragment;
-import com.example.sharencare.Fragments.OtpCallChatFragment;
-import com.example.sharencare.Fragments.RideOptionsFragment;
-import com.example.sharencare.Interfaces.FCM;
+import com.example.sharencare.Fragments.FirstDriverFragment;
+import com.example.sharencare.Fragments.SectionsStatePagerAdapter;
 import com.example.sharencare.Models.ClusterMarker;
-import com.example.sharencare.Models.FCMData;
-import com.example.sharencare.Models.FirebaseCloudMessage;
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.Models.User;
 import com.example.sharencare.Models.UserLocation;
 import com.example.sharencare.R;
+import com.example.sharencare.services.MyFirebaseMessagingService;
 import com.example.sharencare.utils.MyClusterManagerRenderer;
+import com.example.sharencare.utils.StaticPoolClass;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -38,26 +36,12 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.maps.android.clustering.ClusterManager;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-import static com.example.sharencare.Adapters.SearchedRidesRecyclerViewAdapter.BASE_URL;
-import static com.example.sharencare.services.MyFirebaseMessagingService.tripFromMessagingService;
-import static com.example.sharencare.services.MyFirebaseMessagingService.userLocationFromMessagingService;
-import static com.example.sharencare.services.MyFirebaseMessagingService.userRiderDetailsFromMessagingService;
-import static com.example.sharencare.ui.HomeActivity.userLocationFromHomeScreen;
+import static com.example.sharencare.utils.StaticPoolClass.currentUserLocation;
+import static com.example.sharencare.utils.StaticPoolClass.rideAcceptedFlag;
 
 
-public class RidesFoundShowOnMapForDriver extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener, RideOptionsFragment.OnFragmentInteractionListener, OnTripFragment.OnFragmentInteractionListener, OtpCallChatFragment.OnFragmentInteractionListener {
+public class RidesFoundShowOnMapForDriver extends AppCompatActivity implements OnMapReadyCallback {
     private static final String TAG = "RidesFoundShowOnMap";
     private MapView mMapView;
     private GoogleMap mMap;
@@ -77,27 +61,72 @@ public class RidesFoundShowOnMapForDriver extends FragmentActivity implements On
     private User currentUserDetails;
     private String otp="";
     private TextView tripTo;
+    private SectionsStatePagerAdapter mSectionsStatePagerAdapter;
+    private ViewPager mViewPager;
+    SectionsStatePagerAdapter adapter=new SectionsStatePagerAdapter(getSupportFragmentManager());
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rides_driver_found_show_on_map);
-
+        setContentView(R.layout.activity_rides_found_show_on_map_for_driver);
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
         }
-        mMapView = (MapView) findViewById(R.id.user_list_map);
+        mMapView =  findViewById(R.id.user_list_map);
         mMapView.onCreate(mapViewBundle);
         mMapView.getMapAsync(this);
-        findViewById(R.id.accept_ride_fragment_ride_options).setOnClickListener(this);
-        findViewById(R.id.reject_ride_fragment_ride_options).setOnClickListener(this);
-        findViewById(R.id.ride_details_fragment_ride_options).setOnClickListener(this);
-        tripTo=findViewById(R.id.ride_to_fragment_ride_options);
+        mViewPager=findViewById(R.id.driver_fragment_container);
         initializeVars();
+        if(rideAcceptedFlag==false)
+                 setUpViewPager();
 
     }
+
+
+   private void setUpViewPager(){
+         rideAcceptedFlag=true;
+        adapter.addFragment(new FirstDriverFragment(),"FirstDriverFragment");
+        mViewPager.setAdapter(adapter);
+   }
+   public  void setViewPager(int fragmentNumber, Fragment fragment){
+        adapter.addFragment(fragment,"SecondDriverFragment");
+        mViewPager.setAdapter(adapter);
+        mViewPager.setCurrentItem(fragmentNumber);
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public void onMapReady(GoogleMap map) {
@@ -124,17 +153,17 @@ public class RidesFoundShowOnMapForDriver extends FragmentActivity implements On
 
 
     private  void initializeVars() {
-        myLocation = userLocationFromHomeScreen;
-        otherUserLocation = userLocationFromMessagingService;
-        tripDetails = tripFromMessagingService;
-        userOtherUserDetails=userRiderDetailsFromMessagingService;
-        currentUserDetails=MainActivity.currentUser;
+        myLocation = currentUserLocation;
+        otherUserLocation = StaticPoolClass.otherUserLocation;
+        tripDetails = StaticPoolClass.tripDetails;
+        userOtherUserDetails=StaticPoolClass.otherUserDetails;
+        currentUserDetails=StaticPoolClass.currentUserDetails;
         Log.d(TAG, "initializeVars: MyLocation:" + myLocation.toString());
         Log.d(TAG, "initializeVars: OtherUserLocation:" + otherUserLocation.toString());
         Log.d(TAG, "initializeVars: TripDetails:" + tripDetails.toString());
         Log.d(TAG, "initializeVars: Other User Details:"+userOtherUserDetails);
         Log.d(TAG, "initializeVars: current User Details:"+currentUserDetails);
-        tripTo.setText(tripDetails.getTrip_destination());
+
 
     }
 
@@ -194,15 +223,15 @@ public class RidesFoundShowOnMapForDriver extends FragmentActivity implements On
         //total view of the map
         try {
             Log.d(TAG, "setCameraView: Setting Camera view to:"+myLocation.getGeoPoint().toString());
-            double bottomBoundary = myLocation.getGeoPoint().getLatitude() -0.1;
-            double leftBoundary = myLocation.getGeoPoint().getLongitude() -0.1 ;
-            double topBoundary = myLocation.getGeoPoint().getLatitude() +0.1;
-            double rightBoundary =myLocation.getGeoPoint().getLongitude() +0.1 ;
+            double bottomBoundary = myLocation.getGeoPoint().getLatitude() -0.01;
+            double leftBoundary = myLocation.getGeoPoint().getLongitude() -0.01 ;
+            double topBoundary = myLocation.getGeoPoint().getLatitude() +0.01;
+            double rightBoundary =myLocation.getGeoPoint().getLongitude() +0.01 ;
             mLatLngBounds = new LatLngBounds(new LatLng(bottomBoundary, leftBoundary), new LatLng(topBoundary, rightBoundary));
             mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                 @Override
                 public void onMapLoaded() {
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mLatLngBounds,0));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mLatLngBounds,100));
                     setMarker();
                 }
             });
@@ -213,66 +242,10 @@ public class RidesFoundShowOnMapForDriver extends FragmentActivity implements On
     private void setMarker(){
         mMap.addMarker(new MarkerOptions().position(new LatLng(otherUserLocation.getGeoPoint().getLatitude(), otherUserLocation.getGeoPoint().getLongitude())).title("Marker"));
     }
-    @Override
-    public void onClick(View v) {
-        switch(v.getId()){
-            case R.id.accept_ride_fragment_ride_options:{
-                Random rand = new Random();
-                otp = String.format("%04d", rand.nextInt(10000));
-                Log.d(TAG, "onClick: Otp:"+otp);
-                sendRequest(userOtherUserDetails.getToken(),userOtherUserDetails.getUser_id(),"accepted your Request","data_type_ride_accepted",otp);
-                break;
-            }
-            case R.id.reject_ride_fragment_ride_options:{
-
-                sendRequest(userOtherUserDetails.getToken(),userOtherUserDetails.getUser_id(),"is unable to Ride with you","data_type_ride_rejected",otp);
-                break;
-            }
-        }
-
-    }
-    private  void sendRequest(String token,String userId,String  message,String data_type,String otp){
-        Log.d(TAG, "sendRequest: Sending request to user:"+userId);
-        Log.d(TAG, "sendRequest: Sending request for the token:"+token);
-
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        FCM fcmAPI=retrofit.create(FCM.class);
-        HashMap<String, String> headers=new HashMap<>();
-        //attaching the headers
-        headers.put("Content-Type","application/json");
-        headers.put("Authorization","key="+"AAAApCdkCU8:APA91bFfJApMQKhvYQS-R0P7R9eVcUgd7R2a6iwOe37zPQ5aD2YJY2OMMc6Yx5Utg2HkT9CB9HhKCUWvZkbD4aXBlQN5AJwsfSVfVVc52q-7-mCWuuOh9d4OamKhjuE1PmaP8Lek80w_");
-
-        //token
-        FCMData data=new FCMData();
-        data.setOtp(otp);
-        data.setToUserId(otherUserLocation.getUser_id());
-        data.setFromUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        data.setData_type(data_type);
-        data.setTitle(currentUserDetails.getUsername()+" "+message);
-        FirebaseCloudMessage firebaseCloudMessage =new FirebaseCloudMessage();
-        firebaseCloudMessage.setData(data);
-        firebaseCloudMessage.setTo(token);
-        Call<ResponseBody> call =fcmAPI.send(headers,firebaseCloudMessage);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Log.d(TAG, "onResponse: Server Response:"+response.toString());
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.d(TAG, "onFailure: Unable to send message:"+t.getMessage());
-
-            }
-        });
 
 
 
-    }
+
 
 
     @Override
@@ -315,8 +288,5 @@ public class RidesFoundShowOnMapForDriver extends FragmentActivity implements On
     }
 
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
 
-    }
 }

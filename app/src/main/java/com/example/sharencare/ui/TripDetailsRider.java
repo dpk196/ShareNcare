@@ -4,8 +4,12 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,8 +31,18 @@ import com.example.sharencare.threads.SearchForRideLater;
 import com.example.sharencare.utils.CalculateFare;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.common.collect.MapMaker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -38,69 +52,163 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.maps.internal.PolylineEncoding;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class TripDetailsRider extends AppCompatActivity implements View.OnClickListener, SearchForOnTripRidesInterface, SearchForLaterOnTripsInterface {
+import static com.example.sharencare.ui.MapsActivity.geoPoint;
+
+public class TripDetailsRider extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener,SearchForOnTripRidesInterface ,SearchForLaterOnTripsInterface{
     private static final String TAG = "TripDetailsRider";
-    TextView tripStartTime, tripDistance, tripDuration, tripFare, tripFrom, tripTo,startTripNow,startTripLater;
-    FirebaseAuth mAuth;
-    private FirebaseFirestore mDb;
+    private MapView mMapView;
+    private GoogleMap mGoogleMap;
+    private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
+    private LatLngBounds mLatLngBounds;
+    com.google.maps.model.LatLng startPoint ;
+    com.google.maps.model.LatLng endPoint;
     Intent intent;
-    public static TripDetail tripDetail;
-    Button tripSubmitButton;
     String source;
     String destination;
     String duration;
     String distance;
     static  String fare="";
+    private TextView tripDistance,tripDuration,tripFare;
+    private MarkerOptions markerSource;
+    private MarkerOptions markerDestination;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private static GeoPoint geoPoint;
+
     private ArrayList<TripDetail> tripFromFireStore=new ArrayList();
     private ProgressBar mProgressBar;
     private ArrayList<String > matchedUserIds=new ArrayList<>();
-    
+    public static ArrayList<TripDetail> mCollectionTrips;
 
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_details_rider);
-        tripDistance = findViewById(R.id.trip_distance);
-        tripDuration = findViewById(R.id.trip_duration);
-        tripFare = findViewById(R.id.trip_fare);
-        tripFrom = findViewById(R.id.trip_from);
-        tripTo = findViewById(R.id.trip_to);
-        startTripNow = findViewById(R.id.start_trip_button);
-        startTripNow.setOnClickListener(this::onClick);
-        startTripLater = findViewById(R.id.trip_confirm);
-        startTripLater.setOnClickListener(this);
-        mProgressBar=findViewById(R.id.trip_details_rider_progressBar);
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        mDb=FirebaseFirestore.getInstance();
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
+        }
+        mMapView =  findViewById(R.id.trip_view_on_map_rider);
+        mMapView.onCreate(mapViewBundle);
+        mMapView.getMapAsync(this);
         intent = getIntent();
-        getLastKnownLocation();
-        setTripDetailsView();
-    }
-    private void setTripDetailsView() {
-        tripDuration.setText(intent.getStringExtra("duration"));
-        tripFrom.setText(intent.getStringExtra("tripFrom"));
-        tripTo.setText(intent.getStringExtra("tripTo"));
-        tripDistance.setText(intent.getStringExtra("distance"));
-        tripFare.setText(CalculateFare.calculateFare(intent.getStringExtra("distance")));
+        findViewById(R.id.start_trip_now_button_tripDetails_rider).setOnClickListener(this);
+        findViewById(R.id.start_trip_later_tripDetails_rider).setOnClickListener(this);
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        mProgressBar=findViewById(R.id.trip_details_rider_progressBar);
+        gettingIntents();
+        setTextView();
+        getStartingEndingCoordinate(RiderActivity.mDirectionsResult);
+
     }
 
+    private void setTextView() {
+        tripDistance=findViewById(R.id.trip_distance_tripDetialsRider);
+        tripDuration=findViewById(R.id.trip_duration_tripDetialsRider);
+        tripFare=findViewById(R.id.trip_fare_tripDetialsRider);
+        tripDistance.setText(distance);
+        tripDuration.setText(duration);
+        tripFare.setText("Rs"+" "+fare);
+    }
+
+    private void gettingIntents() {
+        destination = intent.getStringExtra("tripTo");
+        source = intent.getStringExtra("tripFrom");
+        distance = intent.getStringExtra("distance");
+        duration=intent.getStringExtra("duration");
+        fare=CalculateFare.calculateFare(intent.getStringExtra("distance"));
+        Log.d(TAG, "gettingIntents: trip From" + source);
+        Log.d(TAG, "gettingIntents: trip to" + destination);
+        Log.d(TAG, "gettingIntents: distance"+distance);
+        Log.d(TAG, "gettingIntents: duration"+duration);
+        Log.d(TAG, "gettingIntents: Fare"+fare);
+    }
+
+    private void getStartingEndingCoordinate(final DirectionsResult result) {
+        for (DirectionsRoute route : result.routes) {
+            startPoint = route.legs[0].endLocation;
+            endPoint = route.legs[0].startLocation;
+            Log.d(TAG, "getStartingEndingCoordinate:Start:" + startPoint.toString());
+            Log.d(TAG, "getStartingEndingCoordinate: End:" + endPoint.toString());
+            Log.d(TAG, "getStartingEndingCoordinate: Start Adress and startLocation" + route.legs[0].startAddress+" location:"+route.legs[0].startLocation.toString());
+            Log.d(TAG, "getStartingEndingCoordinate: End: Adress and startLocation " + route.legs[0].endAddress+" location:"+route.legs[0].endLocation.toString());
+            double bottomBoundary = startPoint.lat -0.1;
+            double leftBoundary = startPoint.lng -0.1 ;
+            double topBoundary = endPoint.lat +0.1;
+            double rightBoundary= endPoint.lng +0.1 ;
+            mLatLngBounds = new LatLngBounds(new LatLng(bottomBoundary, leftBoundary), new LatLng(topBoundary, rightBoundary));
+            LatLng latlng_src=new LatLng(startPoint.lat,startPoint.lng);
+            LatLng latLng_dtn=new LatLng(endPoint.lat,endPoint.lng);
+            markerSource= new MarkerOptions().position(latlng_src).title(destination);
+            markerDestination=new MarkerOptions().position(latLng_dtn).title(source);
+            break;
+        }
+    }
+
+    private void addPolylinesToMap(final DirectionsResult result){
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "run: result routes: " + result.routes.length);
+
+                for(DirectionsRoute route: result.routes){
+                    Log.d(TAG, "run: leg: " + route.legs[0].toString());
+                    List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
+                    List<LatLng> newDecodedPath = new ArrayList<>();
+                    // This loops through all the LatLng coordinates of ONE polyline.
+                    for(com.google.maps.model.LatLng latLng: decodedPath){
+
+//                        Log.d(TAG, "run: latlng: " + latLng.toString());
+                        newDecodedPath.add(new LatLng(
+                                latLng.lat,
+                                latLng.lng));
+                    }
+                    Polyline polyline = mGoogleMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+                    polyline.setColor(ContextCompat.getColor(getApplicationContext(), R.color.blue1));
+                    polyline.setClickable(true);
+                    break;
+                }
+            }
+        });
+    }
+
+    private  void setCameraView(){
+        //total view of the map
+        try {
+
+            mGoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                @Override
+                public void onMapLoaded() {
+                    mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mLatLngBounds,10));
+
+                }
+            });
+        }catch (Exception e){
+            Log.d(TAG, "setCameraView: "+e.getMessage());
+        }
+    }
+    private  void setMapMarker(){
+        mGoogleMap.addMarker(markerDestination);
+        mGoogleMap.addMarker(markerSource);
+
+    }
     @Override
     public void onClick(View v) {
-
         switch (v.getId()){
-            case R.id.start_trip_button:{
-                showDialog();
+            case R.id.start_trip_now_button_tripDetails_rider:{
+                Log.d(TAG, "onClick: ");
                 initThreadOnTrip();
+                showDialog();
                 break;
             }
-            case R.id.trip_confirm:{
+            case R.id.start_trip_later_tripDetails_rider:{
                 showDialog();
                 initThreadTripLater();
                 break;
@@ -109,24 +217,25 @@ public class TripDetailsRider extends AppCompatActivity implements View.OnClickL
 
     }
 
-   
-
     private  void initThreadOnTrip(){
-        SearchForOnTripRides searchForOnTripRides =new SearchForOnTripRides(this,this,tripFrom.getText().toString(),tripTo.getText().toString());
+        SearchForOnTripRides searchForOnTripRides =new SearchForOnTripRides(this,this,source,destination);
         searchForOnTripRides.execute();
 
     }
+
+
     private void initThreadTripLater() {
         Log.d(TAG, "initThreadTripLater: called");
-        SearchForRideLater search=new SearchForRideLater(this,this,tripFrom.getText().toString(),tripTo.getText().toString());
+        SearchForRideLater search=new SearchForRideLater(this,this,source,destination);
         search.execute();
     }
-
     @Override
-    public void matchedOnTripRides(ArrayList<UserLocation> matchedRides) {
+    public void matchedOnTripRides(ArrayList<UserLocation> matchedRides,ArrayList<TripDetail> trips) {
+        mCollectionTrips=trips;
         Log.d(TAG, "matchedOnTripRides: matched userRides size"+matchedRides.size());
         matchedUserIds.clear();
         if(matchedRides.size()>0){
+
             for (UserLocation matchedLocation:matchedRides){
                 Log.d(TAG, "matchedOnTripRides: "+matchedLocation.toString());
                 matchedUserIds.add(matchedLocation.getUser_id());
@@ -138,11 +247,9 @@ public class TripDetailsRider extends AppCompatActivity implements View.OnClickL
         }else {
             hideDialog();
             Log.d(TAG, "matchedOnTripRides: No Matched Rides Retrived");
-            Toast.makeText(this, "No Rides Available to:"+tripTo.getText().toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No Rides Available to:"+destination, Toast.LENGTH_LONG).show();
         }
     }
-    private void showDialog(){mProgressBar.setVisibility(View.VISIBLE);}
-    private void hideDialog(){if(mProgressBar.getVisibility()==View.VISIBLE){mProgressBar.setVisibility(View.INVISIBLE);}}
 
 
     @Override
@@ -151,30 +258,99 @@ public class TripDetailsRider extends AppCompatActivity implements View.OnClickL
         if(userIds.size()>0){
             Intent intent =new Intent(TripDetailsRider.this,AvailableRides.class);
             intent.putExtra("matchedRides",userIds);
-            hideDialog();
+
             startActivity(intent);
         }else{
-            Toast.makeText(this, "No Rides Available to:"+tripTo.getText().toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No Rides Available to:"+destination, Toast.LENGTH_LONG).show();
         }
+        hideDialog();
     }
-    //.............Getting and storing user Last kNown Location...............
 
-    private void getLastKnownLocation() {
-        Log.d(TAG, "getLastKnownLocation: Getting user last Known Location");
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+
+
+    private void showDialog(){mProgressBar.setVisibility(View.VISIBLE);}
+    private void hideDialog(){if(mProgressBar.getVisibility()==View.VISIBLE){mProgressBar.setVisibility(View.INVISIBLE);}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mGoogleMap = googleMap;
+        setCameraView();
+        setMapMarker();
+        addPolylinesToMap(RiderActivity.mDirectionsResult);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Bundle mapViewBundle = outState.getBundle(MAPVIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAPVIEW_BUNDLE_KEY, mapViewBundle);
         }
-        mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                if(task.isSuccessful()){
-                    Location location=task.getResult();
-                    geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-                    UserLocation userLocation = new UserLocation(FirebaseAuth.getInstance().getCurrentUser().getUid(), null, geoPoint);
-                    Log.d(TAG, "onComplete: Location Coordinates:"+geoPoint.toString());
-                }
-            }
-        });
+        mMapView.onSaveInstanceState(mapViewBundle);
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMapView.onResume();
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mMapView.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mMapView.onStop();
+    }
+
+
+    @Override
+    protected void onPause() {
+        mMapView.onPause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mMapView.onDestroy();
+        super.onDestroy();
+
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
     }
 
 

@@ -15,6 +15,7 @@ import com.example.sharencare.Interfaces.TripDetailsOfOnTripMatchedTripInterface
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.Models.UserLocation;
 import com.example.sharencare.R;
+import com.example.sharencare.services.MyFirebaseMessagingService;
 import com.example.sharencare.threads.TripDetailsOfOnTripMatchedTrip;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -37,6 +38,12 @@ public class NotifactionChannel extends Application {
     public void onCreate() {
         super.onCreate();
         createNotificatioChannel();
+        try {
+            StaticPoolClass.rideAcceptedFlag =false;
+        }catch (Exception e){
+            Log.d(TAG, "onCreate: Error!!!!"+e.getMessage());
+        }
+
     }
     private void createNotificatioChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

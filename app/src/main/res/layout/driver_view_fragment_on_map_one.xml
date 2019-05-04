@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context=".Fragments.RideOptionsFragment">
+    android:layout_height="wrap_content">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/fragment_relative_layout_fragment_ride_options">
+        android:id="@+id/fragment_relative_layout_fragment_one_driver">
 
 
         <TextView
-            android:id="@+id/ride_to_view_fragment_ride_options"
+            android:autoSizeTextType="uniform"
+            android:textColor="@color/Black"
+            android:id="@+id/ride_to_view_fragment_one_driver"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="To"
@@ -21,10 +22,12 @@
             android:backgroundTint="@color/White"
             android:textStyle="bold"/>
         <TextView
-            android:id="@+id/ride_to_fragment_ride_options"
+            android:autoSizeTextType="uniform"
+            android:textColor="@color/Black"
+            android:id="@+id/ride_to_fragment_one_driver"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/ride_to_view_fragment_ride_options"
+            android:layout_toRightOf="@+id/ride_to_view_fragment_one_driver"
             android:layout_marginLeft="15dp"
             android:textSize="25dp"
             android:textStyle="bold"
@@ -32,30 +35,30 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/ride_to_view_fragment_ride_options"
+            android:layout_below="@+id/ride_to_view_fragment_one_driver"
             android:layout_marginTop="10dp"
             android:text="Accept Ride"
             android:background="@drawable/white_onclick_grey"
             android:layout_marginLeft="20dp"
-            android:id="@+id/accept_ride_fragment_ride_options"/>
+            android:id="@+id/accept_ride_fragment_one_driver"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Reject Ride"
-            android:layout_toRightOf="@+id/accept_ride_fragment_ride_options"
-            android:layout_below="@+id/ride_to_view_fragment_ride_options"
+            android:layout_toRightOf="@+id/accept_ride_fragment_one_driver"
+            android:layout_below="@+id/ride_to_view_fragment_one_driver"
             android:background="@drawable/white_onclick_grey"
-            android:id="@+id/reject_ride_fragment_ride_options"
+            android:id="@+id/reject_ride_fragment_one_driver"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="20dp"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Ride Details"
-            android:layout_toRightOf="@+id/reject_ride_fragment_ride_options"
-            android:layout_below="@+id/ride_to_view_fragment_ride_options"
+            android:layout_toRightOf="@+id/reject_ride_fragment_one_driver"
+            android:layout_below="@+id/ride_to_view_fragment_one_driver"
             android:background="@drawable/white_onclick_grey"
-            android:id="@+id/ride_details_fragment_ride_options"
+            android:id="@+id/ride_details_fragment_one_driver"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="20dp"/>
 
@@ -66,4 +69,4 @@
 
 
 
-</FrameLayout>
+</RelativeLayout>

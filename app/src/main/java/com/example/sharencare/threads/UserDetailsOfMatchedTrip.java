@@ -7,6 +7,9 @@ import android.util.Log;
 
 import com.example.sharencare.Interfaces.UserDetailsOfMatchedTripInterface;
 import com.example.sharencare.Models.User;
+import com.example.sharencare.R;
+import com.example.sharencare.ui.HomeActivity;
+import com.example.sharencare.ui.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -73,5 +76,6 @@ public class UserDetailsOfMatchedTrip extends AsyncTask<Void,Void, User> {
         Log.d(TAG, "onPostExecute: Called");
         Log.d(TAG, "onPostExecute: "+user.toString());
         details.get().userDetailsReceived(user);
+
     }
 }

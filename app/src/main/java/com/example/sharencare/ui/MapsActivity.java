@@ -65,7 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
         startLocationService();
         fromTripDetails=getIntent();
-        userLocation= TripDetailsDriver.userLocation;
+       // userLocation= TripDetailsDriver.userLocation;
         Log.d(TAG, "onCreate: "+userLocation.toString());
 
     }
