@@ -3,16 +3,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="130dp"
-        android:layout_height="150dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        app:srcCompat="@drawable/applogo" />
+    <RelativeLayout
+       android:id="@+id/layout_logo"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+
+       <ImageView
+           android:id="@+id/imageView"
+           android:layout_width="130dp"
+           android:layout_height="150dp"
+           android:layout_alignParentTop="true"
+           android:layout_centerHorizontal="true"
+           android:layout_marginTop="20dp"
+           app:srcCompat="@drawable/applogo" />
+       
+   </RelativeLayout>
+    <RelativeLayout
+        android:background="@color/green1"
+        android:layout_below="@+id/layout_logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/layout_text">
+        <TextView
+            android:textColor="@color/Black"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="20dp"
+            android:textSize="20sp"
+            android:text="Please provide us your Vehicle Details"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    
+   
 
     <ScrollView
+        android:layout_below="@+id/layout_text"
         android:id="@+id/login_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -22,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="250dp"
+
             android:padding="20dp">
 
 

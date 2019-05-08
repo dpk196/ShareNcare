@@ -16,7 +16,7 @@ import com.example.sharencare.utils.StaticPoolClass;
 
 public class FirstRiderFragment extends Fragment {
     private static final String TAG = "FirstRiderFragment";
-     private TextView otpTextView,vehicleNameView,registrationNumberTextView,fareTextView;
+     private TextView otpTextView,vehicleNameView,registrationNumberTextView,fareTextView,ridingWithTextView;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -25,6 +25,8 @@ public class FirstRiderFragment extends Fragment {
           vehicleNameView=view.findViewById(R.id.start_trip_VehicleDetailsForRider);
           registrationNumberTextView=view.findViewById(R.id.vehicle_registration_number_VehicleDetailsForRider);
           fareTextView=view.findViewById(R.id.fare_value_rider);
+          ridingWithTextView=view.findViewById(R.id.ride_with_VehicleDetailsForRider);
+          ridingWithTextView.setText(StaticPoolClass.otherUserDetails.getUsername());
           otpTextView.setText(StaticPoolClass.recevied_otp);
           vehicleNameView.setText(StaticPoolClass.otherUserDetails.getVehicle_name());
           registrationNumberTextView.setText(StaticPoolClass.otherUserDetails.getRegistration_number());

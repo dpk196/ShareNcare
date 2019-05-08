@@ -14,13 +14,9 @@ import android.widget.TextView;
 
 import com.example.sharencare.Models.User;
 import com.example.sharencare.R;
-import com.example.sharencare.services.MyFirebaseMessagingService;
-import com.example.sharencare.ui.HomeActivity;
 import com.example.sharencare.ui.MainActivity;
 import com.example.sharencare.ui.RidesFoundShowOnMapForDriver;
 import com.google.firebase.messaging.FirebaseMessagingService;
-
-import java.security.PrivateKey;
 
 public class SecondDriverFragment extends Fragment {
     private static final String TAG = "SecondDriverFragment";

@@ -16,6 +16,8 @@ import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
 import com.example.sharencare.threads.DirectionsThreads;
 import com.example.sharencare.threads.RetriveDetailsFromFireStore;
+import com.example.sharencare.utils.CalculateDistance;
+import com.example.sharencare.utils.StaticPoolClass;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
@@ -49,7 +51,6 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     ArrayList<TripDetail> tripDetail=new ArrayList<>();
     private  String tti,tfi;
     Intent intent;
-    public static  DirectionsResult mDirectionsResult;
     public static ArrayList<TripDetail> collectionTrips;
 
     @Override
@@ -163,18 +164,21 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     @Override
     public void onDirectionsRetrived(DirectionsResult result) {
         try {
-            mDirectionsResult=result;
+            StaticPoolClass.directionsResultDriver =result;
             String duration= result.routes[0].legs[0].duration.toString();
             String distance=result.routes[0].legs[0].distance.toString();
             Log.d(TAG, "onDirectionsRetrived: routes: " + result.routes[0].toString());
             Log.d(TAG, "onDirectionsRetrived: duration: " + result.routes[0].legs[0].duration);
             Log.d(TAG, "onDirectionsRetrived: distance: " + result.routes[0].legs[0].distance);
-            intent.putExtra("tripFrom",tfi);
-            intent.putExtra("tripTo",tti);
-            intent.putExtra("distance",result.routes[0].legs[0].distance.toString());
-            intent.putExtra("duration",result.routes[0].legs[0].duration.toString());
-            hideToActivityDialog();
-            startActivity(intent);
+            if(CalculateDistance.calculateDistance(result.routes[0].legs[0].distance.toString())<=50){
+                intent.putExtra("tripFrom",tfi);
+                intent.putExtra("tripTo",tti);
+                intent.putExtra("distance",result.routes[0].legs[0].distance.toString());
+                intent.putExtra("duration",result.routes[0].legs[0].duration.toString());
+                hideToActivityDialog();
+                startActivity(intent);
+            }
+
         } catch (Exception e) {
             Log.d(TAG, "onDirectionsRetrived: " + e.getMessage());
         }
@@ -195,6 +199,7 @@ public class DriverActivity extends AppCompatActivity implements DirectionsResul
     public void userTripsCollectionFromFirestore(ArrayList<TripDetail> result) {
         Log.d(TAG, "userTripsCollectionFromFirestore: Called");
         collectionTrips=result;
+        StaticPoolClass.collectionTripsDriverActivity=result;
         for(TripDetail trip : result ){
             Log.d(TAG, "userTripsCollectionFromFirestore: "+trip.toString());
             source.add(trip.getTrip_source());

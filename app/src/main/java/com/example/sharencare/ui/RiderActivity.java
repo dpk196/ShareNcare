@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.sharencare.Adapters.PreviousRidesRecyclerViewAdapter;
 import com.example.sharencare.Interfaces.DirectionsResultInterface;
@@ -17,6 +18,7 @@ import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
 import com.example.sharencare.threads.DirectionsThreads;
 import com.example.sharencare.threads.RetriveDetailsFromFireStore;
+import com.example.sharencare.utils.CalculateDistance;
 import com.example.sharencare.utils.StaticPoolClass;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
@@ -145,6 +147,7 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
 
     @Override
     public void userTripsCollectionFromFirestore(ArrayList<TripDetail> result) {
+        StaticPoolClass.collectionTripsRiderActivity=result;
         Log.d(TAG, "userTripsCollectionFromFirestore: Called");
         for(TripDetail trip : result ){
             Log.d(TAG, "userTripsCollectionFromFirestore: "+trip.toString());
@@ -180,17 +183,22 @@ public class RiderActivity extends AppCompatActivity implements TripsRetrivedFro
 
     @Override
     public void onDirectionsRetrived(DirectionsResult result) {
+        StaticPoolClass.directionsResultRider=result;
         try {
             Log.d(TAG, "onDirectionsRetrived: routes: " + result.routes[0].toString());
             Log.d(TAG, "onDirectionsRetrived: duration: " + result.routes[0].legs[0].duration);
             Log.d(TAG, "onDirectionsRetrived: distance: " + result.routes[0].legs[0].distance);
-            Intent  intent=new Intent(RiderActivity.this,TripDetailsRider.class);
-            StaticPoolClass.directionsResultRider=result;
-            intent.putExtra("tripFrom",tripFrom);
-            intent.putExtra("tripTo",tripTo);
-            intent.putExtra("distance",result.routes[0].legs[0].distance.toString());
-            intent.putExtra("duration",result.routes[0].legs[0].duration.toString());
-            startActivity(intent);
+            if(CalculateDistance.calculateDistance(result.routes[0].legs[0].distance.toString())<=50){
+                Intent  intent=new Intent(RiderActivity.this,TripDetailsRider.class);
+                intent.putExtra("tripFrom",tripFrom);
+                intent.putExtra("tripTo",tripTo);
+                intent.putExtra("distance",result.routes[0].legs[0].distance.toString());
+                intent.putExtra("duration",result.routes[0].legs[0].duration.toString());
+                startActivity(intent);
+            }else{
+                Toast.makeText(this, "Rides Outside Kolakta are not Available", Toast.LENGTH_SHORT).show();
+            }
+
         } catch (Exception e) {
             Log.d(TAG, "onDirectionsRetrived: " + e.getMessage());
         }

@@ -30,6 +30,7 @@ import com.example.sharencare.Models.UserLocation;
 import com.example.sharencare.R;
 import com.example.sharencare.utils.CalculateFare;
 import com.example.sharencare.utils.DatePickerDialogFragment;
+import com.example.sharencare.utils.StaticPoolClass;
 import com.example.sharencare.utils.TimePickerDialogFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -95,7 +96,7 @@ public class TripDetailsDriver extends AppCompatActivity  implements OnMapReadyC
         findViewById(R.id.start_trip_later_tripDetails_driver).setOnClickListener(this);
         gettingIntents();
         setTextView();
-        getStartingEndingCoordinate(DriverActivity.mDirectionsResult);
+        getStartingEndingCoordinate(StaticPoolClass.directionsResultDriver);
     }
 
     private void setTextView() {
@@ -189,7 +190,7 @@ public class TripDetailsDriver extends AppCompatActivity  implements OnMapReadyC
         mGoogleMap=googleMap;
         setCameraView();
         setMapMarker();
-        addPolylinesToMap(DriverActivity.mDirectionsResult);
+        addPolylinesToMap(StaticPoolClass.directionsResultDriver);
     }
 
     @Override

@@ -21,9 +21,11 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.sharencare.Interfaces.UserDetailsOfMatchedTripInterface;
+import com.example.sharencare.Models.ServerKey;
 import com.example.sharencare.Models.User;
 import com.example.sharencare.R;
 import com.example.sharencare.threads.UserDetailsOfMatchedTrip;
+import com.example.sharencare.utils.StaticPoolClass;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -39,6 +41,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
 import static com.example.sharencare.ui.HomeActivity.user_name;
+import static com.example.sharencare.utils.StaticPoolClass.serverKey;
 
 public class MainActivity extends AppCompatActivity implements UserDetailsOfMatchedTripInterface {
     private ProgressBar mProgressBar;
@@ -61,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements UserDetailsOfMatc
         showDialog();
         mAuth=FirebaseAuth.getInstance();
         mDb = FirebaseFirestore.getInstance();
-        getToken();
         getServerKey();
 
     }
@@ -233,20 +235,21 @@ public class MainActivity extends AppCompatActivity implements UserDetailsOfMatc
         }
     }
 
-    private  void getToken(){
+    public   void getToken(){
         Log.d(TAG, "getToken: called");
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-            @Override
-            public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                if(task.isSuccessful()){
-                    String token=task.getResult().getToken();
-                    Log.d(TAG, "onComplete: Token: "+token);
-                    sendResgistrationTokenToServer(token);
+            FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                @Override
+                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                    if(task.isSuccessful()){
+                        String token=task.getResult().getToken();
+                        currentUser.setToken(token);
+                        Log.d(TAG, "onComplete: User Token: "+currentUser.getToken());
+                        sendResgistrationTokenToServer(token);
+                    }
                 }
-            }
-        });
+            });
     }
-    private void sendResgistrationTokenToServer(String token) {
+    private void sendResgistrationTokenToServer(String token){
      try {
          FirebaseFirestore db = FirebaseFirestore.getInstance();
          DocumentReference reference = db.collection(getString(R.string.collection_users)).document(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -262,8 +265,6 @@ public class MainActivity extends AppCompatActivity implements UserDetailsOfMatc
      }catch (Exception e){
          Log.d(TAG, "sendResgistrationTokenToServer: Error "+e.getMessage());
      }
-
-
     }
     private  void getServerKey(){
         Log.d(TAG, "getServerKey: Called");
@@ -273,10 +274,9 @@ public class MainActivity extends AppCompatActivity implements UserDetailsOfMatc
            @Override
            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
               if(task.isSuccessful()){
-
-                  String key=task.getResult().getData().toString();
-
-                  Log.d(TAG, "onComplete: Server Key:"+key);
+                  ServerKey key=task.getResult().toObject(ServerKey.class);
+                  serverKey=key.getKey();
+                  Log.d(TAG, "onComplete: Server Key="+serverKey);
               }
            }
        });
@@ -284,11 +284,16 @@ public class MainActivity extends AppCompatActivity implements UserDetailsOfMatc
     }
     @Override
     public void userDetailsReceived(User user) {
-        Log.d(TAG, "userDetailsReceived: Current User:"+user);
-        currentUser=user;
-
-        Log.d(TAG, "userDetailsReceived: Navigating to Next Activity");
-        navigateToNextActivity();
+        if(user!=null){
+            Log.d(TAG, "userDetailsReceived: Current User:"+user);
+            currentUser=user;
+            getToken();
+            Log.d(TAG, "userDetailsReceived: Navigating to Next Activity");
+            navigateToNextActivity();
+        }else{
+            Log.d(TAG, "userDetailsReceived: No registered user");
+            Toast.makeText(this, "Please Reinstall the application", Toast.LENGTH_LONG).show();
+        }
 
     }
 }

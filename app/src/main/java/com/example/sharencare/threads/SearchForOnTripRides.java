@@ -164,10 +164,10 @@ public class SearchForOnTripRides extends AsyncTask<Void ,Void, ArrayList<UserLo
     @Override
     protected void onPostExecute(ArrayList<UserLocation> userLocations) {
         LatLngBounds bounds;
-        double bottomBoundary = geoPoint.getLatitude() - 1.1;
-        double leftBoundary = geoPoint.getLongitude() - 1.1;
-        double topBoundary = geoPoint.getLatitude() + 1.1;
-        double rightBoundary = geoPoint.getLongitude() +1.1;
+        double bottomBoundary = geoPoint.getLatitude() - .01;
+        double leftBoundary = geoPoint.getLongitude() - .01;
+        double topBoundary = geoPoint.getLatitude() + .01;
+        double rightBoundary = geoPoint.getLongitude() +.01;
         bounds = new LatLngBounds(new LatLng(bottomBoundary, leftBoundary), new LatLng(topBoundary, rightBoundary));
         Log.d(TAG, "onPostExecute: called");
         if (userLocations.size() > 0) {
@@ -201,7 +201,4 @@ public class SearchForOnTripRides extends AsyncTask<Void ,Void, ArrayList<UserLo
         matchedDriverLocations.clear();
 
     }
-
-
-
 }

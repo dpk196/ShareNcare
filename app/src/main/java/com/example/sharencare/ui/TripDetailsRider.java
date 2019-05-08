@@ -29,6 +29,7 @@ import com.example.sharencare.threads.GetMatchedFCMToken;
 import com.example.sharencare.threads.SearchForOnTripRides;
 import com.example.sharencare.threads.SearchForRideLater;
 import com.example.sharencare.utils.CalculateFare;
+import com.example.sharencare.utils.StaticPoolClass;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -79,8 +80,6 @@ public class TripDetailsRider extends AppCompatActivity implements OnMapReadyCal
     private MarkerOptions markerSource;
     private MarkerOptions markerDestination;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-
-    private ArrayList<TripDetail> tripFromFireStore=new ArrayList();
     private ProgressBar mProgressBar;
     private ArrayList<String > matchedUserIds=new ArrayList<>();
     public static ArrayList<TripDetail> mCollectionTrips;
@@ -105,7 +104,7 @@ public class TripDetailsRider extends AppCompatActivity implements OnMapReadyCal
         mProgressBar=findViewById(R.id.trip_details_rider_progressBar);
         gettingIntents();
         setTextView();
-        getStartingEndingCoordinate(RiderActivity.mDirectionsResult);
+        getStartingEndingCoordinate(StaticPoolClass.directionsResultRider);
 
     }
 
@@ -187,6 +186,7 @@ public class TripDetailsRider extends AppCompatActivity implements OnMapReadyCal
                 @Override
                 public void onMapLoaded() {
                     mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mLatLngBounds,10));
+                    Log.d(TAG, "onMapLoaded: setting up camera");
 
                 }
             });
@@ -271,34 +271,12 @@ public class TripDetailsRider extends AppCompatActivity implements OnMapReadyCal
     private void showDialog(){mProgressBar.setVisibility(View.VISIBLE);}
     private void hideDialog(){if(mProgressBar.getVisibility()==View.VISIBLE){mProgressBar.setVisibility(View.INVISIBLE);}}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
         setCameraView();
         setMapMarker();
-        addPolylinesToMap(RiderActivity.mDirectionsResult);
+        addPolylinesToMap(StaticPoolClass.directionsResultRider);
     }
 
     @Override

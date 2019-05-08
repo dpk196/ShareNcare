@@ -73,9 +73,13 @@ public class UserDetailsOfMatchedTrip extends AsyncTask<Void,Void, User> {
 
     @Override
     protected void onPostExecute(User user) {
-        Log.d(TAG, "onPostExecute: Called");
-        Log.d(TAG, "onPostExecute: "+user.toString());
-        details.get().userDetailsReceived(user);
+        try {
+            Log.d(TAG, "onPostExecute: Called");
+            details.get().userDetailsReceived(user);
+        }catch (Exception e){
+            Log.d(TAG, "onPostExecute: unable to retrive user details"+e.getMessage());
+        }
+
 
     }
 }

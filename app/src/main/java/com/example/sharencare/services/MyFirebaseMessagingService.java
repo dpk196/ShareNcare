@@ -43,7 +43,7 @@ import static com.example.sharencare.utils.NotifactionChannel.CHANNEL_Id;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService implements UserDetailsOfMatchedTripInterface, TripDetailsOfOnTripMatchedTripInterface, UserCurrentLocationFromFirestoreInterface {
     private static final String TAG = "MyFirebaseMessagingServ";
-    private static final int BROADCAST_NOTIFICATION_ID = 1;
+    private static final int BROADCAST_NOTIFICATION_ID=1;
     private String notificationData = "";
     private String title = "";
     private String fromUserId = "";
@@ -52,8 +52,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
     private String message;
     private Intent notifyIntent;
     private  boolean currentUserDetailsFlag=false,otherUserDetailsFlag=false,otherUserlocationFlag=false,currentUserlocationFlag=false;
-
-
     @Override
     public void onDeletedMessages() {
         super.onDeletedMessages();
@@ -62,9 +60,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-       
         try {
-            
             notificationData = remoteMessage.getData().toString();
             Log.d(TAG, "onMessageReceived: "+notificationData);
             data_type = remoteMessage.getData().get(getString(R.string.data_type));
@@ -72,31 +68,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
             fromUserId = remoteMessage.getData().get(getString(R.string.fromUserId));
             myUserId = remoteMessage.getData().get(getString(R.string.toUserId));
             message =remoteMessage.getData().get("message");
-            
-            
             if (data_type.equals("data_type_ride_request")) {
                 notifyIntent = new Intent(this, RidesFoundShowOnMapForDriver.class);
                 Log.d(TAG, "onMessageReceived: A rider Request");
                 Log.d(TAG, "onMessageReceived: A rider Request:" + notifyIntent.toString());
-                initThreads(fromUserId, myUserId);
+                initThreadsDriver(fromUserId, myUserId);
             }
 
             if (data_type.equals("data_type_ride_accepted")) {
                 notifyIntent = new Intent(this, DriveFoundShowOnMapForRider.class);
                 Log.d(TAG, "onMessageReceived: Trip accepted");
                 recevied_otp = remoteMessage.getData().get(getString(R.string.otp));
-                initThreads(fromUserId, myUserId);
+                initThreadsRider(fromUserId, myUserId);
                 Log.d(TAG, "onMessageReceived: otp:" + recevied_otp);
                 notifyIntent = new Intent(this, DriveFoundShowOnMapForRider.class);
                 Log.d(TAG, "onMessageReceived:A driver Ride accepted " + notifyIntent.toString());
-
             }
             if (data_type.equals("data_type_ride_rejected")) {
                 Log.d(TAG, "onMessageReceived: Trip Rejected");
                 sendRejectedBroadcastNotification(title, message);
                 message = "can't ride with you";
             }
-
         } catch (NullPointerException e) {
             Log.d(TAG, "onMessageReceived: Null pointer" + e.getMessage());
         }
@@ -144,12 +136,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
 
     }
 
-    private void initThreads(String fromUserID, String myUserID) {
+    private void initThreadsDriver(String fromUserID, String myUserID) {
         Log.d(TAG, "initThreads: called");
         UserDetailsOfMatchedTrip otherUserDetailsOfMatchedTrip = new UserDetailsOfMatchedTrip(fromUserID, this, this);
         otherUserDetailsOfMatchedTrip.execute();
         //...............
-        UserDetailsOfMatchedTrip currentUserDetailsOfMatchedTrip = new UserDetailsOfMatchedTrip(fromUserID, this, this);
+        UserDetailsOfMatchedTrip currentUserDetailsOfMatchedTrip = new UserDetailsOfMatchedTrip(myUserID, this, this);
         currentUserDetailsOfMatchedTrip.execute();
         //...............
         UserCurrentLocationFromFireStore otherUserlocation = new UserCurrentLocationFromFireStore(fromUserID, this, this);
@@ -164,9 +156,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         }
         TripDetailsOfOnTripMatchedTrip tripDetailsOfOnTripMatchedTrip = new TripDetailsOfOnTripMatchedTrip(myUserID, this, this);
         tripDetailsOfOnTripMatchedTrip.execute();
-        
-        
+    }
 
+    private void initThreadsRider(String fromUserID, String myUserID) {
+        Log.d(TAG, "initThreads: called");
+        UserDetailsOfMatchedTrip otherUserDetailsOfMatchedTrip = new UserDetailsOfMatchedTrip(fromUserID, this, this);
+        otherUserDetailsOfMatchedTrip.execute();
+        //...............
+        UserDetailsOfMatchedTrip currentUserDetailsOfMatchedTrip = new UserDetailsOfMatchedTrip(myUserID, this, this);
+        currentUserDetailsOfMatchedTrip.execute();
+        //...............
+        UserCurrentLocationFromFireStore otherUserlocation = new UserCurrentLocationFromFireStore(fromUserID, this, this);
+        otherUserlocation.execute();
+        //.........
+        UserCurrentLocationFromFireStore currentUserlocation = new UserCurrentLocationFromFireStore(myUserID, this, this);
+        currentUserlocation.execute();
+        //.....
+        while(currentUserDetailsFlag!=true&&otherUserDetailsFlag!=true&&otherUserlocationFlag!=true&&currentUserlocationFlag!=true)
+        {
+            Log.d(TAG, "initThreads: Getting otherUserDetailsOfMatchedTrip currentUserDetailsOfMatchedTrip otherUserlocation currentUserlocation ");
+        }
+        TripDetailsOfOnTripMatchedTrip tripDetailsOfOnTripMatchedTrip = new TripDetailsOfOnTripMatchedTrip(fromUserID, this, this);
+        tripDetailsOfOnTripMatchedTrip.execute();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -248,10 +259,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
 
 
     }
-
-
     //.............................................................................
-
     @Override
     public void onNewToken(String s) {
         sendRegistrationTokenToServer(s);

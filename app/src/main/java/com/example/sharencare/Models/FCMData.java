@@ -1,5 +1,4 @@
 package com.example.sharencare.Models;
-
 public class FCMData {
     private String title;
     private String fromUserId;
@@ -16,7 +15,6 @@ public class FCMData {
         this.otp = otp;
         this.message = message;
     }
-
     public FCMData() {
     }
 

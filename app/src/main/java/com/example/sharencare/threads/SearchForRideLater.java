@@ -21,11 +21,12 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 
-public class SearchForRideLater   extends AsyncTask<Void ,Void, ArrayList<String >> {
+public class SearchForRideLater extends AsyncTask<Void, Void, ArrayList<String>> {
     private static final String TAG = "SearchForRides";
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private static GeoPoint geoPoint;
@@ -40,10 +41,11 @@ public class SearchForRideLater   extends AsyncTask<Void ,Void, ArrayList<String
     boolean backGroundReturn = false;
     ArrayList<String> driverUserIDs = new ArrayList<>();
     ArrayList<UserLocation> locations = new ArrayList<>();
-    ArrayList<UserLocation> matchedDriverLocations=new ArrayList<>();
+    ArrayList<UserLocation> matchedDriverLocations = new ArrayList<>();
     int count = 0;
+
     public SearchForRideLater(SearchForLaterOnTripsInterface searchForRides, Context mContext, String tripFrom, String tripTo) {
-        reference=new WeakReference<>(searchForRides);
+        reference = new WeakReference<>(searchForRides);
         this.mContext = mContext;
         this.tripTo = tripTo;
         this.tripFrom = tripFrom;
@@ -52,18 +54,18 @@ public class SearchForRideLater   extends AsyncTask<Void ,Void, ArrayList<String
     }
 
     @Override
-    protected ArrayList<String > doInBackground(Void... voids) {
+    protected ArrayList<String> doInBackground(Void... voids) {
         Log.d(TAG, "doInBackground: Called");
         return searchForLaterOnRides();
     }
 
-    private ArrayList<String > searchForLaterOnRides() {
+    private ArrayList<String> searchForLaterOnRides() {
         Log.d(TAG, "searchForOnTripRides: Searching For rides");
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder().build();
         mDb.setFirestoreSettings(settings);
         CollectionReference tripCollectionReference = mDb.collection("collection_trips");
         Query tripsQuery = tripCollectionReference.whereEqualTo("trip_destination", tripTo).whereEqualTo("trip_source", tripFrom).
-                whereEqualTo("status","Yet to Start");
+                whereEqualTo("status", "Yet to Start");
         tripsQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -76,22 +78,16 @@ public class SearchForRideLater   extends AsyncTask<Void ,Void, ArrayList<String
                                 driverUserIDs.add(trip.getUser_id());
                             }
                         }
-                        onTripFlag = true;
-                    } else {
-                        Log.d(TAG, "onComplete: Result is empty");
-                        onTripFlag = true;
                     }
-                } else {
-                    onTripFlag = true;
-                    Log.d(TAG, "onComplete: Query Unsuccesfull");
                 }
+                onTripFlag = true;
             }
         });
         while (onTripFlag == false) {
             Log.d(TAG, "searchForOnTripRides: Still searching for rides");
         }
         if (tripFromFireStore.size() > 0) {
-            for(TripDetail tripDetail :tripFromFireStore) {
+            for (TripDetail tripDetail : tripFromFireStore) {
                 Log.d(TAG, "searchForOnTripRides:Search Completed" + tripDetail.toString());
             }
         } else {
@@ -99,7 +95,6 @@ public class SearchForRideLater   extends AsyncTask<Void ,Void, ArrayList<String
         }
         return driverUserIDs;
     }
-
 
 
     @Override

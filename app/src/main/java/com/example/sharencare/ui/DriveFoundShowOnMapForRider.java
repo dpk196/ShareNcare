@@ -210,10 +210,10 @@ public class DriveFoundShowOnMapForRider extends FragmentActivity implements OnM
         //total view of the map
         try {
             Log.d(TAG, "setCameraView: Setting Camera view to:" + myLocation.getGeoPoint().toString());
-            double bottomBoundary = myLocation.getGeoPoint().getLatitude() - 0.1;
-            double leftBoundary = myLocation.getGeoPoint().getLongitude() - 0.1;
-            double topBoundary = myLocation.getGeoPoint().getLatitude() + 0.1;
-            double rightBoundary = myLocation.getGeoPoint().getLongitude() + 0.1;
+            double bottomBoundary = myLocation.getGeoPoint().getLatitude() -0.01;
+            double leftBoundary = myLocation.getGeoPoint().getLongitude() -0.01 ;
+            double topBoundary = myLocation.getGeoPoint().getLatitude() +0.01;
+            double rightBoundary =myLocation.getGeoPoint().getLongitude() +0.01;
             mLatLngBounds = new LatLngBounds(new LatLng(bottomBoundary, leftBoundary), new LatLng(topBoundary, rightBoundary));
             mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                 @Override

@@ -111,9 +111,6 @@ public class LocationService extends Service {
                             geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
                             UserLocation userLocation = new UserLocation(FirebaseAuth.getInstance().getCurrentUser().getUid(), null, geoPoint);
                             saveUserLocation(userLocation);
-
-
-
                         }
                     }
                 },

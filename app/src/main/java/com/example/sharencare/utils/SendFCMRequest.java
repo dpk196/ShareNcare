@@ -19,6 +19,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.sharencare.Adapters.SearchedRidesRecyclerViewAdapter.BASE_URL;
+import static com.example.sharencare.utils.StaticPoolClass.serverKey;
 
 public class SendFCMRequest {
     private static final String TAG = "SendFCMRequest";
@@ -55,8 +56,7 @@ public class SendFCMRequest {
         HashMap<String, String> headers=new HashMap<>();
         //attaching the headers
         headers.put("Content-Type","application/json");
-        headers.put("Authorization","key="+"AAAApCdkCU8:APA91bFfJApMQKhvYQS-R0P7R9eVcUgd7R2a6iwOe37zPQ5aD2YJY2OMMc6Yx5Utg2HkT9CB9HhKCUWvZkbD4aXBlQN5AJwsfSVfVVc52q-7-mCWuuOh9d4OamKhjuE1PmaP8Lek80w_");
-        //token
+        headers.put("Authorization","key="+serverKey);
         FCMData data=new FCMData();
         data.setOtp(otp);
         data.setToUserId(location.getUser_id());

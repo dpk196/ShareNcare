@@ -30,6 +30,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.example.sharencare.utils.StaticPoolClass.serverKey;
+
 public class SearchedRidesRecyclerViewAdapter extends RecyclerView.Adapter<SearchedRidesRecyclerViewAdapter.ViewHolder> {
     private static final String TAG = "SearchedRidesRecycler";
     ArrayList<String > userIDS =new ArrayList<>();
@@ -103,8 +105,7 @@ public class SearchedRidesRecyclerViewAdapter extends RecyclerView.Adapter<Searc
       HashMap<String, String> headers=new HashMap<>();
       //attaching the headers
       headers.put("Content-Type","application/json");
-      headers.put("Authorization","key="+"AAAApCdkCU8:APA91bFfJApMQKhvYQS-R0P7R9eVcUgd7R2a6iwOe37zPQ5aD2YJY2OMMc6Yx5Utg2HkT9CB9HhKCUWvZkbD4aXBlQN5AJwsfSVfVVc52q-7-mCWuuOh9d4OamKhjuE1PmaP8Lek80w_");
-
+      headers.put("Authorization","key="+serverKey);
       //token
       FCMData data=new FCMData();
       data.setToUserId(userId);

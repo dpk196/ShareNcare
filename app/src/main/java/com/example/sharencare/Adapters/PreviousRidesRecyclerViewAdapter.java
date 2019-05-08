@@ -50,11 +50,7 @@ public class PreviousRidesRecyclerViewAdapter extends RecyclerView.Adapter<Previ
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(mContext, TripDetailsDriver.class);
-                intent.putExtra("tripDetails", tripDetail);
-                intent.putExtra("Source",source.get(i));
-                intent.putExtra("Destination",destination.get(i));
-                mContext.startActivity(intent);
+
             }
         });
     }

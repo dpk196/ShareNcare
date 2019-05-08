@@ -34,6 +34,8 @@
         android:layout_marginBottom="10dp">
 
         <TextView
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/Black"
             android:id="@+id/label_start_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -54,12 +56,14 @@
             android:textStyle="bold" />
 
         <TextView
+            android:textColor="@color/Black"
             android:id="@+id/label_start_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/trip_start_time"
             android:layout_marginTop="49dp"
             android:text="Start Date"
+            android:layout_marginLeft="5dp"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -79,18 +83,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/time_date_layout"
-        android:layout_marginTop="61dp"
+        android:layout_marginTop="50dp"
         android:layout_marginBottom="10dp">
 
         <TextView
+            android:textColor="@color/Black"
             android:id="@+id/fare_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
+            android:layout_marginLeft="5dp"
             android:text="Fare"
+            android:textStyle="bold"
             android:textSize="25sp" />
 
         <TextView
+
             android:id="@+id/fare_id_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -98,16 +106,31 @@
             android:layout_marginTop="21dp"
             android:layout_toRightOf="@+id/fare_id"
             android:text="Free Ride"
-            android:textSize="20dp" />
+            android:textStyle="bold"
+            android:textSize="20sp" />
 
         <Button
+            android:backgroundTint="@color/quantum_purpleA400"
+            android:id="@+id/change_fare_button"
+            android:textColor="@color/Black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="25dp"
             android:layout_marginTop="10dp"
+            android:textStyle="bold"
             android:layout_toRightOf="@+id/fare_id_value"
             android:background="@drawable/white_onclick_grey"
             android:text="Change" />
+        <TextView
+            android:layout_marginTop="38dp"
+            android:textColor="@color/red2"
+            android:layout_marginLeft="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fare_id"
+            android:text="Max Chargeable Fare"
+            android:textStyle="bold"
+            android:textSize="18sp"/>
 
     </RelativeLayout>
 
@@ -120,6 +143,8 @@
         android:layout_marginBottom="10dp">
 
         <Button
+            android:textStyle="bold"
+            android:textColor="@color/Black"
             android:id="@+id/schedule_ride"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -128,9 +153,12 @@
             android:layout_marginRight="25dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/white_onclick_grey"
+            android:backgroundTint="@color/yellow1"
             android:text="Confirm" />
 
         <Button
+            android:textStyle="bold"
+            android:textColor="@color/Black"
             android:id="@+id/Reschedule_ride"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -139,8 +167,9 @@
             android:layout_marginTop="40dp"
             android:layout_marginRight="25dp"
             android:layout_marginBottom="40dp"
+            android:backgroundTint="@color/green1"
             android:background="@drawable/white_onclick_grey"
-            android:text="Reschedule" />
+            android:text="RePlan" />
     </RelativeLayout>
 
 

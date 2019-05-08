@@ -56,6 +56,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private FusedLocationProviderClient mFusedLocationProviderClient;
     public static TextView user_name;
     private boolean flag = false;
+
     private static final int LOCATION_UPDATE_INTERVAL = 1000;
     private Handler mHandler = new Handler();
 
@@ -73,6 +74,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setupFirebaseListener();
         user_name = findViewById(R.id.user_name);
         user_name.setText(MainActivity.currentUser.getUsername());
+        getLastKnownLocation();
     }
 
     @Override
@@ -106,6 +108,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     break;
                 }
                 case R.id.sign_out: {
+                    sendResgistrationTokenToServer();
                     FirebaseAuth.getInstance().signOut();
                     break;
                 }
@@ -114,6 +117,23 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             Log.d(TAG, "onClick: Something went Wrong");
             Toast.makeText(this, "Try Again", Toast.LENGTH_SHORT).show();
             ;
+        }
+    }
+    private void sendResgistrationTokenToServer(){
+        try {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference reference = db.collection(getString(R.string.collection_users)).document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+            reference.update("token", "").addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "onComplete: Token Send to FireStore ");
+                    }
+                }
+            });
+        }catch (Exception e){
+            Log.d(TAG, "sendResgistrationTokenToServer: Error "+e.getMessage());
         }
     }
 
@@ -159,6 +179,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void saveUserLocation(UserLocation userLocation) {
 
+
         try {
             DocumentReference locationRef = FirebaseFirestore.getInstance()
                     .collection(getString(R.string.collection_userlocation))
@@ -175,6 +196,31 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             Log.e(TAG, "saveUserLocation: User instance is null, stopping location service.");
             Log.e(TAG, "saveUserLocation: NullPointerException: " + e.getMessage());
         }
+    }
+
+    private void getLastKnownLocation() {
+        Log.d(TAG, "getLastKnownLocation: Getting user last Known Location");
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                if (task.isSuccessful()) {
+                    try{
+                        Location location = task.getResult();
+                        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                        UserLocation userLocation = new UserLocation(FirebaseAuth.getInstance().getCurrentUser().getUid(), null, geoPoint);
+                        saveUserLocation(userLocation);
+                        Log.d(TAG, "onComplete: Location Coordinates:" + geoPoint.toString());
+                    }catch(Exception e){
+                        Log.d(TAG, "onComplete: Unable to get user Location");
+                        Toast.makeText(HomeActivity.this, "Error while retriving your location. Please Restart the app", Toast.LENGTH_LONG).show();
+                    }
+
+                }
+            }
+        });
     }
 
 }

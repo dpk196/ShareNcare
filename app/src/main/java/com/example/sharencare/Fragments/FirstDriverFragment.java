@@ -2,6 +2,7 @@ package com.example.sharencare.Fragments;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sharencare.Interfaces.FCM;
 import com.example.sharencare.Models.FCMData;
@@ -80,20 +82,29 @@ public class FirstDriverFragment extends Fragment {
             public void onClick(View v) {
                 Log.d(TAG, "onClick: Clicked on reject_ride_fragment_one_driver");
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("");
+                builder.setTitle("Tell"+" "+StaticPoolClass.otherUserDetails.getUsername()+" "+"the Reason");
                 final EditText input = new EditText(getContext());
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 builder.setView(input);
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        m_Text = input.getText().toString();
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
+                        if(!input.getText().toString().equals("")){
+                            m_Text = input.getText().toString();
+                            Log.d(TAG, "onClick: "+m_Text);
+                            SendFCMRequest sendFCMRequest = new SendFCMRequest(riderLocation, currentUser,m_Text , riderDetails.getToken(), "data_type_ride_rejected", otp,"Car owner says-");
+                            boolean result = sendFCMRequest.sendRequest();
+                            if (result==true) {
+                                Intent intent=new Intent(getActivity(),HomeActivity.class);
+                                startActivity(intent);
+                                Log.d(TAG, "onClick: Request send successfull");
+                            } else {
+                                Log.d(TAG, "onClick: Something went wrong");
+                            }
+                        }else{
+                            Toast.makeText(getContext(), "Cannot be blank", Toast.LENGTH_SHORT).show();
+                        }
+
                     }
                 });
                 builder.show();
