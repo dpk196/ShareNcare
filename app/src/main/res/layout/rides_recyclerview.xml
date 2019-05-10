@@ -12,18 +12,21 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_marginTop="20dp"
-        android:src="@mipmap/ic_launcher" />
+        android:layout_centerVertical="true"
+        android:src="@drawable/applogo" />
     <TextView
+        android:layout_centerVertical="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/rider_view"
         android:layout_toRightOf="@+id/image"
         android:textColor="#000"
         android:text="Ride"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="40dp"
         android:textSize="25dp" />
 
     <TextView
+        android:layout_centerVertical="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="101dp"

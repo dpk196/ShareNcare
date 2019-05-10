@@ -38,8 +38,8 @@ import javax.annotation.Nullable;
 public class LocationService extends Service {
     private static final String TAG = "LocationService";
     private FusedLocationProviderClient mFusedLocationClient;
-    private final static long UPDATE_INTERVAL = 4 * 1000;  /* 4 secs */
-    private final static long FASTEST_INTERVAL = 2000; /* 2 sec */
+    private final static long UPDATE_INTERVAL =  1500;  /* 1.5 secs */
+    private final static long FASTEST_INTERVAL = 750; /* 0.75 sec */
     private  IBinder  mBinder=new MyBinder();
     public static GeoPoint geoPoint;
 

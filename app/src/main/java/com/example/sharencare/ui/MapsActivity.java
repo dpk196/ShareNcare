@@ -191,6 +191,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
+        startLocationService();
         startUserLocationsRunnable();
 
     }
@@ -199,6 +200,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onDestroy() {
         super.onDestroy();
         stopLocationUpdates();
+
 
     }
 }

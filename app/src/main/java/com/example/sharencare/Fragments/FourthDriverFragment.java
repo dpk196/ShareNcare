@@ -35,7 +35,7 @@ public class FourthDriverFragment extends Fragment {
             public void onClick(View v) {
                 if(!text.getText().toString().equals("")) {
                     String message = text.getText().toString();
-                    SendFCMRequest sendFCMRequest = new SendFCMRequest(riderLocation, currentUser, message, riderDetails.getToken(), "data_type_ride_rejected", "","Sorry");
+                    SendFCMRequest sendFCMRequest = new SendFCMRequest(riderLocation, currentUser, message, riderDetails.getToken(), "data_type_ride_rejected", "","Sorry","");
                     sendFCMRequest.sendRequest();
                 }else{
                     Toast.makeText(getContext(), "Cannot be left blank", Toast.LENGTH_SHORT).show();

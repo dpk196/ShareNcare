@@ -24,6 +24,7 @@ import com.example.sharencare.threads.UserCurrentLocationFromFireStore;
 import com.example.sharencare.threads.UserDetailsOfMatchedTrip;
 import com.example.sharencare.ui.DriveFoundShowOnMapForRider;
 import com.example.sharencare.ui.RidesFoundShowOnMapForDriver;
+import com.example.sharencare.utils.StaticPoolClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -69,6 +70,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
             myUserId = remoteMessage.getData().get(getString(R.string.toUserId));
             message =remoteMessage.getData().get("message");
             if (data_type.equals("data_type_ride_request")) {
+                StaticPoolClass.fare=remoteMessage.getData().get("fare");
                 notifyIntent = new Intent(this, RidesFoundShowOnMapForDriver.class);
                 Log.d(TAG, "onMessageReceived: A rider Request");
                 Log.d(TAG, "onMessageReceived: A rider Request:" + notifyIntent.toString());

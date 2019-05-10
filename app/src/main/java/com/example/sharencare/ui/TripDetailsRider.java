@@ -75,7 +75,7 @@ public class TripDetailsRider extends AppCompatActivity implements OnMapReadyCal
     String destination;
     String duration;
     String distance;
-    static  String fare="";
+    public static  String fare="";
     private TextView tripDistance,tripDuration,tripFare;
     private MarkerOptions markerSource;
     private MarkerOptions markerDestination;

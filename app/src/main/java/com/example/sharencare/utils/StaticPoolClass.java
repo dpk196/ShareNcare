@@ -21,6 +21,7 @@ public class StaticPoolClass {
     public static ArrayList<TripDetail> collectionTripsDriverActivity;
     public static ArrayList<TripDetail> collectionTripsRiderActivity;
     public static String  serverKey;
+    public static String fare;
 
 
 }

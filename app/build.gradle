@@ -36,15 +36,15 @@ dependencies {
     // Support multidex
     implementation 'com.android.support:multidex:1.0.3'
     // Firebase Core
-    implementation 'com.google.firebase:firebase-core:16.0.7'
+    implementation 'com.google.firebase:firebase-core:16.0.8'
     //Firebase Authentication
-    implementation 'com.google.firebase:firebase-auth:16.1.0'
+    implementation 'com.google.firebase:firebase-auth:16.2.1'
     // Firestore Firestore
-    implementation 'com.google.firebase:firebase-firestore:18.1.0'
+    implementation 'com.google.firebase:firebase-firestore:18.2.0'
     //maps
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     //google places
-    implementation 'com.google.android.libraries.places:places:1.0.0'
+    implementation 'com.google.android.libraries.places:places:1.1.0'
     //glide for images
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'

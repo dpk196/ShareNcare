@@ -112,6 +112,7 @@ public class SearchedRidesRecyclerViewAdapter extends RecyclerView.Adapter<Searc
       data.setFromUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
       data.setData_type("data_type_ride_request");
       data.setTitle("Rider found");
+      data.setFare(TripDetailsRider.fare);
 
       data.setMessage(MainActivity.currentUser.getUsername()+" "+"wants to ride with you");
       FirebaseCloudMessage firebaseCloudMessage =new FirebaseCloudMessage();

@@ -6,15 +6,39 @@ public class FCMData {
     private String data_type;
     private String otp;
     private String message;
+    private String fare;
 
-    public FCMData(String title, String fromUserId, String toUserId, String data_type, String otp, String message) {
+    @Override
+    public String toString() {
+        return "FCMData{" +
+                "title='" + title + '\'' +
+                ", fromUserId='" + fromUserId + '\'' +
+                ", toUserId='" + toUserId + '\'' +
+                ", data_type='" + data_type + '\'' +
+                ", otp='" + otp + '\'' +
+                ", message='" + message + '\'' +
+                ", fare='" + fare + '\'' +
+                '}';
+    }
+
+    public String getFare() {
+        return fare;
+    }
+
+    public void setFare(String fare) {
+        this.fare = fare;
+    }
+
+    public FCMData(String title, String fromUserId, String toUserId, String data_type, String otp, String message, String fare) {
         this.title = title;
         this.fromUserId = fromUserId;
         this.toUserId = toUserId;
         this.data_type = data_type;
         this.otp = otp;
         this.message = message;
+        this.fare = fare;
     }
+
     public FCMData() {
     }
 
@@ -66,15 +90,4 @@ public class FCMData {
         this.message = message;
     }
 
-    @Override
-    public String toString() {
-        return "FCMData{" +
-                "title='" + title + '\'' +
-                ", fromUserId='" + fromUserId + '\'' +
-                ", toUserId='" + toUserId + '\'' +
-                ", data_type='" + data_type + '\'' +
-                ", otp='" + otp + '\'' +
-                ", message='" + message + '\'' +
-                '}';
-    }
 }

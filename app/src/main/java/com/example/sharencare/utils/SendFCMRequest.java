@@ -32,9 +32,10 @@ public class SendFCMRequest {
     boolean result;
     boolean flag=false;
     private String title;
+    private String fare;
 
 
-    public SendFCMRequest(UserLocation location, User currentUser, String message, String token, String data_type, String otp, String title) {
+    public SendFCMRequest(UserLocation location, User currentUser, String message, String token, String data_type, String otp, String title,String f) {
         this.location = location;
         this.currentUser = currentUser;
         this.message = message;
@@ -42,6 +43,7 @@ public class SendFCMRequest {
         this.data_type = data_type;
         this.otp = otp;
         this.title = title;
+        this.fare=f;
     }
 
     public   boolean sendRequest(){

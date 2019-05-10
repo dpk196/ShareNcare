@@ -11,8 +11,9 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:id="@+id/image"
-        android:src="@mipmap/ic_launcher"/>
+        android:src="@drawable/applogo"/>
     <TextView
+        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/txt1"
@@ -22,6 +23,7 @@
         android:layout_marginLeft="10dp"
         android:textSize="17dp"/>
     <TextView
+        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/source"
@@ -41,6 +43,7 @@
         android:textSize="17dp"
         android:textColor="#000" />
     <TextView
+        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/destination"
@@ -50,6 +53,7 @@
         android:layout_marginLeft="15dp"
         android:textSize="20sp"/>
     <TextView
+        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Trip not yet started"

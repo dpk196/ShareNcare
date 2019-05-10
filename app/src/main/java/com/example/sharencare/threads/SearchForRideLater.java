@@ -64,8 +64,7 @@ public class SearchForRideLater extends AsyncTask<Void, Void, ArrayList<String>>
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder().build();
         mDb.setFirestoreSettings(settings);
         CollectionReference tripCollectionReference = mDb.collection("collection_trips");
-        Query tripsQuery = tripCollectionReference.whereEqualTo("trip_destination", tripTo).whereEqualTo("trip_source", tripFrom).
-                whereEqualTo("status", "Yet to Start");
+        Query tripsQuery = tripCollectionReference.whereEqualTo("trip_destination", tripTo).whereEqualTo("trip_source", tripFrom);
         tripsQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -73,7 +72,7 @@ public class SearchForRideLater extends AsyncTask<Void, Void, ArrayList<String>>
                     if (!task.getResult().isEmpty()) {
                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                             TripDetail trip = documentSnapshot.toObject(TripDetail.class);
-                            if (!trip.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            if (!trip.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())&&!trip.getStatus().equals("On trip")){
                                 tripFromFireStore.add(trip);
                                 driverUserIDs.add(trip.getUser_id());
                             }

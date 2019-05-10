@@ -64,17 +64,57 @@ public class FirstDriverFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: Clicked on accept_ride_fragment_one_driver");
-                Random rand = new Random();
-                otp=String.format("%04d", rand.nextInt(10000));
-                Log.d(TAG, "onClick: Otp:" + otp);
-                SendFCMRequest sendFCMRequest = new SendFCMRequest(riderLocation, currentUser,"Tap for Details  " , riderDetails.getToken(), "data_type_ride_accepted", otp,currentUser.getUsername()+" "+"has accepted your Request");
-                boolean result = sendFCMRequest.sendRequest();
-                if (result==true) {
-                    ((RidesFoundShowOnMapForDriver) getActivity()).setViewPager(1, new SecondDriverFragment());
-                    Log.d(TAG, "onClick: Request send successfull");
-                } else {
-                    Log.d(TAG, "onClick: Something went wrong");
-                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Do you want to charge for this trip");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle("Max Chargeable fare Rs"+" "+StaticPoolClass.fare);
+                        final EditText input = new EditText(getContext());
+                        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        builder.setView(input);
+                        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if(!input.getText().toString().equals("")){
+                                    String m_fare= input.getText().toString();
+                                    if(Double.valueOf(m_fare)<Double.valueOf(StaticPoolClass.fare)){
+                                        Random rand = new Random();
+                                        otp=String.format("%04d", rand.nextInt(10000));
+                                        Log.d(TAG, "onClick: Otp:" + otp);
+                                        SendFCMRequest sendFCMRequest = new SendFCMRequest(riderLocation, currentUser,"Tap for Details" , riderDetails.getToken(), "data_type_ride_accepted", otp,currentUser.getUsername()+" "+"has accepted your Request",m_fare);
+                                        boolean result = sendFCMRequest.sendRequest();
+                                        if (result==true) {
+                                            ((RidesFoundShowOnMapForDriver) getActivity()).setViewPager(1, new SecondDriverFragment());
+                                            Log.d(TAG, "onClick: Request send successfull");
+                                        } else {
+                                            Log.d(TAG, "onClick: Something went wrong");
+                                        }
+                                    }else {
+                                        Toast.makeText(getContext(), "Fare Cannot be more than"+" "+StaticPoolClass.fare, Toast.LENGTH_SHORT).show();
+                                    }
+
+                                }
+                            }
+                        });
+                        builder.show();
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SendFCMRequest sendFCMRequest = new SendFCMRequest(riderLocation, currentUser,"Tap for Details" , riderDetails.getToken(), "data_type_ride_accepted", otp,currentUser.getUsername()+" "+"has accepted your Request","Free Ride");
+                        sendFCMRequest.sendRequest();
+                        ((RidesFoundShowOnMapForDriver) getActivity()).setViewPager(1, new SecondDriverFragment());
+                        Log.d(TAG, "onClick: Free Ride");
+                        Toast.makeText(getContext(), "You are On trip with"+" "+StaticPoolClass.otherUserDetails.getUsername(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.show();
+
+
+
             }
         });
         view.findViewById(R.id.reject_ride_fragment_one_driver).setOnClickListener(new View.OnClickListener() {
@@ -92,7 +132,7 @@ public class FirstDriverFragment extends Fragment {
                         if(!input.getText().toString().equals("")){
                             m_Text = input.getText().toString();
                             Log.d(TAG, "onClick: "+m_Text);
-                            SendFCMRequest sendFCMRequest = new SendFCMRequest(riderLocation, currentUser,m_Text , riderDetails.getToken(), "data_type_ride_rejected", otp,"Car owner says-");
+                            SendFCMRequest sendFCMRequest = new SendFCMRequest(riderLocation, currentUser,m_Text , riderDetails.getToken(), "data_type_ride_rejected", otp,"Car owner says-","");
                             boolean result = sendFCMRequest.sendRequest();
                             if (result==true) {
                                 Intent intent=new Intent(getActivity(),HomeActivity.class);
