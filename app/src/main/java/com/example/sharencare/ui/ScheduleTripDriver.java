@@ -150,6 +150,8 @@ public class ScheduleTripDriver extends AppCompatActivity implements View.OnClic
         mDb.setFirestoreSettings(settings);
 
         DocumentReference newTripRef = mDb.collection(getString(R.string.collection_trips)).document();
+        Log.d(TAG, "submitDetailsToFireStore: id of the document:"+newTripRef.getId());
+        tripDetail.setTripId(newTripRef.getId());
         newTripRef.set(tripDetail).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

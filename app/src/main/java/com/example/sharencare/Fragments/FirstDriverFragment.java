@@ -26,6 +26,7 @@ import com.example.sharencare.R;
 import com.example.sharencare.services.MyFirebaseMessagingService;
 import com.example.sharencare.ui.HomeActivity;
 import com.example.sharencare.ui.MainActivity;
+import com.example.sharencare.ui.OnGoingTripDetails;
 import com.example.sharencare.ui.RidesFoundShowOnMapForDriver;
 import com.example.sharencare.utils.SendFCMRequest;
 import com.example.sharencare.utils.StaticPoolClass;
@@ -53,6 +54,8 @@ public class FirstDriverFragment extends Fragment {
     private TripDetail tripDetail = StaticPoolClass.tripDetails;
     public static String otp;
     private String m_Text = "";
+    private String m_fare="";
+
 
     @Nullable
     @Override
@@ -60,6 +63,7 @@ public class FirstDriverFragment extends Fragment {
         View view=inflater.inflate(R.layout.driver_view_fragment_on_map_one, container, false);
         rideToFragmentOne =view.findViewById(R.id.ride_to_fragment_one_driver);
         rideToFragmentOne.setText(tripDetail.getTrip_destination());
+
         view.findViewById(R.id.accept_ride_fragment_one_driver).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,12 +82,13 @@ public class FirstDriverFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 if(!input.getText().toString().equals("")){
-                                    String m_fare= input.getText().toString();
+                                    m_fare=input.getText().toString();
                                     if(Double.valueOf(m_fare)<Double.valueOf(StaticPoolClass.fare)){
+                                        Log.d(TAG, "onClick: Fare:"+m_fare);
                                         Random rand = new Random();
                                         otp=String.format("%04d", rand.nextInt(10000));
                                         Log.d(TAG, "onClick: Otp:" + otp);
-                                        SendFCMRequest sendFCMRequest = new SendFCMRequest(riderLocation, currentUser,"Tap for Details" , riderDetails.getToken(), "data_type_ride_accepted", otp,currentUser.getUsername()+" "+"has accepted your Request",m_fare);
+                                        SendFCMRequest sendFCMRequest = new SendFCMRequest("Tap for Details" , riderDetails.getToken(), "data_type_ride_accepted", otp,currentUser.getUsername()+" "+"has accepted your Request","Rs"+" "+m_fare);
                                         boolean result = sendFCMRequest.sendRequest();
                                         if (result==true) {
                                             ((RidesFoundShowOnMapForDriver) getActivity()).setViewPager(1, new SecondDriverFragment());
@@ -104,7 +109,10 @@ public class FirstDriverFragment extends Fragment {
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        SendFCMRequest sendFCMRequest = new SendFCMRequest(riderLocation, currentUser,"Tap for Details" , riderDetails.getToken(), "data_type_ride_accepted", otp,currentUser.getUsername()+" "+"has accepted your Request","Free Ride");
+                        Random rand = new Random();
+                        otp=String.format("%04d", rand.nextInt(10000));
+                        Log.d(TAG, "onClick: Otp:" + otp);
+                        SendFCMRequest sendFCMRequest = new SendFCMRequest("Tap for Details" , riderDetails.getToken(), "data_type_ride_accepted", otp,currentUser.getUsername()+" "+"has accepted your Request","Free Ride");
                         sendFCMRequest.sendRequest();
                         ((RidesFoundShowOnMapForDriver) getActivity()).setViewPager(1, new SecondDriverFragment());
                         Log.d(TAG, "onClick: Free Ride");
@@ -132,7 +140,7 @@ public class FirstDriverFragment extends Fragment {
                         if(!input.getText().toString().equals("")){
                             m_Text = input.getText().toString();
                             Log.d(TAG, "onClick: "+m_Text);
-                            SendFCMRequest sendFCMRequest = new SendFCMRequest(riderLocation, currentUser,m_Text , riderDetails.getToken(), "data_type_ride_rejected", otp,"Car owner says-","");
+                            SendFCMRequest sendFCMRequest = new SendFCMRequest(m_Text , riderDetails.getToken(), "data_type_ride_rejected", otp,"Car owner says-","");
                             boolean result = sendFCMRequest.sendRequest();
                             if (result==true) {
                                 Intent intent=new Intent(getActivity(),HomeActivity.class);
@@ -156,6 +164,7 @@ public class FirstDriverFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: Clicked on ride_details_fragment_one_driver");
+                startActivity(new Intent(getContext(), OnGoingTripDetails.class));
 
             }
         });

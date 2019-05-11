@@ -65,7 +65,6 @@
             android:layout_marginBottom="5dp"/>
 
         <Button
-            android:autoSizeTextType="uniform"
             android:id="@+id/start_trip_fragment_two_driver"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

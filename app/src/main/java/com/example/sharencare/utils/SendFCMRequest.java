@@ -19,12 +19,11 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.sharencare.Adapters.SearchedRidesRecyclerViewAdapter.BASE_URL;
+import static com.example.sharencare.utils.StaticPoolClass.otherUserDetails;
 import static com.example.sharencare.utils.StaticPoolClass.serverKey;
 
 public class SendFCMRequest {
     private static final String TAG = "SendFCMRequest";
-    private UserLocation location;
-    private User  currentUser;
     private  String message;
     private  String token;
     private  String data_type;
@@ -35,9 +34,7 @@ public class SendFCMRequest {
     private String fare;
 
 
-    public SendFCMRequest(UserLocation location, User currentUser, String message, String token, String data_type, String otp, String title,String f) {
-        this.location = location;
-        this.currentUser = currentUser;
+    public SendFCMRequest(String message, String token, String data_type, String otp, String title,String f) {
         this.message = message;
         this.token = token;
         this.data_type = data_type;
@@ -61,7 +58,10 @@ public class SendFCMRequest {
         headers.put("Authorization","key="+serverKey);
         FCMData data=new FCMData();
         data.setOtp(otp);
-        data.setToUserId(location.getUser_id());
+        data.setFare(fare);
+        data.setDlat(Double.toString(StaticPoolClass.tripDestinationLatLng.lat));
+        data.setDlng(Double.toString(StaticPoolClass.tripDestinationLatLng.lng));
+        data.setToUserId(otherUserDetails.getUser_id());
         data.setFromUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
         data.setData_type(data_type);
         data.setTitle(title);

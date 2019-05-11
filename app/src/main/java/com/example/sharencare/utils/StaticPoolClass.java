@@ -1,5 +1,7 @@
 package com.example.sharencare.utils;
 
+import android.location.Address;
+
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.Models.User;
 import com.example.sharencare.Models.UserLocation;
@@ -22,6 +24,9 @@ public class StaticPoolClass {
     public static ArrayList<TripDetail> collectionTripsRiderActivity;
     public static String  serverKey;
     public static String fare;
+    public static Address desAddress;
+    public static  com.google.maps.model.LatLng tripSourceLatLng;
+    public static com.google.maps.model.LatLng tripDestinationLatLng;
 
 
 }

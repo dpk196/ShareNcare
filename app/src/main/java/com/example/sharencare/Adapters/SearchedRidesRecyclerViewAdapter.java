@@ -17,7 +17,9 @@ import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.R;
 import com.example.sharencare.ui.MainActivity;
 import com.example.sharencare.Interfaces.FCM;
+import com.example.sharencare.ui.TripDetailsDriver;
 import com.example.sharencare.ui.TripDetailsRider;
+import com.example.sharencare.utils.StaticPoolClass;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
@@ -109,11 +111,12 @@ public class SearchedRidesRecyclerViewAdapter extends RecyclerView.Adapter<Searc
       //token
       FCMData data=new FCMData();
       data.setToUserId(userId);
+      data.setDlat(Double.toString(StaticPoolClass.tripDestinationLatLng.lat));
+      data.setDlng(Double.toString(StaticPoolClass.tripDestinationLatLng.lng));
       data.setFromUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
       data.setData_type("data_type_ride_request");
       data.setTitle("Rider found");
       data.setFare(TripDetailsRider.fare);
-
       data.setMessage(MainActivity.currentUser.getUsername()+" "+"wants to ride with you");
       FirebaseCloudMessage firebaseCloudMessage =new FirebaseCloudMessage();
       firebaseCloudMessage.setData(data);

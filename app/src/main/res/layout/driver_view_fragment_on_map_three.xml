@@ -68,7 +68,6 @@
             android:layout_marginBottom="5dp"/>
 
         <Button
-
             android:id="@+id/navigate_trip_three_driver"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -96,7 +95,7 @@
             android:text="End Trip" />
 
         <Button
-            android:id="@+id/chat_fragment_three_driver"
+            android:id="@+id/sos_fragment_three_driver"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/ride_with_fragment_three_driver"

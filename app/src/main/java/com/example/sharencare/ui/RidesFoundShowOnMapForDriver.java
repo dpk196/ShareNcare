@@ -6,6 +6,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -59,10 +61,12 @@ import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.sharencare.utils.StaticPoolClass.currentUserLocation;
+import static com.example.sharencare.utils.StaticPoolClass.desAddress;
 import static com.example.sharencare.utils.StaticPoolClass.otherUserDetails;
 import static com.example.sharencare.utils.StaticPoolClass.rideAcceptedFlag;
 
@@ -97,7 +101,6 @@ public class RidesFoundShowOnMapForDriver extends AppCompatActivity implements O
     private Marker mSelectedMarker;
     private String duration="";
     private String maxChargeableFare="";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,8 +139,10 @@ public class RidesFoundShowOnMapForDriver extends AppCompatActivity implements O
         }
 
         Log.d(TAG, "onMapReady: Called");
-        mMap.setOnInfoWindowClickListener(this);
         setCameraView();
+        mMap.setOnInfoWindowClickListener(this);
+
+
     }
 
     @Override
@@ -331,9 +336,10 @@ public class RidesFoundShowOnMapForDriver extends AppCompatActivity implements O
                     else{
                         snippet="Determine route to"+" "+otherUserDetails.getUsername()+"?";
                         avatar=R.drawable.person;
-                    ClusterMarker clusterMarker=new ClusterMarker(new LatLng(otherUserLocation.getGeoPoint().getLatitude(),otherUserLocation.getGeoPoint().getLongitude()),otherUserDetails.getUsername()+"'s"+" "+"location",snippet,avatar);
+                        ClusterMarker clusterMarker=new ClusterMarker(new LatLng(otherUserLocation.getGeoPoint().getLatitude(),otherUserLocation.getGeoPoint().getLongitude()),otherUserDetails.getUsername()+"'s"+" "+"location",snippet,avatar);
                         mClusterManager.addItem(clusterMarker);
                         mClusterMarkers.add(clusterMarker);
+
 
                     }
 
@@ -342,6 +348,11 @@ public class RidesFoundShowOnMapForDriver extends AppCompatActivity implements O
 
                 }
             }
+            snippet="Determine route to"+" "+StaticPoolClass.tripDetails.getTrip_destination()+"?";
+            avatar=R.drawable.destination;
+            ClusterMarker clusterMarker=new ClusterMarker(new LatLng(StaticPoolClass.tripDestinationLatLng.lat,StaticPoolClass.tripDestinationLatLng.lng),"Destination",snippet,avatar);
+            mClusterManager.addItem(clusterMarker);
+            mClusterMarkers.add(clusterMarker);
             mClusterManager.cluster();
 
         }
@@ -457,7 +468,6 @@ public class RidesFoundShowOnMapForDriver extends AppCompatActivity implements O
                         newDecodedPath.add(new LatLng(
                                 latLng.lat,
                                 latLng.lng));
-
                     }
                     Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
                     polyline.setColor(ContextCompat.getColor(getApplicationContext(), R.color.blue1));
@@ -471,6 +481,9 @@ public class RidesFoundShowOnMapForDriver extends AppCompatActivity implements O
             }
         });
     }
+
+
+
 
 
 }

@@ -7,6 +7,47 @@ public class FCMData {
     private String otp;
     private String message;
     private String fare;
+    private String  dlat;
+    private String  dlng;
+
+
+
+    public String getFare() {
+        return fare;
+    }
+
+    public void setFare(String fare) {
+        this.fare = fare;
+    }
+
+    public FCMData(String title, String fromUserId, String toUserId, String data_type, String otp, String message, String fare,String  lat,String lng) {
+        this.title = title;
+        this.fromUserId = fromUserId;
+        this.toUserId = toUserId;
+        this.data_type = data_type;
+        this.otp = otp;
+        this.message = message;
+        this.fare = fare;
+        this.dlat=lat;
+        this.dlng=lng;
+
+    }
+
+    public String  getDlat() {
+        return dlat;
+    }
+
+    public void setDlat(String  dlat) {
+        this.dlat = dlat;
+    }
+
+    public String  getDlng() {
+        return dlng;
+    }
+
+    public void setDlng(String dlng) {
+        this.dlng = dlng;
+    }
 
     @Override
     public String toString() {
@@ -18,27 +59,10 @@ public class FCMData {
                 ", otp='" + otp + '\'' +
                 ", message='" + message + '\'' +
                 ", fare='" + fare + '\'' +
+                ", dlat=" + dlat +
+                ", dlng=" + dlng +
                 '}';
     }
-
-    public String getFare() {
-        return fare;
-    }
-
-    public void setFare(String fare) {
-        this.fare = fare;
-    }
-
-    public FCMData(String title, String fromUserId, String toUserId, String data_type, String otp, String message, String fare) {
-        this.title = title;
-        this.fromUserId = fromUserId;
-        this.toUserId = toUserId;
-        this.data_type = data_type;
-        this.otp = otp;
-        this.message = message;
-        this.fare = fare;
-    }
-
     public FCMData() {
     }
 

@@ -68,8 +68,8 @@ public class TripDetailsRider extends AppCompatActivity implements OnMapReadyCal
     private GoogleMap mGoogleMap;
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
     private LatLngBounds mLatLngBounds;
-    com.google.maps.model.LatLng startPoint ;
-    com.google.maps.model.LatLng endPoint;
+    public static com.google.maps.model.LatLng startPoint ;
+    public static com.google.maps.model.LatLng endPoint;
     Intent intent;
     String source;
     String destination;
@@ -132,8 +132,10 @@ public class TripDetailsRider extends AppCompatActivity implements OnMapReadyCal
 
     private void getStartingEndingCoordinate(final DirectionsResult result) {
         for (DirectionsRoute route : result.routes) {
-            startPoint = route.legs[0].endLocation;
-            endPoint = route.legs[0].startLocation;
+            StaticPoolClass.tripDestinationLatLng = route.legs[0].endLocation;
+            StaticPoolClass.tripSourceLatLng = route.legs[0].startLocation;
+            startPoint= StaticPoolClass.tripDestinationLatLng;
+            endPoint=StaticPoolClass.tripSourceLatLng;
             Log.d(TAG, "getStartingEndingCoordinate:Start:" + startPoint.toString());
             Log.d(TAG, "getStartingEndingCoordinate: End:" + endPoint.toString());
             Log.d(TAG, "getStartingEndingCoordinate: Start Adress and startLocation" + route.legs[0].startAddress+" location:"+route.legs[0].startLocation.toString());

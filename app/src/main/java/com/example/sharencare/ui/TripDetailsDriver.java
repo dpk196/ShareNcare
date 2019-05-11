@@ -65,13 +65,13 @@ public class TripDetailsDriver extends AppCompatActivity implements OnMapReadyCa
     private GoogleMap mGoogleMap;
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
     private LatLngBounds mLatLngBounds;
-    com.google.maps.model.LatLng startPoint;
-    com.google.maps.model.LatLng endPoint;
     Intent intent;
     String source;
     String destination;
     String duration;
     String distance;
+    private static com.google.maps.model.LatLng startPoint ;
+    private static com.google.maps.model.LatLng endPoint;
     static String fare = "Free Ride";
     private TextView tripDistance, tripDuration;
     private MarkerOptions markerSource;
@@ -121,8 +121,10 @@ public class TripDetailsDriver extends AppCompatActivity implements OnMapReadyCa
 
     private void getStartingEndingCoordinate(final DirectionsResult result) {
         for (DirectionsRoute route : result.routes) {
-            startPoint = route.legs[0].endLocation;
-            endPoint = route.legs[0].startLocation;
+            StaticPoolClass.tripDestinationLatLng = route.legs[0].endLocation;
+            StaticPoolClass.tripSourceLatLng = route.legs[0].startLocation;
+            startPoint= StaticPoolClass.tripDestinationLatLng;
+            endPoint=StaticPoolClass.tripSourceLatLng;
             Log.d(TAG, "getStartingEndingCoordinate:Start:" + startPoint.toString());
             Log.d(TAG, "getStartingEndingCoordinate: End:" + endPoint.toString());
             Log.d(TAG, "getStartingEndingCoordinate: Start Adress and startLocation" + route.legs[0].startAddress + " location:" + route.legs[0].startLocation.toString());
@@ -250,7 +252,7 @@ public class TripDetailsDriver extends AppCompatActivity implements OnMapReadyCa
     }
 
     private void createAtripDetailsObject() {
-        tripDetail = new TripDetail("", "On trip", source, destination, FirebaseAuth.getInstance().getCurrentUser().getUid(), duration, fare, distance, "", "driver", null);
+        tripDetail = new TripDetail("", "On trip", source, destination, FirebaseAuth.getInstance().getCurrentUser().getUid(), duration, fare, distance, "", "driver", null,"");
         Log.d(TAG, "createAtripDetailsObject: " + tripDetail);
 
     }
@@ -261,6 +263,8 @@ public class TripDetailsDriver extends AppCompatActivity implements OnMapReadyCa
         mDb.setFirestoreSettings(settings);
 
         DocumentReference newTripRef = mDb.collection(getString(R.string.collection_trips)).document();
+        Log.d(TAG, "submitDetailsToFireStore: id of the document:"+newTripRef.getId());
+        tripDetail.setTripId(newTripRef.getId());
         newTripRef.set(tripDetail).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

@@ -20,6 +20,7 @@ public class TripDetail implements Parcelable {
     String trip_date;
     String riderOrDriver;
     @ServerTimestamp Date timestamp;
+    String tripId;
 
 
     protected TripDetail(Parcel in) {
@@ -51,23 +52,6 @@ public class TripDetail implements Parcelable {
         return timestamp;
     }
 
-    @Override
-    public String toString() {
-        return "TripDetail{" +
-                "start_time='" + start_time + '\'' +
-                ", status='" + status + '\'' +
-                ", trip_source='" + trip_source + '\'' +
-                ", trip_destination='" + trip_destination + '\'' +
-                ", user_id='" + user_id + '\'' +
-                ", trip_duration='" + trip_duration + '\'' +
-                ", trip_fare='" + trip_fare + '\'' +
-                ", trip_distance='" + trip_distance + '\'' +
-                ", trip_date='" + trip_date + '\'' +
-                ", riderOrDriver='" + riderOrDriver + '\'' +
-                ", timestamp=" + timestamp +
-                '}';
-    }
-
     public String getRiderOrDriver() {
         return riderOrDriver;
     }
@@ -80,13 +64,7 @@ public class TripDetail implements Parcelable {
         this.timestamp = timestamp;
     }
 
-    public TripDetail(String start_time,
-                      String status, String trip_source,
-                      String trip_destination,
-                      String user_id, String trip_duration,
-                      String trip_fare, String trip_distance,
-                      String trip_date, String riderOrDriver,
-                      Date timestamp) {
+    public TripDetail(String start_time, String status, String trip_source, String trip_destination, String user_id, String trip_duration, String trip_fare, String trip_distance, String trip_date, String riderOrDriver, Date timestamp, String tripId) {
         this.start_time = start_time;
         this.status = status;
         this.trip_source = trip_source;
@@ -98,6 +76,7 @@ public class TripDetail implements Parcelable {
         this.trip_date = trip_date;
         this.riderOrDriver = riderOrDriver;
         this.timestamp = timestamp;
+        this.tripId = tripId;
     }
 
     public String getTrip_distance() {
@@ -127,6 +106,32 @@ public class TripDetail implements Parcelable {
     public TripDetail() {
     }
 
+    @Override
+    public String toString() {
+        return "TripDetail{" +
+                "start_time='" + start_time + '\'' +
+                ", status='" + status + '\'' +
+                ", trip_source='" + trip_source + '\'' +
+                ", trip_destination='" + trip_destination + '\'' +
+                ", user_id='" + user_id + '\'' +
+                ", trip_duration='" + trip_duration + '\'' +
+                ", trip_fare='" + trip_fare + '\'' +
+                ", trip_distance='" + trip_distance + '\'' +
+                ", trip_date='" + trip_date + '\'' +
+                ", riderOrDriver='" + riderOrDriver + '\'' +
+                ", tripId='" + tripId + '\'' +
+                ", timestamp=" + timestamp +
+                '}';
+    }
+
+    public String getTripId() {
+
+        return tripId;
+    }
+
+    public void setTripId(String tripId) {
+        this.tripId = tripId;
+    }
 
     public String getUser_id() {
         return user_id;

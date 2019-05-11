@@ -109,7 +109,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 case R.id.sign_out: {
                     sendResgistrationTokenToServer();
-                    FirebaseAuth.getInstance().signOut();
                     break;
                 }
             }
@@ -129,6 +128,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "onComplete: Token Send to FireStore ");
+                        FirebaseAuth.getInstance().signOut();
                     }
                 }
             });

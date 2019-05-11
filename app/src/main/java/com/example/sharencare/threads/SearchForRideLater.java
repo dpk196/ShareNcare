@@ -83,7 +83,7 @@ public class SearchForRideLater extends AsyncTask<Void, Void, ArrayList<String>>
             }
         });
         while (onTripFlag == false) {
-            Log.d(TAG, "searchForOnTripRides: Still searching for rides");
+           // Log.d(TAG, "searchForOnTripRides: Still searching for rides");
         }
         if (tripFromFireStore.size() > 0) {
             for (TripDetail tripDetail : tripFromFireStore) {
