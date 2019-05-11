@@ -205,7 +205,7 @@ public class TripDetailsDriver extends AppCompatActivity implements OnMapReadyCa
         switch (v.getId()) {
             case R.id.start_trip_now_button_tripDetails_driver: {
                 for (TripDetail tripDetail : DriverActivity.collectionTrips) {
-                    if (tripDetail.getStatus().equals("On trip")) {
+                    if (tripDetail.getStatus().contains("On trip")) {
                         Log.d(TAG, "onClick: User is Already on a trip");
                         onTrip = true;
                         AlertDialog.Builder builder = new AlertDialog.Builder(TripDetailsDriver.this);

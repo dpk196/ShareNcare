@@ -21,6 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.example.sharencare.Adapters.SearchedRidesRecyclerViewAdapter.BASE_URL;
 import static com.example.sharencare.utils.StaticPoolClass.otherUserDetails;
 import static com.example.sharencare.utils.StaticPoolClass.serverKey;
+import static com.example.sharencare.utils.StaticPoolClass.tripDetailsForScheduleRide;
 
 public class SendFCMRequest {
     private static final String TAG = "SendFCMRequest";
@@ -45,8 +46,6 @@ public class SendFCMRequest {
 
     public   boolean sendRequest(){
         Log.d(TAG, "sendRequest: Sending request for the token:"+token);
-
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -59,13 +58,18 @@ public class SendFCMRequest {
         FCMData data=new FCMData();
         data.setOtp(otp);
         data.setFare(fare);
-        data.setDlat(Double.toString(StaticPoolClass.tripDestinationLatLng.lat));
-        data.setDlng(Double.toString(StaticPoolClass.tripDestinationLatLng.lng));
+        if(!data_type.contains("allowed")){
+            data.setDlat(Double.toString(StaticPoolClass.tripDestinationLatLng.lat));
+            data.setDlng(Double.toString(StaticPoolClass.tripDestinationLatLng.lng));
+        }
         data.setToUserId(otherUserDetails.getUser_id());
         data.setFromUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
         data.setData_type(data_type);
         data.setTitle(title);
         data.setMessage(message);
+        if(StaticPoolClass.tripDetailsForScheduleRide!=null){
+            data.setTrip_id(tripDetailsForScheduleRide.getTripId());
+        }
         FirebaseCloudMessage firebaseCloudMessage =new FirebaseCloudMessage();
         firebaseCloudMessage.setData(data);
         firebaseCloudMessage.setTo(token);

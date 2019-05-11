@@ -30,10 +30,11 @@ public class SearchForRideLater extends AsyncTask<Void, Void, ArrayList<String>>
     private static final String TAG = "SearchForRides";
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private static GeoPoint geoPoint;
-    private ArrayList<TripDetail> tripFromFireStore = new ArrayList();
+    public static ArrayList<TripDetail> tripFromFireStore = new ArrayList();
     private WeakReference<SearchForLaterOnTripsInterface> reference;
     private Context mContext;
     private FirebaseFirestore mDb;
+    private String date;
     private String tripTo;
     private String tripFrom;
     boolean onTripFlag = false;
@@ -44,11 +45,12 @@ public class SearchForRideLater extends AsyncTask<Void, Void, ArrayList<String>>
     ArrayList<UserLocation> matchedDriverLocations = new ArrayList<>();
     int count = 0;
 
-    public SearchForRideLater(SearchForLaterOnTripsInterface searchForRides, Context mContext, String tripFrom, String tripTo) {
+    public SearchForRideLater(SearchForLaterOnTripsInterface searchForRides, Context mContext, String tripFrom, String tripTo,String date) {
         reference = new WeakReference<>(searchForRides);
         this.mContext = mContext;
         this.tripTo = tripTo;
         this.tripFrom = tripFrom;
+        this.date=date;
         mDb = FirebaseFirestore.getInstance();
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
     }
@@ -64,7 +66,7 @@ public class SearchForRideLater extends AsyncTask<Void, Void, ArrayList<String>>
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder().build();
         mDb.setFirestoreSettings(settings);
         CollectionReference tripCollectionReference = mDb.collection("collection_trips");
-        Query tripsQuery = tripCollectionReference.whereEqualTo("trip_destination", tripTo).whereEqualTo("trip_source", tripFrom);
+        Query tripsQuery = tripCollectionReference.whereEqualTo("trip_date",date).whereEqualTo("trip_destination", tripTo).whereEqualTo("trip_source", tripFrom);
         tripsQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -104,6 +106,6 @@ public class SearchForRideLater extends AsyncTask<Void, Void, ArrayList<String>>
 
     @Override
     protected void onPostExecute(ArrayList<String> strings) {
-        reference.get().matchedLaterOnTrips(strings);
+        reference.get().matchedLaterOnTrips(strings,tripFromFireStore);
     }
 }

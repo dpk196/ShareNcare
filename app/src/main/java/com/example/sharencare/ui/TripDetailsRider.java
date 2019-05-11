@@ -62,7 +62,7 @@ import java.util.List;
 
 import static com.example.sharencare.ui.MapsActivity.geoPoint;
 
-public class TripDetailsRider extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener,SearchForOnTripRidesInterface ,SearchForLaterOnTripsInterface{
+public class TripDetailsRider extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener,SearchForOnTripRidesInterface {
     private static final String TAG = "TripDetailsRider";
     private MapView mMapView;
     private GoogleMap mGoogleMap;
@@ -71,9 +71,9 @@ public class TripDetailsRider extends AppCompatActivity implements OnMapReadyCal
     public static com.google.maps.model.LatLng startPoint ;
     public static com.google.maps.model.LatLng endPoint;
     Intent intent;
-    String source;
-    String destination;
-    String duration;
+    public static String source;
+    public static String destination;
+    public static String duration;
     String distance;
     public static  String fare="";
     private TextView tripDistance,tripDuration,tripFare;
@@ -212,7 +212,7 @@ public class TripDetailsRider extends AppCompatActivity implements OnMapReadyCal
             }
             case R.id.start_trip_later_tripDetails_rider:{
                 showDialog();
-                initThreadTripLater();
+                startActivity(new Intent(TripDetailsRider.this,ScheduleTripRequiredDetails.class));
                 break;
             }
         }
@@ -226,11 +226,6 @@ public class TripDetailsRider extends AppCompatActivity implements OnMapReadyCal
     }
 
 
-    private void initThreadTripLater() {
-        Log.d(TAG, "initThreadTripLater: called");
-        SearchForRideLater search=new SearchForRideLater(this,this,source,destination);
-        search.execute();
-    }
     @Override
     public void matchedOnTripRides(ArrayList<UserLocation> matchedRides,ArrayList<TripDetail> trips) {
         mCollectionTrips=trips;
@@ -254,19 +249,7 @@ public class TripDetailsRider extends AppCompatActivity implements OnMapReadyCal
     }
 
 
-    @Override
-    public void matchedLaterOnTrips(ArrayList<String> userIds) {
-        Log.d(TAG, "matchedLaterOnTrips: Called");
-        if(userIds.size()>0){
-            Intent intent =new Intent(TripDetailsRider.this,AvailableRides.class);
-            intent.putExtra("matchedRides",userIds);
 
-            startActivity(intent);
-        }else{
-            Toast.makeText(this, "No Rides Available to:"+destination, Toast.LENGTH_LONG).show();
-        }
-        hideDialog();
-    }
 
 
 

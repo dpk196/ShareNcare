@@ -1,6 +1,7 @@
 package com.example.sharencare.ui;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.Models.User;
 import com.example.sharencare.Models.UserLocation;
 import com.example.sharencare.R;
+import com.example.sharencare.services.LocationService;
 import com.example.sharencare.utils.MyClusterManagerRenderer;
 import com.example.sharencare.utils.StaticPoolClass;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,6 +56,7 @@ import com.google.maps.model.DirectionsRoute;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.sharencare.utils.StaticPoolClass.currentUserLocation;
 import static com.example.sharencare.utils.StaticPoolClass.desAddress;
 import static com.example.sharencare.utils.StaticPoolClass.otherUserDetails;
 
@@ -303,60 +306,11 @@ public class DriveFoundShowOnMapForRider extends FragmentActivity implements OnM
         }
     }
 
-    private void startUserLocationsRunnable() {
-        Log.d(TAG, "startUserLocationsRunnable: starting runnable for retrieving updated locations.");
-        mHandler.postDelayed(mRunnable = new Runnable() {
-            @Override
-            public void run() {
-                retrieveMyLocations();
-                retrieveOtherUserLocations();
-                mHandler.postDelayed(mRunnable, LOCATION_UPDATE_INTERVAL);
-            }
-        }, LOCATION_UPDATE_INTERVAL);
-    }
 
     private void stopLocationUpdates() {
         mHandler.removeCallbacks(mRunnable);
     }
 
-    private void retrieveMyLocations() {
-        // Log.d(TAG, "retrieveUserLocations: Called");
-        DocumentReference mUserLocationReference = FirebaseFirestore.getInstance().collection(getString(R.string.collection_userlocation))
-                .document(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        mUserLocationReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    userLocation = task.getResult().toObject(UserLocation.class);
-                    // Log.d(TAG, "onComplete: "+userLocation.toString());
-                    LatLng latLng = new LatLng(myLocation.getGeoPoint().getLatitude(), myLocation.getGeoPoint().getLongitude());
-                    // mClusterMarkers.get(0).setPosition(latLng);
-                    // mClusterManagerRenderer.setUpdateMarker(mClusterMarkers.get(0));
-                    //  Log.d(TAG, "onComplete: Updating User Location");
-                }
-            }
-        });
-    }
-
-    private void retrieveOtherUserLocations() {
-        // Log.d(TAG, "retrieveOtherUserLocations: Called");
-        DocumentReference mUserLocationReference = FirebaseFirestore.getInstance().collection(getString(R.string.collection_userlocation))
-                .document(otherUserLocation.getUser_id());
-        mUserLocationReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    userLocation = task.getResult().toObject(UserLocation.class);
-                    // Log.d(TAG, "onComplete: Other User Location "+userLocation.toString());
-                    LatLng latLng = new LatLng(userLocation.getGeoPoint().getLatitude(), userLocation.getGeoPoint().getLongitude());
-                    //  mClusterMarkers.get(0).setPosition(latLng);
-                    //   mClusterManagerRenderer.setUpdateMarker(mClusterMarkers.get(0));
-                    //   Log.d(TAG, "onComplete: Updating User Location");
-                }
-            }
-        });
-
-    }
 
     private void setCameraView() {
         //total view of the map
@@ -378,8 +332,65 @@ public class DriveFoundShowOnMapForRider extends FragmentActivity implements OnM
             Log.d(TAG, "setCameraView: " + e.getMessage());
         }
     }
+    private void startUserLocationsRunnable(){
+        Log.d(TAG, "startUserLocationsRunnable: starting runnable for retrieving updated locations.");
+        mHandler.postDelayed(mRunnable = new Runnable() {
+            @Override
+            public void run() {
+                retrieveLocations(currentUserLocation.getUser_id());
+                retrieveLocations(otherUserLocation.getUser_id());
+
+                mHandler.postDelayed(mRunnable, LOCATION_UPDATE_INTERVAL);
+            }
+        }, LOCATION_UPDATE_INTERVAL);
+    }
+
+    private void retrieveLocations(String userId){
+
+        DocumentReference mUserLocationReference= FirebaseFirestore.getInstance().collection(getString(R.string.collection_userlocation))
+                .document(userId);
+        mUserLocationReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    UserLocation userLocation=task.getResult().toObject(UserLocation.class);
+                    if(userLocation.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                        mClusterMarkers.get(0).setPosition(new LatLng(userLocation.getGeoPoint().getLatitude(),userLocation.getGeoPoint().getLongitude()));
+                        mClusterManagerRenderer.setUpdateMarker(mClusterMarkers.get(0));
+                    }else{
+                        mClusterMarkers.get(1).setPosition(new LatLng(userLocation.getGeoPoint().getLatitude(),userLocation.getGeoPoint().getLongitude()));
+                        mClusterManagerRenderer.setUpdateMarker(mClusterMarkers.get(1));
+                    }
 
 
+                }
+            }
+        });
+    }
+    private boolean isLocationServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if("com.example.sharencare.services.LocationService".equals(service.service.getClassName())) {
+                Log.d(TAG, "isLocationServiceRunning: location service is already running.");
+                return true;
+            }
+        }
+        Log.d(TAG, "isLocationServiceRunning: location service is not running.");
+        return false;
+    }
+    private void startLocationService(){
+        if(!isLocationServiceRunning()){
+            Intent serviceIntent = new Intent(this, LocationService.class);
+//        this.startService(serviceIntent);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
+                DriveFoundShowOnMapForRider.this.startForegroundService(serviceIntent);
+
+            }else{
+                Log.d(TAG, "startLocationService: Starting Services");
+                startService(serviceIntent);
+            }
+        }
+    }
 
     @Override
     public void onClick(View v) {
@@ -390,6 +401,7 @@ public class DriveFoundShowOnMapForRider extends FragmentActivity implements OnM
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
+        startLocationService();
         startUserLocationsRunnable();
     }
 

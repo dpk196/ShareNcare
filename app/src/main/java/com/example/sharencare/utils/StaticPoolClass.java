@@ -27,6 +27,9 @@ public class StaticPoolClass {
     public static Address desAddress;
     public static  com.google.maps.model.LatLng tripSourceLatLng;
     public static com.google.maps.model.LatLng tripDestinationLatLng;
-
-
+    public static boolean IsSchedule=false;
+    public static TripDetail tripDetailsForScheduleRide;
+    public static boolean acceptSchuledRideFlag=false;
+    public static boolean ifRiderRejected=false;
+    public static boolean ifDriverRejected=false;
 }

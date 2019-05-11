@@ -22,7 +22,10 @@
         android:roundIcon="@drawable/applogowhite"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.OnGoingTripDetails"></activity>
+        <activity android:name=".ui.ScheduleDriveViewRider"></activity>
+        <activity android:name=".ui.ScheduleDriveViewDriver" />
+        <activity android:name=".ui.ScheduleTripRequiredDetails" />
+        <activity android:name=".ui.OnGoingTripDetails" />
         <activity android:name=".ui.ScheduleTripDriver" />
         <activity android:name=".ui.VehicleNameAndRegistration" />
         <!--

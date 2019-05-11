@@ -9,6 +9,7 @@ public class FCMData {
     private String fare;
     private String  dlat;
     private String  dlng;
+    private String  trip_id;
 
 
 
@@ -20,7 +21,7 @@ public class FCMData {
         this.fare = fare;
     }
 
-    public FCMData(String title, String fromUserId, String toUserId, String data_type, String otp, String message, String fare,String  lat,String lng) {
+    public FCMData(String title, String fromUserId, String toUserId, String data_type, String otp, String message, String fare,String  lat,String lng,String trip_id) {
         this.title = title;
         this.fromUserId = fromUserId;
         this.toUserId = toUserId;
@@ -30,7 +31,32 @@ public class FCMData {
         this.fare = fare;
         this.dlat=lat;
         this.dlng=lng;
+        this.trip_id=trip_id;
 
+    }
+
+    @Override
+    public String toString() {
+        return "FCMData{" +
+                "title='" + title + '\'' +
+                ", fromUserId='" + fromUserId + '\'' +
+                ", toUserId='" + toUserId + '\'' +
+                ", data_type='" + data_type + '\'' +
+                ", otp='" + otp + '\'' +
+                ", message='" + message + '\'' +
+                ", fare='" + fare + '\'' +
+                ", dlat='" + dlat + '\'' +
+                ", dlng='" + dlng + '\'' +
+                ", trip_id='" + trip_id + '\'' +
+                '}';
+    }
+
+    public String getTrip_id() {
+        return trip_id;
+    }
+
+    public void setTrip_id(String trip_id) {
+        this.trip_id = trip_id;
     }
 
     public String  getDlat() {
@@ -49,20 +75,6 @@ public class FCMData {
         this.dlng = dlng;
     }
 
-    @Override
-    public String toString() {
-        return "FCMData{" +
-                "title='" + title + '\'' +
-                ", fromUserId='" + fromUserId + '\'' +
-                ", toUserId='" + toUserId + '\'' +
-                ", data_type='" + data_type + '\'' +
-                ", otp='" + otp + '\'' +
-                ", message='" + message + '\'' +
-                ", fare='" + fare + '\'' +
-                ", dlat=" + dlat +
-                ", dlng=" + dlng +
-                '}';
-    }
     public FCMData() {
     }
 

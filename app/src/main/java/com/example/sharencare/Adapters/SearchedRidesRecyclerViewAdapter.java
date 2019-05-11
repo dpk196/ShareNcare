@@ -68,6 +68,7 @@ public class SearchedRidesRecyclerViewAdapter extends RecyclerView.Adapter<Searc
                     Log.d(TAG, "onClick: UserId:"+userIDS.get(i).toString());
                     Log.d(TAG, "onClick: Token:"+tokenList.get(i).toString());
                     sendRequest(tokenList.get(i),userIDS.get(i), TripDetailsRider.mCollectionTrips.get(i));
+
                     Toast.makeText(mContext, "Please wait for 2-3 minutes for response", Toast.LENGTH_SHORT).show();
                 }catch(Exception e){
                     Log.d(TAG, "onClick: Something went wrong please try again");
@@ -111,10 +112,17 @@ public class SearchedRidesRecyclerViewAdapter extends RecyclerView.Adapter<Searc
       //token
       FCMData data=new FCMData();
       data.setToUserId(userId);
+      data.setTrip_id(trip.getTripId());
       data.setDlat(Double.toString(StaticPoolClass.tripDestinationLatLng.lat));
       data.setDlng(Double.toString(StaticPoolClass.tripDestinationLatLng.lng));
       data.setFromUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
-      data.setData_type("data_type_ride_request");
+      if(StaticPoolClass.IsSchedule==true){
+          data.setData_type("data_type_schedule_trip");
+      }else{
+          data.setData_type("data_type_ride_request");
+      }
+
+
       data.setTitle("Rider found");
       data.setFare(TripDetailsRider.fare);
       data.setMessage(MainActivity.currentUser.getUsername()+" "+"wants to ride with you");

@@ -35,46 +35,17 @@
             android:textSize="25dp"
             android:textStyle="bold" />
 
-        <TextView
-            android:autoSizeTextType="uniform"
-            android:id="@+id/otpTextView_fragment_three_driver"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/ride_to_view_fragment_three_driver"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/white_onclick_grey"
-            android:backgroundTint="@color/quantum_yellow900"
-            android:text="To"
-            android:textColor="@color/Black"
-            android:textSize="15sp"
-            android:textStyle="bold" />
 
-        <TextView
-            android:autoSizeTextType="uniform"
-            android:id="@+id/otp_value_fragment_three_driver"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/otpTextView_fragment_three_driver"
-            android:layout_marginLeft="1dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/white_onclick_grey"
-            android:backgroundTint="@color/quantum_yellow100"
-            android:text="Kolkata"
-            android:maxLength="12"
-            android:textColor="@color/Black"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="5dp"/>
+
+
 
         <Button
             android:id="@+id/navigate_trip_three_driver"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/ride_with_fragment_three_driver"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="35dp"
             android:layout_marginTop="10dp"
-            android:layout_toRightOf="@+id/otp_value_fragment_three_driver"
             android:background="@drawable/white_onclick_grey"
             android:backgroundTint="@color/quantum_yellow"
             android:text="Navigate"
@@ -85,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/ride_with_fragment_three_driver"
-            android:layout_marginLeft="17dp"
+            android:layout_marginLeft="25dp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp"
@@ -99,7 +70,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/ride_with_fragment_three_driver"
-            android:layout_marginLeft="17dp"
+            android:layout_marginLeft="25dp"
             android:layout_marginTop="10dp"
             android:layout_toRightOf="@+id/end_trip_three_driver"
             android:background="@drawable/white_onclick_grey"
