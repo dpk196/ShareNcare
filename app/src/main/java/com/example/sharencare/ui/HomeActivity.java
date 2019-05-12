@@ -111,6 +111,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     sendResgistrationTokenToServer();
                     break;
                 }
+                case R.id.about_us:{
+                     startActivity(new Intent(HomeActivity.this,AboutUs.class));
+                    break;
+                }
             }
         } catch (Exception e) {
             Log.d(TAG, "onClick: Something went Wrong");

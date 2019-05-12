@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.AboutUs">
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="130dp"
+        android:layout_height="150dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        app:srcCompat="@drawable/applogo" />
+    <RelativeLayout
+        android:layout_below="@id/imageView"
+        android:layout_width="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/textEmailReg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:text="Created By"
+            android:textColor="@color/Black"
+            android:textSize="25sp" />
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:id="@+id/name1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textEmailReg"
+            android:text="Ankesh Anurag"
+            android:textSize="20sp"/>
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:id="@+id/name2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/name1"
+            android:text="Deepak Kumar Yadav"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"/>
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:id="@+id/name3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/name2"
+            android:text="Dheeraj Kumar Pandey"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"/>
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:id="@+id/name4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/name3"
+            android:text="Megha Kumari"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"/>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

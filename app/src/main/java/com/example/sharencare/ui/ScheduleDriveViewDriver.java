@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import static com.example.sharencare.utils.StaticPoolClass.ifRideRejected;
 import static com.example.sharencare.utils.StaticPoolClass.otherUserDetails;
 
 public class ScheduleDriveViewDriver extends AppCompatActivity  {
@@ -46,8 +47,13 @@ public class ScheduleDriveViewDriver extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 try{
-                    SendFCMRequest sendFCMRequest = new SendFCMRequest("Tab to see Trip Details", StaticPoolClass.otherUserDetails.getToken(), "allowed_to_show_trip_details", "","Trip Details","");
-                    sendFCMRequest.sendRequest();
+                    if(ifRideRejected==false){
+                        SendFCMRequest sendFCMRequest = new SendFCMRequest("Tab to see Trip Details", StaticPoolClass.otherUserDetails.getToken(), "allowed_to_show_trip_details", "","Trip Details","");
+                        sendFCMRequest.sendRequest();
+                    }else {
+                        Log.d(TAG, "onClick: Rider is unable to ride with you");
+                        Toast.makeText(ScheduleDriveViewDriver.this, "Sorry can't share details now", Toast.LENGTH_SHORT).show();
+                    }
                 }catch (Exception e){
                     Log.d(TAG, "onClick: Someting went wrong:"+e.getMessage());
                     Toast.makeText(ScheduleDriveViewDriver.this, "Try again", Toast.LENGTH_SHORT).show();

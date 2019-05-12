@@ -30,6 +30,6 @@ public class StaticPoolClass {
     public static boolean IsSchedule=false;
     public static TripDetail tripDetailsForScheduleRide;
     public static boolean acceptSchuledRideFlag=false;
-    public static boolean ifRiderRejected=false;
+    public static boolean ifRideRejected=false;
     public static boolean ifDriverRejected=false;
 }

@@ -17,11 +17,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.Models.User;
 import com.example.sharencare.R;
-import com.example.sharencare.ui.HomeActivity;
 import com.example.sharencare.ui.MainActivity;
 import com.example.sharencare.ui.RidesFoundShowOnMapForDriver;
 import com.example.sharencare.utils.SendFCMRequest;

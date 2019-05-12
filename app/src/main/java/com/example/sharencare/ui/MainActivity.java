@@ -296,4 +296,13 @@ public class MainActivity extends AppCompatActivity implements UserDetailsOfMatc
         }
 
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        StaticPoolClass.IsSchedule=false;
+        StaticPoolClass.acceptSchuledRideFlag=false;
+        StaticPoolClass.rideAcceptedFlag=false;
+        StaticPoolClass.ifRideRejected=false;
+    }
 }

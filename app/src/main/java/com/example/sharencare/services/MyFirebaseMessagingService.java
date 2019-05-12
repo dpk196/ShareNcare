@@ -48,6 +48,7 @@ import com.google.maps.model.LatLng;
 
 import static com.example.sharencare.utils.StaticPoolClass.currentUserDetails;
 import static com.example.sharencare.utils.StaticPoolClass.currentUserLocation;
+import static com.example.sharencare.utils.StaticPoolClass.ifRideRejected;
 import static com.example.sharencare.utils.StaticPoolClass.otherUserDetails;
 import static com.example.sharencare.utils.StaticPoolClass.otherUserLocation;
 import static com.example.sharencare.utils.StaticPoolClass.recevied_otp;
@@ -143,6 +144,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
                 getTripFromFireStore(trip_id);
             }
             if(data_type.contains("allowed_to_show_trip_details_rejected")){
+                ifRideRejected=true;
                 Log.d(TAG, "onMessageReceived: Trip Rejected");
                 sendNoIntentBroadcastNotification(title,message);
             }
