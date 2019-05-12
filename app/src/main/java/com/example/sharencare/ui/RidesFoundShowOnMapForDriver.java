@@ -238,30 +238,7 @@ public class RidesFoundShowOnMapForDriver extends AppCompatActivity implements O
             }
         });
     }
-    private boolean isLocationServiceRunning() {
-        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
-            if("com.example.sharencare.services.LocationService".equals(service.service.getClassName())) {
-                Log.d(TAG, "isLocationServiceRunning: location service is already running.");
-                return true;
-            }
-        }
-        Log.d(TAG, "isLocationServiceRunning: location service is not running.");
-        return false;
-    }
-    private void startLocationService(){
-        if(!isLocationServiceRunning()){
-            Intent serviceIntent = new Intent(this, LocationService.class);
-//        this.startService(serviceIntent);
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
-                RidesFoundShowOnMapForDriver.this.startForegroundService(serviceIntent);
 
-            }else{
-                Log.d(TAG, "startLocationService: Starting Services");
-                startService(serviceIntent);
-            }
-        }
-    }
 
 
 
@@ -272,7 +249,7 @@ public class RidesFoundShowOnMapForDriver extends AppCompatActivity implements O
         super.onResume();
         mMapView.onResume();
         startUserLocationsRunnable();
-        startLocationService();
+
     }
 
     @Override

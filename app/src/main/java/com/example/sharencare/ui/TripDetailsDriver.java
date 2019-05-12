@@ -1,6 +1,7 @@
 package com.example.sharencare.ui;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -28,6 +29,7 @@ import android.widget.Toast;
 import com.example.sharencare.Models.TripDetail;
 import com.example.sharencare.Models.UserLocation;
 import com.example.sharencare.R;
+import com.example.sharencare.services.LocationService;
 import com.example.sharencare.utils.CalculateFare;
 import com.example.sharencare.utils.DatePickerDialogFragment;
 import com.example.sharencare.utils.StaticPoolClass;
@@ -236,6 +238,7 @@ public class TripDetailsDriver extends AppCompatActivity implements OnMapReadyCa
                     createAtripDetailsObject();
                     submitDetailsToFireStore(tripDetail);
                     Log.d(TAG, "onClick: Building Trip Object");
+                    startLocationService();
                 }
 
                 break;
@@ -352,6 +355,30 @@ public class TripDetailsDriver extends AppCompatActivity implements OnMapReadyCa
     public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
+    }
+    private boolean isLocationServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if("com.example.sharencare.services.LocationService".equals(service.service.getClassName())) {
+                Log.d(TAG, "isLocationServiceRunning: location service is already running.");
+                return true;
+            }
+        }
+        Log.d(TAG, "isLocationServiceRunning: location service is not running.");
+        return false;
+    }
+    private void startLocationService(){
+        if(!isLocationServiceRunning()){
+            Intent serviceIntent = new Intent(this, LocationService.class);
+//        this.startService(serviceIntent);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
+                TripDetailsDriver.this.startForegroundService(serviceIntent);
+
+            }else{
+                Log.d(TAG, "startLocationService: Starting Services");
+                startService(serviceIntent);
+            }
+        }
     }
 }
 
