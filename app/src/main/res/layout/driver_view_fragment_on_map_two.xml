@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- TODO: Update blank fragment layout -->
+    <RelativeLayout
+        android:id="@+id/fragment_relative_layout_fragment_otp_call_chat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/quantum_yellow100">
+
+
+        <TextView
+            android:autoSizeTextType="uniform"
+            android:id="@+id/ride_to_view_fragment_two_driver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="On Trip with"
+            android:textSize="24dp"
+            android:textColor="@color/Black"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/ride_with_fragment_two_driver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:textColor="@color/Black"
+            android:layout_toRightOf="@+id/ride_to_view_fragment_two_driver"
+            android:autoSizeTextType="uniform"
+            android:shadowColor="@color/Black"
+            android:text="Deepak"
+            android:textSize="25dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:autoSizeTextType="uniform"
+            android:id="@+id/otpTextView_fragment_two_driver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ride_to_view_fragment_two_driver"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/white_onclick_grey"
+            android:backgroundTint="@color/quantum_yellow900"
+            android:text="OTP"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:autoSizeTextType="uniform"
+            android:id="@+id/otp_value_fragment_two_driver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/otpTextView_fragment_two_driver"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/white_onclick_grey"
+            android:backgroundTint="@color/quantum_yellow100"
+            android:text="4578"
+            android:textSize="19sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="5dp"/>
+
+        <Button
+            android:id="@+id/start_trip_fragment_two_driver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ride_with_fragment_two_driver"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/otp_value_fragment_two_driver"
+            android:background="@drawable/white_onclick_grey"
+            android:backgroundTint="@color/quantum_yellow"
+            android:text="Start Trip"
+            android:layout_marginBottom="5dp"/>
+
+        <Button
+
+            android:id="@+id/call_him_fragment_two_driver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ride_with_fragment_two_driver"
+            android:layout_marginLeft="17dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@+id/start_trip_fragment_two_driver"
+            android:background="@drawable/white_onclick_grey"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="Call" />
+
+        <Button
+            android:id="@+id/chat_fragment_two_driver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ride_with_fragment_two_driver"
+            android:layout_marginLeft="17dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/call_him_fragment_two_driver"
+            android:background="@drawable/white_onclick_grey"
+            android:text="Chat"
+            android:layout_marginBottom="5dp"/>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="15dp"
+    android:background="@drawable/mybutton"
+    android:id="@+id/searched_rides_parent_layout">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/image"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/applogo" />
+    <TextView
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rider_view"
+        android:layout_toRightOf="@+id/image"
+        android:textColor="#000"
+        android:text="Ride"
+        android:layout_marginLeft="40dp"
+        android:textSize="25dp" />
+
+    <TextView
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="101dp"
+        android:layout_toRightOf="@+id/rider_view"
+        android:text="Ride Number"
+        android:textSize="20sp"
+        android:id="@+id/ride_number"/>
+
+
+
+
+
+
+
+</RelativeLayout>

@@ -20,29 +20,41 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.sharencare.Interfaces.UserDetailsOfMatchedTripInterface;
+import com.example.sharencare.Models.ServerKey;
 import com.example.sharencare.Models.User;
 import com.example.sharencare.R;
+import com.example.sharencare.threads.UserDetailsOfMatchedTrip;
+import com.example.sharencare.utils.StaticPoolClass;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
+import static com.example.sharencare.ui.HomeActivity.user_name;
+import static com.example.sharencare.utils.StaticPoolClass.serverKey;
+
+public class MainActivity extends AppCompatActivity implements UserDetailsOfMatchedTripInterface {
     private ProgressBar mProgressBar;
     private static final String TAG = "MainActivity";
     private FirebaseAuth mAuth;
     FirebaseFirestore mDb;
-    User u;
+    public static User currentUser;
     boolean mLocationPermissionGranted=false;
     private static  final int PERMISSIONS_REQUEST_ENABLE_GPS=991;
     private static  final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION=992;
     private static  final int ERROR_DIALOG_REQUEST=993;
+    String token="" ;
+    public  static String  server_key="";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,42 +64,40 @@ public class MainActivity extends AppCompatActivity {
         showDialog();
         mAuth=FirebaseAuth.getInstance();
         mDb = FirebaseFirestore.getInstance();
+        getServerKey();
+
     }
+
+    private void getCurrrentUser() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null){
+            if (!user.getUid().equals("")) {
+                UserDetailsOfMatchedTrip details =new UserDetailsOfMatchedTrip(FirebaseAuth.getInstance().getCurrentUser().getUid(),this,this);
+                details.execute();
+            }
+        }else{
+            navigateToNextActivity();
+        }
+
+    }
+
+
     private  void navigateToNextActivity(){
+        Log.d(TAG, "navigateToNextActivity: Called");
         final FirebaseUser user = mAuth.getCurrentUser();
+
         try{
             if(!user.getUid().equals("")){
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                                .setTimestampsInSnapshotsEnabled(true)
-                                .build();
-                        mDb.setFirestoreSettings(settings);
-                        DocumentReference userRef = mDb.collection(getString(R.string.collection_users)).document(user.getUid());
-                        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if(task.isSuccessful()){
-                                    Log.d(TAG, "onComplete: successfully set the user client.");
-                                    u = task.getResult().toObject(User.class);
-                                    Log.d(TAG, "onCreate: Redirecting to Home Activity"+u.toString());
-                                    try{
-                                        ((UserClient)(getApplicationContext())).setUser(u);
-                                    }
-                                    catch (Exception e){
-                                        Log.d(TAG, "onComplete: "+e.getMessage());
-                                    }
-
-                                }
-                            }
-                        });
                         Intent i=new Intent(MainActivity.this,HomeActivity.class);
-                        i.putExtra(getString(R.string.user_obj),u);
+                        i.putExtra(getString(R.string.user_obj),currentUser);
+                        hideDialog();
                         startActivity(i);
                         finish();
                     }
-                }, 5000);
+                }, 500);
 
             }
         } catch (Exception e){
@@ -98,10 +108,11 @@ public class MainActivity extends AppCompatActivity {
 
                     Intent intent=new Intent(MainActivity.this,LoginActivity.class);
                     Log.d(TAG, "onCreate: Redirecting to Register Activity");
+                    hideDialog();
                     startActivity(intent);
                     finish();
                 }
-            }, 5000);
+            }, 4000);
         }
     }
 
@@ -151,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
-            navigateToNextActivity();
+            getCurrrentUser();
 
         } else {
             ActivityCompat.requestPermissions(this,
@@ -204,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
                 if(mLocationPermissionGranted){
-                   navigateToNextActivity();
+                   getCurrrentUser();
                 }
                 else{
                     getLocationPermission();
@@ -218,12 +229,80 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if(checkMapServices()){
             if(mLocationPermissionGranted){
-               navigateToNextActivity();
+               getCurrrentUser();
             }else
                 getLocationPermission();
         }
     }
 
+    public   void getToken(){
+        Log.d(TAG, "getToken: called");
+            FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                @Override
+                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                    if(task.isSuccessful()){
+                        String token=task.getResult().getToken();
+                        currentUser.setToken(token);
+                        Log.d(TAG, "onComplete: User Token: "+currentUser.getToken());
+                        sendResgistrationTokenToServer(token);
+                    }
+                }
+            });
+    }
+    private void sendResgistrationTokenToServer(String token){
+     try {
+         FirebaseFirestore db = FirebaseFirestore.getInstance();
+         DocumentReference reference = db.collection(getString(R.string.collection_users)).document(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
+         reference.update("token", token).addOnCompleteListener(new OnCompleteListener<Void>() {
+             @Override
+             public void onComplete(@NonNull Task<Void> task) {
+                 if (task.isSuccessful()) {
+                     Log.d(TAG, "onComplete: Token Send to FireStore ");
+                 }
+             }
+         });
+     }catch (Exception e){
+         Log.d(TAG, "sendResgistrationTokenToServer: Error "+e.getMessage());
+     }
+    }
+    private  void getServerKey(){
+        Log.d(TAG, "getServerKey: Called");
+       FirebaseFirestore db= FirebaseFirestore.getInstance();
+       DocumentReference ref=db.collection("server").document("key");
+       ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+           @Override
+           public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+              if(task.isSuccessful()){
+                  ServerKey key=task.getResult().toObject(ServerKey.class);
+                  serverKey=key.getKey();
+                  Log.d(TAG, "onComplete: Server Key="+serverKey);
+              }
+           }
+       });
 
+    }
+    @Override
+    public void userDetailsReceived(User user) {
+        if(user!=null){
+            Log.d(TAG, "userDetailsReceived: Current User:"+user);
+            currentUser=user;
+            getToken();
+            Log.d(TAG, "userDetailsReceived: Navigating to Next Activity");
+            navigateToNextActivity();
+        }else{
+            Log.d(TAG, "userDetailsReceived: No registered user");
+            Toast.makeText(this, "Please Reinstall the application", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        StaticPoolClass.IsSchedule=false;
+        StaticPoolClass.acceptSchuledRideFlag=false;
+        StaticPoolClass.rideAcceptedFlag=false;
+        StaticPoolClass.ifRideRejected=false;
+    }
 }

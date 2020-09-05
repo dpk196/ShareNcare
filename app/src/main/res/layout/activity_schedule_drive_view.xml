@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textEmailReg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="Trip Detials"
+        android:textColor="@color/Black"
+        android:textSize="25sp" />
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/label_start_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="320dp"
+        android:layout_marginBottom="672dp"
+        android:text="Trip Start time"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="12:pm"
+        android:id="@+id/trip_start_time"
+        android:layout_marginTop="80dp"
+        android:layout_marginLeft="150dp" />
+
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/label_total_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginEnd="320dp"
+        android:layout_marginBottom="672dp"
+        android:text="Trip distance"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10km"
+        android:id="@+id/trip_distance"
+        android:layout_marginTop="150dp"
+        android:layout_marginLeft="150dp" />
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/label_total_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="200dp"
+        android:layout_marginEnd="320dp"
+        android:layout_marginBottom="672dp"
+        android:text="Trip duration"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2 hrs"
+        android:id="@+id/trip_duration"
+        android:layout_marginTop="200dp"
+        android:layout_marginLeft="150dp" />
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/label_total_fare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="250dp"
+        android:layout_marginEnd="320dp"
+        android:layout_marginBottom="672dp"
+        android:text="Max Fare"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rs 250"
+        android:id="@+id/trip_fare"
+        android:layout_marginTop="250dp"
+        android:layout_marginLeft="150dp"/>
+
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/label_from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="300dp"
+        android:layout_marginEnd="320dp"
+        android:layout_marginBottom="672dp"
+        android:text="From"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/trip_from"
+        android:layout_marginTop="300dp"
+        android:layout_marginLeft="150dp"/>
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/label_to"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="350dp"
+        android:layout_marginEnd="320dp"
+        android:layout_marginBottom="672dp"
+        android:text="To"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/trip_to"
+        android:layout_marginTop="350dp"
+        android:layout_marginLeft="150dp"/>
+
+    <Button
+        android:id="@+id/trip_allow_to_view_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="400dp"
+        android:layout_marginRight="30dp"
+        android:background="@color/startblue"
+        android:text="Allow Rider to see Trip Details"
+        android:textStyle="bold" />
+    <Button
+        android:id="@+id/call_rider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="30dp"
+        android:background="@color/quantum_purpleA400"
+        android:layout_below="@+id/trip_allow_to_view_details"
+        android:text="Call"
+        android:textStyle="bold" />
+    <Button
+        android:id="@+id/cancel_trip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="30dp"
+        android:background="@color/yellow1"
+        android:layout_below="@+id/call_rider"
+        android:text="Cancel"
+        android:textStyle="bold" />
+    <Button
+        android:id="@+id/accept_trip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="30dp"
+        android:background="@color/red5"
+        android:layout_below="@+id/cancel_trip"
+        android:text="Accept Ride"
+        android:textStyle="bold" />
+
+
+
+
+</RelativeLayout>

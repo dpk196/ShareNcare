@@ -1,0 +1,94 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout
+       android:id="@+id/layout_logo"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+
+       <ImageView
+           android:id="@+id/imageView"
+           android:layout_width="130dp"
+           android:layout_height="150dp"
+           android:layout_alignParentTop="true"
+           android:layout_centerHorizontal="true"
+           android:layout_marginTop="20dp"
+           app:srcCompat="@drawable/applogo" />
+       
+   </RelativeLayout>
+    <RelativeLayout
+        android:background="@color/green1"
+        android:layout_below="@+id/layout_logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/layout_text">
+        <TextView
+            android:textColor="@color/Black"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="20dp"
+            android:textSize="20sp"
+            android:text="Please provide us your Vehicle Details"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    
+   
+
+    <ScrollView
+        android:layout_below="@+id/layout_text"
+        android:id="@+id/login_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/email_login_form"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
+            android:padding="20dp">
+
+
+            <EditText
+                android:id="@+id/vehicle_name_activity_vehicle_name_and_registration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:hint="Vehicle Name"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"/>
+
+
+            <EditText
+                android:id="@+id/registration_number_activity_vehicle_name_and_registration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Registration Number"
+                android:layout_marginTop="20dp"
+                android:maxLines="1" />
+
+            <Button
+                android:id="@+id/update_vehicle_name_registration_activity_vehicle_name_and_registration"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/theme_button"
+                android:text="Update"
+                android:textStyle="bold" />
+
+
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+</RelativeLayout>

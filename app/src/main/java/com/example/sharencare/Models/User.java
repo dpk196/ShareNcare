@@ -3,7 +3,7 @@ package com.example.sharencare.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class User implements Parcelable{
+public class User implements Parcelable {
 
     private String email;
     private String user_id;
@@ -12,20 +12,8 @@ public class User implements Parcelable{
     private String registration_number;
     private String  mobile_number;
     private String driver_or_rider;
-    public User(String email, String user_id, String username, String avatar, String registration_number, String mobile_number, String driver_or_rider) {
-        this.email = email;
-        this.user_id = user_id;
-        this.username = username;
-        this.avatar = avatar;
-        this.registration_number = registration_number;
-        this.mobile_number = mobile_number;
-        this.driver_or_rider = driver_or_rider;
-    }
-
-    public User() {
-
-    }
-
+    private String token;
+    private String vehicle_name;
 
     protected User(Parcel in) {
         email = in.readString();
@@ -35,6 +23,8 @@ public class User implements Parcelable{
         registration_number = in.readString();
         mobile_number = in.readString();
         driver_or_rider = in.readString();
+        token = in.readString();
+        vehicle_name = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -49,6 +39,56 @@ public class User implements Parcelable{
         }
     };
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", user_id='" + user_id + '\'' +
+                ", username='" + username + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", registration_number='" + registration_number + '\'' +
+                ", mobile_number='" + mobile_number + '\'' +
+                ", driver_or_rider='" + driver_or_rider + '\'' +
+                ", token='" + token + '\'' +
+                ", vehicle_name='" + vehicle_name + '\'' +
+                '}';
+    }
+
+    public String getVehicle_name() {
+        return vehicle_name;
+    }
+
+    public void setVehicle_name(String vehicle_name) {
+        this.vehicle_name = vehicle_name;
+    }
+
+    public User(String email, String user_id, String username, String avatar, String registration_number, String mobile_number, String driver_or_rider, String token, String vehicle_name) {
+        this.email = email;
+        this.user_id = user_id;
+        this.username = username;
+        this.avatar = avatar;
+        this.registration_number = registration_number;
+        this.mobile_number = mobile_number;
+        this.driver_or_rider = driver_or_rider;
+        this.token = token;
+        this.vehicle_name = vehicle_name;
+    }
+
+    public User() {
+
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+
+
+
     public String getAvatar() {
         return avatar;
     }
@@ -57,9 +97,7 @@ public class User implements Parcelable{
         this.avatar = avatar;
     }
 
-    public static Creator<User> getCREATOR() {
-        return CREATOR;
-    }
+
 
     public String getEmail() {
         return email;
@@ -108,25 +146,11 @@ public class User implements Parcelable{
         this.driver_or_rider = driver_or_rider;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "email='" + email + '\'' +
-                ", user_id='" + user_id + '\'' +
-                ", username='" + username + '\'' +
-                ", avatar='" + avatar + '\'' +
-                ", registration_number='" + registration_number + '\'' +
-                ", mobile_number='" + mobile_number + '\'' +
-                ", driver_or_rider='" + driver_or_rider + '\'' +
-                '}';
-    }
 
     @Override
     public int describeContents() {
         return 0;
     }
-
-
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
@@ -134,6 +158,11 @@ public class User implements Parcelable{
         dest.writeString(user_id);
         dest.writeString(username);
         dest.writeString(avatar);
+        dest.writeString(registration_number);
+        dest.writeString(mobile_number);
+        dest.writeString(driver_or_rider);
+        dest.writeString(token);
+        dest.writeString(vehicle_name);
     }
 }
 
